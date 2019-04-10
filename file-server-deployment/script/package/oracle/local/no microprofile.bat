@@ -1,0 +1,1 @@
+mvn -f ../../../../pom.xml clean package -P data.source.oracle.local,jdbc.oracle

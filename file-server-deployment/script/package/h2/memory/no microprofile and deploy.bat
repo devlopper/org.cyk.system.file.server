@@ -1,0 +1,1 @@
+mvn -f ../../../../pom.xml clean package wildfly:deploy -P data.source.h2.memory,jdbc.h2

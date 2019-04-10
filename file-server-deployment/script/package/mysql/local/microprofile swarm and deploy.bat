@@ -1,0 +1,1 @@
+mvn -f ../../../../pom.xml clean package wildfly-swarm:run -P data.source.mysql.local,jdbc.mysql,microprofile.jboss.wildfly.swarm

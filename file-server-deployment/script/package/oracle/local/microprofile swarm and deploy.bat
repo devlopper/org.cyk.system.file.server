@@ -1,0 +1,1 @@
+mvn -f ../../../../pom.xml clean package wildfly-swarm:run -P data.source.oracle.local,jdbc.oracle,microprofile.jboss.wildfly.swarm

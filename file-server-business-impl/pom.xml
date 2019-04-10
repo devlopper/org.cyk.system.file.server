@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<name>Business Implementation based on EJB</name>
+	
+	<parent>
+		<groupId>org.cyk.system.file.server</groupId>
+		<artifactId>file-server-_pom</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<groupId>org.cyk.system.file.server.business</groupId>
+	<artifactId>file-server-business-impl</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.cyk.system.file.server.business</groupId>
+			<artifactId>file-server-business-api</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cyk.system.file.server.persistence</groupId>
+			<artifactId>file-server-persistence-impl</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>	
+	
+	<profiles>
+		<profile>
+			<id>org.cyk.test</id>
+			<properties>
+				<org.cyk.test.classes>org.cyk.system.file.server.business.impl.integration.DataSourceDefinition</org.cyk.test.classes>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>1.4.197</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+	
+</project>
