@@ -32,7 +32,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		
 		__inject__(FileRepresentation.class).createOne(file);
 		
-		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business").getEntity();
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business",null).getEntity();
 		
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo(__file__.getExtension());
@@ -40,6 +40,26 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getName()).isEqualTo(__file__.getName());
 		assertThat(file.getSize()).isEqualTo(__file__.getSize());
 		assertThat(file.getUniformResourceLocator()).isEqualTo(__file__.getUniformResourceLocator());
+		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo("Hello");
+		
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business","name,extension,mimeType").getEntity();
+		assertThat(file).isNotNull();
+		assertThat(file.getName()).isEqualTo(__file__.getName());
+		assertThat(file.getExtension()).isEqualTo(__file__.getExtension());
+		assertThat(file.getMimeType()).isEqualTo(__file__.getMimeType());
+		assertThat(file.getSize()).isNull();
+		assertThat(file.getUniformResourceLocator()).isNull();
+		assertThat(file.getBytes()).isNull();
+		
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business","bytes").getEntity();
+		
+		assertThat(file).isNotNull();
+		assertThat(file.getExtension()).isNull();
+		assertThat(file.getMimeType()).isNull();
+		assertThat(file.getName()).isNull();
+		assertThat(file.getSize()).isNull();
+		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(new String(file.getBytes())).isEqualTo("Hello");
 	}

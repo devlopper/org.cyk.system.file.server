@@ -3,7 +3,6 @@ package org.cyk.system.file.server.representation.entities;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 
 import org.cyk.utility.server.representation.AbstractEntityFromPersistenceEntity;
 
@@ -18,7 +17,6 @@ public class FileDto extends AbstractEntityFromPersistenceEntity implements Seri
 
 	private String uniformResourceLocator;
 	
-	@XmlSchemaType(name="base64Binary")
 	private byte[] bytes;
 	
 	private String name;
