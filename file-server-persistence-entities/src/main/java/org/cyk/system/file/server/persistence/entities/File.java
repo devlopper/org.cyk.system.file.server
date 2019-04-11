@@ -20,19 +20,23 @@ public class File extends AbstractEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Location
+	 * Physical location. Can be local (file:///) or remote (ftp, http,...)
 	 */
 	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR) private String uniformResourceLocator;
 	
 	/**
-	 * Content
+	 * Binary content
 	 */
 	@Column(name=COLUMN_BYTES) private byte[] bytes;
 	
 	/**
-	 * Name
+	 * Logical name
 	 */
 	@Column(name=COLUMN_NAME) private String name;
+	
+	/* 
+	 * Derived informations. Those informations can be derived from bytes or collected from inputed file.
+	 * */
 	
 	/**
 	 * Extension
