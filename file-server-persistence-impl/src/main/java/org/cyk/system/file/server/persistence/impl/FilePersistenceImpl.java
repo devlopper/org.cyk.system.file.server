@@ -11,5 +11,5 @@ import org.cyk.utility.server.persistence.jpa.AbstractPersistenceEntityImpl;
 @Singleton
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 }

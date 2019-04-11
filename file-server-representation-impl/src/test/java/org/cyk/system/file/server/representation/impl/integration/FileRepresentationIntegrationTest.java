@@ -14,7 +14,11 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	
 	@Test
 	public void createOneFile() throws Exception{
-		org.cyk.utility.file.File __file__ = __inject__(FileBuilder.class).setClazz(getClass()).setName("text01.txt").execute().getOutput();
+		org.cyk.utility.file.File __file__ = __inject__(FileBuilder.class)
+				/*.setInputStream(getClass().getResourceAsStream("text01.txt"))*/
+				.setBytes("Hello".getBytes())
+				.setName("text01.txt").execute().getOutput();
+	
 		String code = __getRandomCode__();
 		
 		FileDto file = new FileDto();
@@ -37,6 +41,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getSize()).isEqualTo(__file__.getSize());
 		assertThat(file.getUniformResourceLocator()).isEqualTo(__file__.getUniformResourceLocator());
 		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo("Hello");
 	}
 	
 	@Override
