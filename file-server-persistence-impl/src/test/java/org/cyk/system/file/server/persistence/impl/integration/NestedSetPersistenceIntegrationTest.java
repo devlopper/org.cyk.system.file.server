@@ -1,4 +1,4 @@
-package org.cyk.system.file.server.persistence.impl.unit;
+package org.cyk.system.file.server.persistence.impl.integration;
 
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.server.persistence.test.TestPersistenceCreate;

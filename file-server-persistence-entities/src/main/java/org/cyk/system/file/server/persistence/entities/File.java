@@ -67,7 +67,7 @@ public class File extends AbstractEntity implements Serializable {
 	
 	/**/
 	
-	public static final String FIELD_BYTES = "group";
+	public static final String FIELD_BYTES = "bytes";
 	public static final String FIELD_NAME = "name";
 	public static final String FIELD_EXTENSION = "extension";
 	public static final String FIELD_MIME_TYPE = "mimeType";
