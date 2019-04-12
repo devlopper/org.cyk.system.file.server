@@ -17,7 +17,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.system.file.server.persistence</groupId>
-			<artifactId>file-server-persistence-entities</artifactId>
+			<artifactId>file-server-persistence-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		

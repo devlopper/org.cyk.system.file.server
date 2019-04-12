@@ -7,6 +7,8 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.server.persistence.jpa.AbstractEntity;
 
@@ -25,14 +27,19 @@ public class File extends AbstractEntity implements Serializable {
 	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR) private String uniformResourceLocator;
 	
 	/**
+	 * Logical name
+	 */
+	@NotNull
+	@Column(name=COLUMN_NAME) private String name;
+	
+	/*
+	 * Local physical storage
+	 */
+	
+	/**
 	 * Binary content
 	 */
 	@Column(name=COLUMN_BYTES) private byte[] bytes;
-	
-	/**
-	 * Logical name
-	 */
-	@Column(name=COLUMN_NAME) private String name;
 	
 	/* 
 	 * Derived informations. Those informations can be derived from bytes or collected from inputed file.
@@ -46,14 +53,18 @@ public class File extends AbstractEntity implements Serializable {
 	/**
 	 * Mime type
 	 */
+	@NotNull
 	@Column(name=COLUMN_MIME_TYPE) private String mimeType;
 	
 	/**
 	 * Size
 	 */
+	@NotNull
 	@Column(name=COLUMN_SIZE) private Long size;
 		
 	/**/
+	
+	@Transient private String nameAndExtension;
 	
 	/**/
 	
