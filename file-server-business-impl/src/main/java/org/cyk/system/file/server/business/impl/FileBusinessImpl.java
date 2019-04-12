@@ -9,6 +9,7 @@ import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.file.FileHelper;
+import org.cyk.utility.random.RandomHelper;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -46,6 +47,10 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 				if(file.getSize() == null) {
 					if(bytes!=null)
 						file.setSize(new Long(bytes.length));
+				}
+				
+				if(__injectStringHelper__().isBlank(file.getCode())) {
+					file.setCode(__inject__(RandomHelper.class).getAlphanumeric(10)+System.currentTimeMillis());
 				}
 			}
 		});
