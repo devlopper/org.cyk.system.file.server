@@ -14,12 +14,12 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 	
 	@Test
 	public void createOneRoleType() throws Exception{
-		String code = __getRandomCode__();
+		String identifier = __getRandomIdentifier__();
 		String text = "Hello world.";
-		File file = new File().setCode(code).setNameAndExtension("text01.txt").setBytes(text.getBytes());
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
 		__inject__(FileBusiness.class).create(file);
 		
-		file = __inject__(FileBusiness.class).findOneByBusinessIdentifier(code);
+		file = __inject__(FileBusiness.class).findOneBySystemIdentifier(identifier);
 		
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");

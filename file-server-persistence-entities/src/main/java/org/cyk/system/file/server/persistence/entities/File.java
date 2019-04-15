@@ -6,11 +6,12 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.cyk.utility.server.persistence.jpa.AbstractEntity;
+import org.cyk.utility.server.persistence.jpa.AbstractIdentifiedByString;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
 @Table(name=File.TABLE)
-public class File extends AbstractEntity implements Serializable {
+public class File extends AbstractIdentifiedByString implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -39,6 +40,7 @@ public class File extends AbstractEntity implements Serializable {
 	/**
 	 * Binary content
 	 */
+	@Lob
 	@Column(name=COLUMN_BYTES) private byte[] bytes;
 	
 	/* 
@@ -69,15 +71,8 @@ public class File extends AbstractEntity implements Serializable {
 	/**/
 	
 	@Override
-	public File setCode(String code) {
-		return (File) super.setCode(code);
-	}
-	
-	/**/
-	
-	@Override
-	public String toString() {
-		return getCode()+","+getName();
+	public File setIdentifier(String identifier) {
+		return (File) super.setIdentifier(identifier);
 	}
 	
 	/**/

@@ -1,7 +1,7 @@
 package org.cyk.system.file.server.persistence.impl.integration;
 
+import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.utility.server.persistence.test.TestPersistenceCreate;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeploymentAsSwram;
 import org.junit.Test;
 
@@ -10,9 +10,14 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 	
 	@Test
 	public void createOneFile() throws Exception{
-		String code = __getRandomCode__();
-		File file = new File().setCode(code).setName(__getRandomCode__()).setBytes("Hello".getBytes()).setMimeType("text/plain").setSize(1l);
-		__inject__(TestPersistenceCreate.class).addObjects(file).execute();
+		String identifier = __getRandomIdentifier__();
+		File file = new File().setIdentifier(identifier).setName("file").setBytes("Hello".getBytes()).setMimeType("text/plain").setSize(1l);
+		userTransaction.begin();
+		__inject__(FilePersistence.class).create(file);
+		userTransaction.commit();
+		
+		file = __inject__(FilePersistence.class).readOneBySystemIdentifier(identifier);
+		assertionHelper.assertNotNull(file);
 	}
 	
 }

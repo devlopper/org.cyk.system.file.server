@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.utility.server.persistence.jpa.AbstractPersistenceEntityImpl;
+import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 
 @Singleton
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {

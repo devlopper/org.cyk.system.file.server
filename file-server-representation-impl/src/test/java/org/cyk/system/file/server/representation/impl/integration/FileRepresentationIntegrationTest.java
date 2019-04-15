@@ -13,6 +13,7 @@ import org.junit.Test;
 public class FileRepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeploymentAsSwram {
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void createOneFile() throws Exception{
 		String code = __getRandomCode__();
@@ -27,8 +28,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
 		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-		assertThat(file.getBytes()).isNotNull();
-		assertThat(new String(file.getBytes())).isEqualTo(text);
+		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business","name,extension,mimeType").getEntity();
 		assertThat(file).isNotNull();
@@ -56,8 +56,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
 		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-		assertThat(file.getBytes()).isNotNull();
-		assertThat(new String(file.getBytes())).isEqualTo(text);
+		assertThat(file.getBytes()).isNull();
 		
 		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany("name,extension,mimeType").getEntity()).iterator().next();
 		assertThat(file).isNotNull();
