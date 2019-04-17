@@ -6,7 +6,6 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -33,16 +32,6 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	@NotNull
 	@Column(name=COLUMN_NAME) private String name;
 	
-	/*
-	 * Local physical storage
-	 */
-	
-	/**
-	 * Binary content
-	 */
-	@Lob
-	@Column(name=COLUMN_BYTES) private byte[] bytes;
-	
 	/* 
 	 * Derived informations. Those informations can be derived from bytes or collected from inputed file.
 	 * */
@@ -67,6 +56,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	/**/
 	
 	@Transient private String nameAndExtension;
+	@Transient private byte[] bytes;
 	
 	/**/
 	
@@ -85,7 +75,6 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	public static final String FIELD_SIZE = "size";
 	
 	public static final String COLUMN_NAME = FIELD_NAME;
-	public static final String COLUMN_BYTES = FIELD_BYTES;
 	public static final String COLUMN_EXTENSION = FIELD_EXTENSION;
 	public static final String COLUMN_MIME_TYPE = FIELD_MIME_TYPE;
 	public static final String COLUMN_UNIFORM_RESOURCE_LOCATOR = FIELD_UNIFORM_RESOURCE_LOCATOR;

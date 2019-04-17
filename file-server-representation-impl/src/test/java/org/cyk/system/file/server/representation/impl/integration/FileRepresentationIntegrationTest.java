@@ -16,12 +16,12 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	@SuppressWarnings("unchecked")
 	@Test
 	public void createOneFile() throws Exception{
-		String code = __getRandomCode__();
+		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
-		FileDto file = new FileDto().setCode(code).setNameAndExtension("text01.txt").setBytes(text.getBytes());
+		FileDto file = new FileDto().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
 		__inject__(FileRepresentation.class).createOne(file);
 		
-		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business",null).getEntity();
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system",null).getEntity();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -30,7 +30,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
 		assertThat(file.getBytes()).isNull();
 		
-		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business","name,extension,mimeType").getEntity();
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -39,7 +39,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNull();
 		
-		file = (FileDto) __inject__(FileRepresentation.class).getOne(code, "business","bytes").getEntity();
+		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","bytes").getEntity();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isNull();
 		assertThat(file.getMimeType()).isNull();

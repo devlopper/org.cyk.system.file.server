@@ -26,8 +26,8 @@ public class FileDto extends AbstractEntityFromPersistenceEntity implements Seri
 	private String nameAndExtension;
 	
 	@Override
-	public FileDto setCode(String code) {
-		return (FileDto) super.setCode(code);
+	public FileDto setIdentifier(String identifier) {
+		return (FileDto) super.setIdentifier(identifier);
 	}
 	
 }

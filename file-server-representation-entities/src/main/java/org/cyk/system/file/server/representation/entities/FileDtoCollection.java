@@ -16,14 +16,5 @@ import lombok.experimental.Accessors;
 @XmlSeeAlso(FileDto.class)
 public class FileDtoCollection extends AbstractEntityCollection<FileDto> implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	public FileDtoCollection add(String code,String name) {
-		add(new FileDto().setCode(code).setName(name));
-		return this;
-	}
 	
-	public FileDtoCollection add(String code) {
-		return add(code, null);
-	}
-		
 }

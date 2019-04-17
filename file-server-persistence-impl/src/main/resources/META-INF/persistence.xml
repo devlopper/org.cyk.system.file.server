@@ -3,6 +3,7 @@
     <persistence-unit name="filePersistenceUnit" transaction-type="JTA">
     	<jta-data-source>${data.source.jndi.name}</jta-data-source>
     	<class>org.cyk.system.file.server.persistence.entities.File</class>
+    	<class>org.cyk.system.file.server.persistence.entities.FileBytes</class>
     	<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}"/>
