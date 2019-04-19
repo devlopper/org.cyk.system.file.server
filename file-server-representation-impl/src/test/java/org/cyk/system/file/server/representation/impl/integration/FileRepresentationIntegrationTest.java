@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 
+import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
@@ -49,7 +50,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(new String(file.getBytes())).isEqualTo(text);
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null).getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -58,7 +59,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany("name,extension,mimeType").getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType").getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -67,7 +68,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany("bytes").getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"bytes").getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isNull();
 		assertThat(file.getMimeType()).isNull();
@@ -77,6 +78,20 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(new String(file.getBytes())).isEqualTo(text);
 		
+		__inject__(FileBusiness.class).deleteBySystemIdentifier(identifier);
+	}
+	
+	@Test
+	public void downloadOneFile() throws Exception{
+		String identifier = __getRandomIdentifier__();
+		String text = "This is a content";
+		FileDto file = new FileDto().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
+		__inject__(FileRepresentation.class).createOne(file);
+		
+		byte[] bytes = (byte[]) __inject__(FileRepresentation.class).download(identifier,null).getEntity();
+		assertThat(new String(bytes)).isEqualTo(text);
+		
+		__inject__(FileBusiness.class).deleteBySystemIdentifier(identifier);
 	}
 	
 	@Override

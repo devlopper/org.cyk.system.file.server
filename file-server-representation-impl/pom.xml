@@ -13,7 +13,11 @@
 	<groupId>org.cyk.system.file.server.representation</groupId>
 	<artifactId>file-server-representation-impl</artifactId>
 	<packaging>jar</packaging>
-
+	
+	<properties>
+		<org.jboss.resteasy-resteasy-multipart-provider.version>3.1.0.Final</org.jboss.resteasy-resteasy-multipart-provider.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.system.file.server.representation</groupId>
@@ -29,6 +33,13 @@
 			<groupId>org.cyk.jee.utility.server.representation.impl</groupId>
 			<artifactId>jee-utility-server-representation-impl</artifactId>
 			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-multipart-provider</artifactId>
+		    <version>${org.jboss.resteasy-resteasy-multipart-provider.version}</version>
+		    <scope>provided</scope>
 		</dependency>
 	</dependencies>		
 	

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
-import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.persistence.test.TestPersistenceCreate;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -29,19 +28,6 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 				assertThat(file.getName()).isEqualTo("file");
 				assertThat(file.getUniformResourceLocator()).isEqualTo(null);
 				assertThat(file.getBytes()).isNull();
-				/*
-				Properties properties = new Properties();
-				properties.setFields("bytes");
-				file = __inject__(FilePersistence.class).readOne(identifier, properties);				
-				assertThat(file).isNotNull();
-				assertThat(file.getExtension()).isEqualTo("txt");
-				assertThat(file.getMimeType()).isEqualTo("text/plain");
-				assertThat(file.getName()).isEqualTo("text01");
-				assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-				assertThat(file.getBytes()).isNotNull();
-				assertThat(file.getSize()).isEqualTo(file.getBytes().length);
-				assertThat(new String(file.getBytes())).isEqualTo(text);	
-				*/
 			}
 		}).execute();
 	}

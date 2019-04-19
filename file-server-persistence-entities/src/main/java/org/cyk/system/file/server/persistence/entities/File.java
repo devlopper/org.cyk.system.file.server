@@ -65,6 +65,15 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 		return (File) super.setIdentifier(identifier);
 	}
 	
+	public String getNameAndExtension() {
+		if(nameAndExtension == null) {
+			nameAndExtension = name;
+			if(extension!=null && !extension.isEmpty())
+				nameAndExtension += "."+extension;	
+		}
+		return nameAndExtension;
+	}
+	
 	/**/
 	
 	public static final String FIELD_BYTES = "bytes";
