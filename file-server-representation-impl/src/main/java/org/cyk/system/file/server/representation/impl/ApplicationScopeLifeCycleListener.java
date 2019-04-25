@@ -3,9 +3,10 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.system.file.server.annotation.File;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.annotation.Default;
-import org.cyk.utility.__kernel__.annotation.Representation;
+import org.cyk.utility.__kernel__.annotation.Server;
 import org.cyk.utility.field.FieldValueCopyFieldsGetter;
 import org.cyk.utility.instance.InstanceBuilder;
 
@@ -19,7 +20,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		__inject__(org.cyk.system.file.server.representation.api.ApplicationScopeLifeCycleListener.class).initialize(null);
 		
 		__setQualifierClassTo__(Default.class,FieldValueCopyFieldsGetter.class);
-		__setQualifierClassTo__(Representation.class,InstanceBuilder.class);
+		
+		__setQualifiersClasses__(InstanceBuilder.class, File.class,Server.class);
 	}
 	 
 	@Override
