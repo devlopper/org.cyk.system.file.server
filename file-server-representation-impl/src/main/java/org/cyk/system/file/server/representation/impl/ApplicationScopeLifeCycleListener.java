@@ -5,7 +5,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.annotation.Default;
+import org.cyk.utility.__kernel__.annotation.Representation;
 import org.cyk.utility.field.FieldValueCopyFieldsGetter;
+import org.cyk.utility.instance.InstanceBuilder;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -13,11 +15,13 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		__setQualifierClassTo__(Default.class,FieldValueCopyFieldsGetter.class);
 		__inject__(org.cyk.system.file.server.business.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
 		__inject__(org.cyk.system.file.server.representation.api.ApplicationScopeLifeCycleListener.class).initialize(null);
+		
+		__setQualifierClassTo__(Default.class,FieldValueCopyFieldsGetter.class);
+		__setQualifierClassTo__(Representation.class,InstanceBuilder.class);
 	}
-	
+	 
 	@Override
 	public void __destroy__(Object object) {}
 	
