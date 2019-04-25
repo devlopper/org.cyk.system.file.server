@@ -28,7 +28,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
+		assertThat(file.getUniformResourceLocator()).isNotNull();
 		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();
@@ -56,7 +56,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
+		assertThat(file.getUniformResourceLocator()).isNotNull();
 		assertThat(file.getBytes()).isNull();
 		
 		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType").getEntity()).iterator().next();

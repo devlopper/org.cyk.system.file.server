@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.servlet.ServletContextEvent;
 
+import org.cyk.system.file.server.representation.impl.ApplicationScopeLifeCycleListener;
 import org.cyk.utility.server.deployment.AbstractServletContextListener;
 
 public class ServletContextListener extends AbstractServletContextListener implements Serializable {
@@ -11,7 +12,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 
 	@Override
 	protected void __listenContextInitialized__(ServletContextEvent servletContextEvent) {
-		
+		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
 	}
 	
 	@Override

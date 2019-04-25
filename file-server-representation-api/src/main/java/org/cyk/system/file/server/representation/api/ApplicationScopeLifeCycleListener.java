@@ -1,11 +1,11 @@
-package org.cyk.system.file.server.business.api;
+package org.cyk.system.file.server.representation.api;
 import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
-import org.cyk.utility.assertion.AssertionsProviderClassMap;
+import org.cyk.utility.__kernel__.function.FunctionRunnableMap;
+import org.cyk.utility.instance.InstanceBuilderImpl;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -13,7 +13,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		__inject__(AssertionsProviderClassMap.class).set(File.class, FileAssertionsProvider.class);
+		__inject__(FunctionRunnableMap.class).set(InstanceBuilderImpl.class, InstanceBuilderFunctionRunnableImpl.class,LEVEL);
 	}
 	
 	@Override
@@ -21,5 +21,5 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	
 	/**/
 	
-	public static final Integer LEVEL = new Integer(org.cyk.utility.server.business.ApplicationScopeLifeCycleListener.LEVEL+1);
+	public static final Integer LEVEL = 1000;//new Integer(org.cyk.system.file.server.business.ApplicationScopeLifeCycleListener.LEVEL+1);
 }
