@@ -53,6 +53,12 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	@NotNull
 	@Column(name=COLUMN_SIZE) private Long size;
 		
+	/**
+	 * SHA1
+	 */
+	@NotNull
+	@Column(name=COLUMN_SHA1) private String sha1;
+	
 	/**/
 	
 	@Transient private String nameAndExtension;
@@ -82,12 +88,14 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	public static final String FIELD_MIME_TYPE = "mimeType";
 	public static final String FIELD_UNIFORM_RESOURCE_LOCATOR = "uniformResourceLocator";
 	public static final String FIELD_SIZE = "size";
+	public static final String FIELD_SHA1 = "sha1";
 	
 	public static final String COLUMN_NAME = FIELD_NAME;
 	public static final String COLUMN_EXTENSION = FIELD_EXTENSION;
 	public static final String COLUMN_MIME_TYPE = FIELD_MIME_TYPE;
 	public static final String COLUMN_UNIFORM_RESOURCE_LOCATOR = FIELD_UNIFORM_RESOURCE_LOCATOR;
 	public static final String COLUMN_SIZE = FIELD_SIZE;
+	public static final String COLUMN_SHA1 = FIELD_SHA1;
 	
 	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"file";
 	

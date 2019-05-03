@@ -28,7 +28,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.getUniformResourceLocator()).isEqualTo("http://localhost:8080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
+		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();
@@ -56,7 +56,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.getUniformResourceLocator()).isEqualTo("http://localhost:8080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
+		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
 		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType").getEntity()).iterator().next();
@@ -92,6 +92,21 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(new String(bytes)).isEqualTo(text);
 		
 		__inject__(FileBusiness.class).deleteBySystemIdentifier(identifier);
+	}
+	
+	@Test
+	public void createFromDirectories() throws Exception{
+		__inject__(FileRepresentation.class).createFromDirectories("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation");
+		@SuppressWarnings("unchecked")
+		Collection<FileDto> files = (Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null, null, null).getEntity();
+		assertThat(files).withFailMessage("No file found").isNotNull();
+		assertThat(files).withFailMessage("No file found").isNotEmpty();
+		assertThat(files.stream().map(x -> x.getName())).hasSize(15).contains("Alléluia de la Maîtrise");
+		//Long count = __inject__(FileBusiness.class).count();
+		//__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
+		//assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
+		for(FileDto index : files)
+			__inject__(FileBusiness.class).deleteBySystemIdentifier(index.getIdentifier());
 	}
 	
 	@Override

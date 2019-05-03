@@ -2,6 +2,8 @@ package org.cyk.system.file.server.business.impl.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
+
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
@@ -9,6 +11,7 @@ import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.business.test.TestBusinessCreate;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
+import org.cyk.utility.string.Strings;
 import org.junit.Test;
 
 public class FileBusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
@@ -76,10 +79,20 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 				assertThat(new String(file.getBytes())).isEqualTo(text);	
 			}
 		}).execute();
-		
-		
-		
 				
+	}
+	
+	@Test
+	public void createFileFromDirectories() throws Exception{
+		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
+		Collection<File> files = __inject__(FileBusiness.class).findMany();
+		assertThat(files).withFailMessage("No file found").isNotNull();
+		assertThat(files).withFailMessage("No file found").isNotEmpty();
+		assertThat(files.stream().map(x -> x.getNameAndExtension())).hasSize(15).contains("Alléluia de la Maîtrise.pdf");
+		//Long count = __inject__(FileBusiness.class).count();
+		//__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
+		//assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
+		__inject__(FileBusiness.class).deleteAll();
 	}
 	
 }

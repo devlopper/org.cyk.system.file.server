@@ -16,11 +16,19 @@ import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
+import org.cyk.utility.string.Strings;
 
 @Singleton
 public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<File,FileBusiness,FileDto,FileDtoCollection> implements FileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Response createFromDirectories(String directories) {
+		System.out.println("FileRepresentationImpl.createFromDirectories() ::: "+directories);
+		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories));
+		return Response.ok("Files has been created from directories").build();
+	}
+	
 	@Override
 	public Response download(String identifier,String isInline) {
 		File file = __inject__(FileBusiness.class).findOneBySystemIdentifier(identifier);

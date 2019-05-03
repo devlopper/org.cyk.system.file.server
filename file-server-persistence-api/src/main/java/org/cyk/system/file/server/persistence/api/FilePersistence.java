@@ -5,4 +5,6 @@ import org.cyk.utility.server.persistence.PersistenceEntity;
 
 public interface FilePersistence extends PersistenceEntity<File> {
 
+	File readBySha1(String sha1);
+	
 }

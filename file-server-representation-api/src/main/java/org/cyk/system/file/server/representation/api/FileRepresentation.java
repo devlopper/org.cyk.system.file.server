@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.representation.api;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,6 +18,11 @@ import org.cyk.utility.server.representation.RepresentationEntity;
 @Path(FileRepresentation.PATH)
 public interface FileRepresentation extends RepresentationEntity<File,FileDto,FileDtoCollection> {
 	
+	@POST
+	@Path(PATH_CREATE_FROM_DIRECTORIES)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	Response createFromDirectories(@QueryParam(PARAMETER_DIRECTORIES) String directories);
+	
 	/*
 	 * Upload is not yet standard. For now we will use specific application server functionality
 	 */
@@ -32,8 +38,12 @@ public interface FileRepresentation extends RepresentationEntity<File,FileDto,Fi
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
 	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) String isInline);
 	
+	String PATH_CREATE_FROM_DIRECTORIES = PATH_ROOT+ConstantString.CREATE+__SLASH__+ConstantString.FROM+__SLASH__+ConstantString.DIRECTORIES;
+	
 	String PATH = "/file";
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = PATH+__SLASH__+PATH_UPLOAD;
 	String PATH_DOWNLOAD_ONE = PATH_IDENTIFIER+__SLASH__+ConstantString.DOWNLOAD;
+	
+	
 }

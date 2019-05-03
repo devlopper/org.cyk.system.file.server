@@ -16,7 +16,8 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 	public void createOneFile() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
-		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l);
+		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l)
+				.setSha1("sha1");
 		FileBytes fileBytes = new FileBytes().setFile(file).setBytes(text.getBytes());
 		__inject__(TestPersistenceCreate.class).addObjects(file,fileBytes).addTryEndRunnables(new Runnable() {
 			@Override

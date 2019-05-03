@@ -1,11 +1,17 @@
 package org.cyk.system.file.server.business.impl;
 
+import java.io.FileInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
@@ -16,9 +22,12 @@ import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.constant.ConstantCharacter;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.file.FileHelper;
+import org.cyk.utility.file.Files;
+import org.cyk.utility.file.FilesGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
+import org.cyk.utility.string.StringHelper;
 import org.cyk.utility.string.Strings;
 
 @Singleton
@@ -31,9 +40,23 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 		function.addTryBeginRunnables(new Runnable() {
 			@Override
 			public void run() {
+				byte[] bytes = file.getBytes();
+				if(__inject__(StringHelper.class).isBlank(file.getSha1())) {
+					if(bytes==null) {
+						//TODO get a way to compute sha1 : from given uniform resource locator
+					}else
+						file.setSha1(new String(new DigestUtils(MessageDigestAlgorithms.SHA_1).digestAsHex(bytes)));
+				}
+				/*
+				if(__injectStringHelper__().isNotBlank(file.getSha1())) {
+					File current = __inject__(FilePersistence.class).readBySha1(file.getSha1());
+					if(current!=null)
+						__inject__(ThrowableHelper.class).throwRuntimeException("File content already exist");
+				}
+				*/
 				String nameAndExtension = file.getNameAndExtension();
 				String extension = file.getExtension();
-				byte[] bytes = file.getBytes();
+				
 				
 				if(__injectStringHelper__().isBlank(file.getName())) {
 					if(__injectStringHelper__().isNotBlank(nameAndExtension))
@@ -56,10 +79,12 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 					if(bytes!=null)
 						file.setSize(new Long(bytes.length));
 				}
+				
+				
 			}
 		});
 		
-		function.try_().end().addRunnables(new Runnable() {
+		function.addTryEndRunnables(new Runnable() {
 			@Override
 			public void run() {
 				byte[] bytes = file.getBytes();
@@ -80,6 +105,36 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 					__inject__(FileBytesBusiness.class).delete(fileBytes);
 			}
 		});
+	}
+	
+	@Override @Transactional
+	public FileBusiness createFromDirectories(Strings directories) {
+		FilesGetter filesGetter = __inject__(FilesGetter.class);
+		filesGetter.addDirectories(directories).setIsFileChecksumComputable(Boolean.TRUE).setIsFilterByFileChecksum(Boolean.TRUE);
+		Files files = filesGetter.execute().getOutput();
+		if(files!=null) {
+			Collection<File> persistences = new ArrayList<>();
+			files.get().forEach(new Consumer<org.cyk.utility.file.File>() {
+				@Override
+				public void accept(org.cyk.utility.file.File file) {
+					File persistence = __inject__(File.class);
+					try {
+						persistence.setBytes(IOUtils.toByteArray(new FileInputStream(new java.io.File(file.getPathAndNameAndExtension()))));
+					} catch (Exception exception) {
+						exception.printStackTrace();
+					}
+					persistence.setExtension(file.getExtension());
+					persistence.setMimeType(file.getMimeType());
+					persistence.setName(file.getName());
+					persistence.setSha1(file.getChecksum());
+					persistence.setSize(file.getSize());
+					persistence.setUniformResourceLocator(file.getUniformResourceLocator());
+					persistences.add(persistence);
+				}
+			});
+		createMany(persistences);
+		}
+		return this;
 	}
 	
 	@Override

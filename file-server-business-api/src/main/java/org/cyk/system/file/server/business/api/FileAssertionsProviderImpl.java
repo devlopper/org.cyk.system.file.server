@@ -21,6 +21,20 @@ public class FileAssertionsProviderImpl extends AbstractAssertionsProviderForImp
 				}else {
 					
 				}
+				/*
+				String sha1 = file.getSha1();
+				if(__inject__(StringHelper.class).isBlank(sha1)) {
+					byte[] bytes = file.getBytes();
+					if(bytes==null) {
+						
+					}else
+						file.setSha1(new String(new DigestUtils(MessageDigestAlgorithms.SHA_1).digestAsHex(bytes)));
+				}
+				
+				if(__injectStringHelper__().isNotBlank(file.getSha1())) {
+					
+				}
+				*/
 			}
 		}else {
 			
