@@ -28,6 +28,7 @@
 	</dependencies>	
 	
 	<profiles>
+		
 		<profile>
 			<id>org.cyk.test</id>
 			<properties>
@@ -41,6 +42,22 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!--
+		<profile>
+			<id>org.cyk.test</id>
+			<properties>
+				<org.cyk.test.classes>org.cyk.system.file.server.business.impl.integration.DataSourceDefinition</org.cyk.test.classes>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>mysql</groupId>
+		    		<artifactId>mysql-connector-java</artifactId>
+		    		<version>5.1.47</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		-->
 	</profiles>
 	
 </project>

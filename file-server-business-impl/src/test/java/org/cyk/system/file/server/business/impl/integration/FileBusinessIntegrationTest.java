@@ -89,10 +89,15 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 		assertThat(files).withFailMessage("No file found").isNotNull();
 		assertThat(files).withFailMessage("No file found").isNotEmpty();
 		assertThat(files.stream().map(x -> x.getNameAndExtension())).hasSize(15).contains("Alléluia de la Maîtrise.pdf");
-		//Long count = __inject__(FileBusiness.class).count();
-		//__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
-		//assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
-		__inject__(FileBusiness.class).deleteAll();
+		Long count = __inject__(FileBusiness.class).count();
+		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
+		assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
+		__inject__(FileBusiness.class).deleteMany(files);
 	}
+	
+	/*@Test
+	public void createFileFromDirectories() throws Exception{
+		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions"));
+	}*/
 	
 }

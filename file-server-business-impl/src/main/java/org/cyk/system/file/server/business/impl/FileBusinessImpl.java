@@ -1,13 +1,19 @@
 package org.cyk.system.file.server.business.impl;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
@@ -27,8 +33,10 @@ import org.cyk.utility.file.FilesGetter;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
+import org.cyk.utility.server.persistence.Persistence;
 import org.cyk.utility.string.StringHelper;
 import org.cyk.utility.string.Strings;
+import org.cyk.utility.time.TimeHelper;
 
 @Singleton
 public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersistence> implements FileBusiness,Serializable {
@@ -107,34 +115,96 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 		});
 	}
 	
-	@Override @Transactional
+	@Override
 	public FileBusiness createFromDirectories(Strings directories) {
 		FilesGetter filesGetter = __inject__(FilesGetter.class);
 		filesGetter.addDirectories(directories).setIsFileChecksumComputable(Boolean.TRUE).setIsFilterByFileChecksum(Boolean.TRUE);
+		System.out.println("Reading file from directories : "+directories);
 		Files files = filesGetter.execute().getOutput();
+		System.out.println("Number of file found in directories () : "+__injectCollectionHelper__().getSize(files));
+		Files filesNotToBeCreated = __inject__(Files.class);
 		if(files!=null) {
 			Collection<File> persistences = new ArrayList<>();
 			files.get().forEach(new Consumer<org.cyk.utility.file.File>() {
 				@Override
 				public void accept(org.cyk.utility.file.File file) {
-					File persistence = __inject__(File.class);
-					try {
-						persistence.setBytes(IOUtils.toByteArray(new FileInputStream(new java.io.File(file.getPathAndNameAndExtension()))));
-					} catch (Exception exception) {
-						exception.printStackTrace();
+					File persistence = null;
+					if(__injectStringHelper__().isNotBlank(file.getMimeType()) && file.getSize()!=null && file.getSize()>0 && file.getSize() < 1024 * 1024 * 1) {
+						if(__injectStringHelper__().isNotBlank(file.getChecksum()))
+							persistence = getPersistence().readBySha1(file.getChecksum());
+						if(persistence == null) {
+							persistence = __inject__(File.class);
+							try {
+								byte[] buffer = new byte[1024 * 8];
+								byte[] bytes = null;
+							    try (InputStream inputStream = java.nio.file.Files.newInputStream(Paths.get(file.getPathAndNameAndExtension()))) {
+							        int numberOfBytesRead = inputStream.read(buffer);
+							        if (numberOfBytesRead < buffer.length) {
+							        	bytes = Arrays.copyOf(buffer, numberOfBytesRead);
+							        }else {
+							        	ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1024 * 16);
+								        while (numberOfBytesRead != -1) {
+								        	outputStream.write(buffer, 0, numberOfBytesRead);
+								        	numberOfBytesRead = inputStream.read(buffer);
+								        }
+								        bytes = outputStream.toByteArray();
+								        outputStream.close();
+							        }
+							    }
+							    persistence.setBytes(bytes);
+							    buffer = null;
+							    bytes = null;	    
+							} catch (Exception exception) {
+								exception.printStackTrace();
+							}
+							persistence.setExtension(file.getExtension());
+							persistence.setMimeType(file.getMimeType());
+							persistence.setName(file.getName());
+							persistence.setSha1(file.getChecksum());
+							persistence.setSize(file.getSize());
+							persistence.setUniformResourceLocator(file.getUniformResourceLocator());
+							//persistence.setUniformResourceLocator("url");
+							persistences.add(persistence);
+							if(persistences.size() == 300) {
+								System.out.println("FileBusinessImpl.createFromDirectories(...).new Consumer() {...}.accept() FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
+								createFromDirectories(persistences);
+								//__inject__(Persistence.class).flush();
+								//__inject__(Persistence.class).clear();
+								persistences.stream().map(x -> x.setBytes(null));
+								persistences.clear();
+								System.gc();
+								//System.out.println("Garbage collector called. Waiting sometimes before continuing...");
+								//__inject__(TimeHelper.class).pause(1000l * 10);
+								System.out.println("FileBusinessImpl.createFromDirectories(...).new Consumer() {...}.accept() FREE MEMORY 02 : "+Runtime.getRuntime().freeMemory());
+							}	
+						}else {
+							filesNotToBeCreated.add(file);
+						}
+					}else {
+						filesNotToBeCreated.add(file);
 					}
-					persistence.setExtension(file.getExtension());
-					persistence.setMimeType(file.getMimeType());
-					persistence.setName(file.getName());
-					persistence.setSha1(file.getChecksum());
-					persistence.setSize(file.getSize());
-					persistence.setUniformResourceLocator(file.getUniformResourceLocator());
-					persistences.add(persistence);
 				}
 			});
-		createMany(persistences);
+			if(persistences.size() > 0)
+				createFromDirectories(persistences);
 		}
+		System.out.println("Number of file created from directories () : "+(__injectCollectionHelper__().getSize(files)-__injectCollectionHelper__().getSize(filesNotToBeCreated)));
 		return this;
+	}
+	
+	/*
+	@Override @Transactional(value=TxType.REQUIRES_NEW)
+	public FileBusiness createFromDirectories(Collection<File> files) {
+		createMany(files);
+		//__inject__(Persistence.class).flush();
+		return this;
+	}
+	*/
+	
+	@Transactional(value=TxType.REQUIRES_NEW)
+	private void createFromDirectories(Collection<File> files) {
+		createMany(files);
+		//__inject__(Persistence.class).flush();
 	}
 	
 	@Override

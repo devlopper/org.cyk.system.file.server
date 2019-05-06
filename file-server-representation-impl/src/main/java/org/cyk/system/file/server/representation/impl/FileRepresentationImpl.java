@@ -24,7 +24,6 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 
 	@Override
 	public Response createFromDirectories(String directories) {
-		System.out.println("FileRepresentationImpl.createFromDirectories() ::: "+directories);
 		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories));
 		return Response.ok("Files has been created from directories").build();
 	}
