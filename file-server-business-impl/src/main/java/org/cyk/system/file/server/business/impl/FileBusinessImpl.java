@@ -153,7 +153,7 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 				//System.out.println("FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
 				for(org.cyk.utility.file.File indexFile : files.get()) {
 					File persistence = null;
-					if(__injectStringHelper__().isNotBlank(indexFile.getMimeType())) {
+					if(__injectStringHelper__().isNotBlank(indexFile.getMimeType()) && __injectNumberHelper__().isGreaterThanZero(indexFile.getSize())) {
 						if(__injectStringHelper__().isNotBlank(indexFile.getChecksum()))
 							persistence = getPersistence().readBySha1(indexFile.getChecksum());
 						if(persistence == null) {

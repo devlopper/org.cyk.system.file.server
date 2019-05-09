@@ -39,13 +39,13 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	/**
 	 * Extension
 	 */
-	@Column(name=COLUMN_EXTENSION) private String extension;
+	@Column(name=COLUMN_EXTENSION,length=10) private String extension;
 	
 	/**
 	 * Mime type
 	 */
 	@NotNull
-	@Column(name=COLUMN_MIME_TYPE) private String mimeType;
+	@Column(name=COLUMN_MIME_TYPE,length=50) private String mimeType;
 	
 	/**
 	 * Size
