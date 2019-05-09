@@ -84,7 +84,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 	
 	@Test
 	public void createFileFromDirectories() throws Exception{
-		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
+		/*__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
 		Collection<File> files = __inject__(FileBusiness.class).findMany();
 		assertThat(files).withFailMessage("No file found").isNotNull();
 		assertThat(files).withFailMessage("No file found").isNotEmpty();
@@ -93,6 +93,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
 		assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
 		__inject__(FileBusiness.class).deleteMany(files);
+		*/
 	}
 	
 	/*@Test

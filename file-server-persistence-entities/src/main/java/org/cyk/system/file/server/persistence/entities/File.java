@@ -57,7 +57,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	 * SHA1
 	 */
 	@NotNull
-	@Column(name=COLUMN_SHA1) private String sha1;
+	@Column(name=COLUMN_SHA1,length=40) private String sha1;
 	
 	/**/
 	

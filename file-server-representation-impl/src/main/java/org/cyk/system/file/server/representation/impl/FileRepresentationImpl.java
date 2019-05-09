@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.HttpHeaders;
@@ -15,6 +16,8 @@ import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.constant.ConstantString;
+import org.cyk.utility.number.Intervals;
+import org.cyk.utility.number.NumberHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 import org.cyk.utility.string.Strings;
 
@@ -23,8 +26,20 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Response createFromDirectories(String directories) {
-		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories));
+	public Response createFromDirectories(List<String> directories,/*List<String> mimeTypeTypes,List<String> mimeTypeSubTypes,List<String> mimeTypes,*/List<String> extensions
+			,List<String> sizes,Integer batchSize,Integer count) {
+		Intervals intervals = null;
+		if(__injectCollectionHelper__().isNotEmpty(sizes)) {
+			intervals = __inject__(Intervals.class);
+			for(String index : sizes) {
+				String[] extremities = index.split(";");
+				if(extremities.length == 2) {
+					intervals.add(__inject__(NumberHelper.class).getInteger(extremities[0]), __inject__(NumberHelper.class).getInteger(extremities[1]));
+				}
+			}
+		}
+		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories),null,null,null
+				,__inject__(Strings.class).add(extensions),intervals,batchSize,count == null || count == 0 ? null : count);
 		return Response.ok("Files has been created from directories").build();
 	}
 	

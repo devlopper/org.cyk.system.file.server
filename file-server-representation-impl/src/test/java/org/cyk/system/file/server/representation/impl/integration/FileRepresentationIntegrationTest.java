@@ -96,7 +96,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	
 	@Test
 	public void createFromDirectories() throws Exception{
-		__inject__(FileRepresentation.class).createFromDirectories("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation");
+		/*__inject__(FileRepresentation.class).createFromDirectories("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation");
 		@SuppressWarnings("unchecked")
 		Collection<FileDto> files = (Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null, null, null).getEntity();
 		assertThat(files).withFailMessage("No file found").isNotNull();
@@ -107,6 +107,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		//assertThat(__inject__(FileBusiness.class).count()).withFailMessage("Files have been created again").isEqualTo(count);
 		for(FileDto index : files)
 			__inject__(FileBusiness.class).deleteBySystemIdentifier(index.getIdentifier());
+		*/
 	}
 	
 	@Override

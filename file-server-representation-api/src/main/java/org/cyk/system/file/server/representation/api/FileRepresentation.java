@@ -1,5 +1,7 @@
 package org.cyk.system.file.server.representation.api;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -21,7 +23,8 @@ public interface FileRepresentation extends RepresentationEntity<File,FileDto,Fi
 	@POST
 	@Path(PATH_CREATE_FROM_DIRECTORIES)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	Response createFromDirectories(@QueryParam(PARAMETER_DIRECTORIES) String directories);
+	Response createFromDirectories(@QueryParam(PARAMETER_DIRECTORY) List<String> directories,@QueryParam(PARAMETER_EXTENSION) List<String> extensions
+			,@QueryParam(PARAMETER_SIZE) List<String> sizes,@QueryParam(PARAMETER_BATCH_SIZE) Integer batchSize,@QueryParam(PARAMETER_COUNT) Integer count);
 	
 	/*
 	 * Upload is not yet standard. For now we will use specific application server functionality

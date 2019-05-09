@@ -1,14 +1,10 @@
 package org.cyk.system.file.server.business.impl;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Singleton;
@@ -17,7 +13,6 @@ import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
@@ -27,16 +22,18 @@ import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.constant.ConstantCharacter;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.collection.CollectionHelper;
 import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.file.Files;
 import org.cyk.utility.file.FilesGetter;
+import org.cyk.utility.file.Paths;
+import org.cyk.utility.file.PathsGetter;
+import org.cyk.utility.number.Intervals;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
-import org.cyk.utility.server.persistence.Persistence;
 import org.cyk.utility.string.StringHelper;
 import org.cyk.utility.string.Strings;
-import org.cyk.utility.time.TimeHelper;
 
 @Singleton
 public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersistence> implements FileBusiness,Serializable {
@@ -116,95 +113,88 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 	}
 	
 	@Override
-	public FileBusiness createFromDirectories(Strings directories) {
-		FilesGetter filesGetter = __inject__(FilesGetter.class);
-		filesGetter.addDirectories(directories).setIsFileChecksumComputable(Boolean.TRUE).setIsFilterByFileChecksum(Boolean.TRUE);
-		System.out.println("Reading file from directories : "+directories);
-		Files files = filesGetter.execute().getOutput();
-		System.out.println("Number of file found in directories () : "+__injectCollectionHelper__().getSize(files));
-		Files filesNotToBeCreated = __inject__(Files.class);
-		if(files!=null) {
-			Collection<File> persistences = new ArrayList<>();
-			files.get().forEach(new Consumer<org.cyk.utility.file.File>() {
-				@Override
-				public void accept(org.cyk.utility.file.File file) {
+	public FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
+			,Integer batchSize,Integer count) {
+		System.out.println("Creating file from directories");
+		System.out.println("Directories : "+directories);
+		System.out.println("Extensions : "+extensions);
+		System.out.println("Sizes : "+sizes);
+		System.out.println("Batch size : "+batchSize);
+		System.out.println("Count : "+count);
+		
+		if(count!=null && count<1)
+			count = 1;
+		if(batchSize == null)
+			batchSize = 200;
+		if(count!=null && count < batchSize)
+			batchSize = count;	
+		
+		Paths paths = __inject__(PathsGetter.class).addDirectories(directories).setIsDirectoryGettable(Boolean.FALSE).setIsFileGettable(Boolean.TRUE).execute().getOutput();
+		System.out.println("Number of files paths : "+paths.getSize());
+		
+		Integer numberOfPages = paths.getSize() / batchSize + (paths.getSize() % batchSize == 0 ? 0 : 1);
+		System.out.println("Page size : "+batchSize+" , number of pages : "+numberOfPages);
+		for(Integer index = 0; index < numberOfPages; index = index + 1) {
+			Integer from = index * batchSize;
+			Integer to = from + batchSize - 1;
+			if(to>paths.getSize())
+				to = paths.getSize()-1;
+			System.out.println("Page from "+from+" to "+to);
+			FilesGetter filesGetter = __inject__(FilesGetter.class);
+			filesGetter.getPaths(Boolean.TRUE).add( ((List<Path>)paths.get()).subList(from, to+1) );
+			filesGetter.setIsFileChecksumComputable(Boolean.TRUE).setIsFilterByFileChecksum(Boolean.TRUE).setIsFileBytesComputable(Boolean.TRUE);
+			filesGetter.getFileExtensions(Boolean.TRUE).add(extensions);
+			filesGetter.getFileSizeIntervals(Boolean.TRUE).add(sizes);
+			Files files = filesGetter.execute().getOutput();
+			
+			System.out.println("Number of file read : "+__inject__(CollectionHelper.class).getSize(files));
+			if(__injectCollectionHelper__().isNotEmpty(files)) {
+				Collection<File> persistences = new ArrayList<>();
+				//System.out.println("FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
+				for(org.cyk.utility.file.File indexFile : files.get()) {
 					File persistence = null;
-					if(__injectStringHelper__().isNotBlank(file.getMimeType()) && file.getSize()!=null && file.getSize()>0 && file.getSize() < 1024 * 1024 * 1) {
-						if(__injectStringHelper__().isNotBlank(file.getChecksum()))
-							persistence = getPersistence().readBySha1(file.getChecksum());
+					if(__injectStringHelper__().isNotBlank(indexFile.getMimeType())) {
+						if(__injectStringHelper__().isNotBlank(indexFile.getChecksum()))
+							persistence = getPersistence().readBySha1(indexFile.getChecksum());
 						if(persistence == null) {
 							persistence = __inject__(File.class);
-							try {
-								byte[] buffer = new byte[1024 * 8];
-								byte[] bytes = null;
-							    try (InputStream inputStream = java.nio.file.Files.newInputStream(Paths.get(file.getPathAndNameAndExtension()))) {
-							        int numberOfBytesRead = inputStream.read(buffer);
-							        if (numberOfBytesRead < buffer.length) {
-							        	bytes = Arrays.copyOf(buffer, numberOfBytesRead);
-							        }else {
-							        	ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1024 * 16);
-								        while (numberOfBytesRead != -1) {
-								        	outputStream.write(buffer, 0, numberOfBytesRead);
-								        	numberOfBytesRead = inputStream.read(buffer);
-								        }
-								        bytes = outputStream.toByteArray();
-								        outputStream.close();
-							        }
-							    }
-							    persistence.setBytes(bytes);
-							    buffer = null;
-							    bytes = null;	    
-							} catch (Exception exception) {
-								exception.printStackTrace();
-							}
-							persistence.setExtension(file.getExtension());
-							persistence.setMimeType(file.getMimeType());
-							persistence.setName(file.getName());
-							persistence.setSha1(file.getChecksum());
-							persistence.setSize(file.getSize());
-							persistence.setUniformResourceLocator(file.getUniformResourceLocator());
-							//persistence.setUniformResourceLocator("url");
+							persistence.setExtension(indexFile.getExtension());
+							persistence.setMimeType(indexFile.getMimeType());
+							persistence.setName(indexFile.getName());
+							persistence.setSha1(indexFile.getChecksum());
+							persistence.setSize(indexFile.getSize());
+							persistence.setUniformResourceLocator(indexFile.getUniformResourceLocator());
+							persistence.setBytes(indexFile.getBytes());
 							persistences.add(persistence);
-							if(persistences.size() == 300) {
-								System.out.println("FileBusinessImpl.createFromDirectories(...).new Consumer() {...}.accept() FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
-								createFromDirectories(persistences);
-								//__inject__(Persistence.class).flush();
-								//__inject__(Persistence.class).clear();
-								persistences.stream().map(x -> x.setBytes(null));
-								persistences.clear();
-								System.gc();
-								//System.out.println("Garbage collector called. Waiting sometimes before continuing...");
-								//__inject__(TimeHelper.class).pause(1000l * 10);
-								System.out.println("FileBusinessImpl.createFromDirectories(...).new Consumer() {...}.accept() FREE MEMORY 02 : "+Runtime.getRuntime().freeMemory());
-							}	
-						}else {
-							filesNotToBeCreated.add(file);
+							if(count!=null) {
+								count--;
+								if(count == 0)
+									break;	
+							}
+							
 						}
-					}else {
-						filesNotToBeCreated.add(file);
 					}
 				}
-			});
-			if(persistences.size() > 0)
+				
+				System.out.println("Persisting "+persistences.size());
 				createFromDirectories(persistences);
+				persistences.stream().map(x -> x.setBytes(null));
+				persistences.clear();
+				files.get().stream().map(x -> x.setBytes(null));
+				files.removeAll();
+				System.gc();
+				System.out.println("Done!!!");
+				if(count!=null && count == 0)
+					break;
+				//System.out.println("FREE MEMORY 02 : "+Runtime.getRuntime().freeMemory());
+			}
 		}
-		System.out.println("Number of file created from directories () : "+(__injectCollectionHelper__().getSize(files)-__injectCollectionHelper__().getSize(filesNotToBeCreated)));
 		return this;
 	}
-	
-	/*
-	@Override @Transactional(value=TxType.REQUIRES_NEW)
-	public FileBusiness createFromDirectories(Collection<File> files) {
-		createMany(files);
-		//__inject__(Persistence.class).flush();
-		return this;
-	}
-	*/
 	
 	@Transactional(value=TxType.REQUIRES_NEW)
 	private void createFromDirectories(Collection<File> files) {
 		createMany(files);
-		//__inject__(Persistence.class).flush();
 	}
 	
 	@Override
