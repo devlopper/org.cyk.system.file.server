@@ -50,7 +50,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(new String(file.getBytes())).isEqualTo(text);
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null).getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -59,7 +59,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType").getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType",null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -68,7 +68,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"bytes").getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"bytes",null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isNull();
 		assertThat(file.getMimeType()).isNull();

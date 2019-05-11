@@ -33,4 +33,33 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 		}).execute();
 	}
 	
+	@Test
+	public void readWhereNameContains() throws Exception{
+		userTransaction.begin();
+		for(Integer index = 0 ; index < 20 ; index = index + 1) {
+			String identifier = __getRandomIdentifier__();
+			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
+					.setUniformResourceLocator("url").setSha1("sha1");
+			__inject__(FilePersistence.class).create(file);
+			
+		}
+		userTransaction.commit();
+		
+		assertThat(__inject__(FilePersistence.class).readWhereNameContains("a")).as("file found").isEmpty();
+		assertReadWhereNameContains("f",20);
+		assertReadWhereNameContains("i",20);
+		assertReadWhereNameContains("10",1);
+		assertReadWhereNameContains("file0",1);
+		assertReadWhereNameContains("file1",11);
+		assertReadWhereNameContains("file11",1);
+		
+		userTransaction.begin();
+		__inject__(FilePersistence.class).deleteAll();
+		userTransaction.commit();
+	}
+	
+	private void assertReadWhereNameContains(String string,Integer count) {
+		assertThat(__inject__(FilePersistence.class).readWhereNameContains(string)).as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
+	}
+	
 }

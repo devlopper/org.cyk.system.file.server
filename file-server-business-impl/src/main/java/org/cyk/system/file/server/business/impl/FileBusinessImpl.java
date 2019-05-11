@@ -253,6 +253,11 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 	}
 	
 	@Override
+	public Collection<File> findWhereNameContains(String string) {
+		return getPersistence().readWhereNameContains(string);
+	}
+	
+	@Override
 	protected Class<File> __getPersistenceEntityClass__() {
 		return File.class;
 	}

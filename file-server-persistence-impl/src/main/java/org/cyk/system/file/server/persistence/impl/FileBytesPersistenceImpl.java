@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
+import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.query.PersistenceQuery;
 import org.cyk.utility.server.persistence.query.PersistenceQueryRepository;
@@ -25,16 +26,16 @@ public class FileBytesPersistenceImpl extends AbstractPersistenceEntityImpl<File
 	
 	@Override
 	public FileBytes readByFile(File file) {
-		return __readOne__(____getQueryParameters____(file));
+		return __readOne__(____getQueryParameters____(null,file));
 	}
 	
-	protected Object[] __getQueryParameters__(String queryIdentifier,Object...objects){
+	protected Object[] __getQueryParameters__(String queryIdentifier,Properties properties,Object...objects){
 		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);
 		
 		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFile,queryIdentifier))
 			return new Object[]{FileBytes.FIELD_FILE, objects[0]};
 		
-		return super.__getQueryParameters__(queryIdentifier, objects);
+		return super.__getQueryParameters__(queryIdentifier,properties, objects);
 	}
 	
 }
