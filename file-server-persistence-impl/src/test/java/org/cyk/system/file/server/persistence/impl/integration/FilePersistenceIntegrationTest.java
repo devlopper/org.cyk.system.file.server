@@ -74,6 +74,9 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 		
 		//assertRead_whereNameContains("a",0);
 		assertRead_whereNameContains("f",20);
+		assertRead_whereNameContains("F",20);
+		assertRead_whereNameContains("FILE",20);
+		assertRead_whereNameContains("fILe",20);
 		assertRead_whereNameContains("i",20);
 		assertRead_whereNameContains("10",1);
 		assertRead_whereNameContains("file0",1);
