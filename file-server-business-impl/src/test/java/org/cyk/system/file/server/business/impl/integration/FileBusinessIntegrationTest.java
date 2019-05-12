@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
-import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
@@ -122,6 +121,9 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 	}
 	
 	private void assertFindMany_whereNameContains(String string,Integer count) {
-		assertThat(__inject__(FilePersistence.class).readWhereNameContains(string)).as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
+		assertThat(__inject__(FileBusiness.class).findMany(new Properties().setQueryFilters(__inject__(CollectionHelper.class).instanciate(string))))
+			.as("number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
+		assertThat(__inject__(FileBusiness.class).count(new Properties().setQueryFilters(__inject__(CollectionHelper.class).instanciate(string))))
+		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
 	}
 }

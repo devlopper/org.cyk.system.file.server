@@ -9,4 +9,5 @@ public interface FilePersistence extends PersistenceEntity<File> {
 
 	File readBySha1(String sha1);
 	Collection<File> readWhereNameContains(String string);
+	Long countWhereNameContains(String string);
 }

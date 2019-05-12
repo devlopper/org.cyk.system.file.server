@@ -37,6 +37,11 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		return __readMany__(null,____getQueryParameters____(null,string));
 	}
 	
+	@Override
+	public Long countWhereNameContains(String string) {
+		return __count__(null,____getQueryParameters____(null,string));
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected Object[] __getQueryParameters__(String queryIdentifier,Properties properties,Object...objects){
 		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);

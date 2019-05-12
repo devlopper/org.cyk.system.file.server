@@ -3,10 +3,13 @@ package org.cyk.system.file.server.representation.impl.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
+import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
+import org.cyk.utility.collection.CollectionHelper;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -81,6 +84,29 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		__inject__(FileBusiness.class).deleteBySystemIdentifier(identifier);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getMany_whereNameContains() throws Exception{
+		for(Integer index = 0 ; index < 20 ; index = index + 1) {
+			String identifier = __getRandomIdentifier__();
+			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
+					.setUniformResourceLocator("url").setSha1("sha1");
+			__inject__(FileBusiness.class).create(file);
+			
+		}
+		
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null).getEntity()).as("file not found").hasSize(5);
+		//assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,(List<String>) __inject__(CollectionHelper.class).instanciate("a")).getEntity()
+		//		).as("file found").isEmpty();
+		assertGetMany_whereNameContains("f",20);
+		assertGetMany_whereNameContains("i",20);
+		assertGetMany_whereNameContains("10",1);
+		assertGetMany_whereNameContains("file0",1);
+		assertGetMany_whereNameContains("file1",11);
+		assertGetMany_whereNameContains("file11",1);		
+		__inject__(FileBusiness.class).deleteAll();
+	}
+	
 	@Test
 	public void downloadOneFile() throws Exception{
 		String identifier = __getRandomIdentifier__();
@@ -108,6 +134,12 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		for(FileDto index : files)
 			__inject__(FileBusiness.class).deleteBySystemIdentifier(index.getIdentifier());
 		*/
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void assertGetMany_whereNameContains(String string,Integer count) {
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(0l,new Long(count),null,(List<String>) __inject__(CollectionHelper.class).instanciate(string)).getEntity())
+				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 	}
 	
 	@Override
