@@ -3,7 +3,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.system.file.server.annotation.File;
+import org.cyk.system.file.server.annotation.System;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.annotation.Default;
 import org.cyk.utility.__kernel__.annotation.Server;
@@ -21,7 +21,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 		
 		__setQualifierClassTo__(Default.class,FieldValueCopyFieldsGetter.class);
 		
-		__setQualifiersClasses__(InstanceBuilder.class, File.class,Server.class);
+		__setQualifiersClasses__(InstanceBuilder.class, System.class,Server.class);
 	}
 	 
 	@Override

@@ -53,7 +53,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(new String(file.getBytes())).isEqualTo(text);
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,null).getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,null,null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -62,7 +62,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"name,extension,mimeType",null).getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,"name,extension,mimeType",null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isEqualTo("txt");
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -71,7 +71,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNull();
 		
-		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,"bytes",null).getEntity()).iterator().next();
+		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,"bytes",null).getEntity()).iterator().next();
 		assertThat(file).isNotNull();
 		assertThat(file.getExtension()).isNull();
 		assertThat(file.getMimeType()).isNull();
@@ -95,7 +95,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 			
 		}
 		
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null).getEntity()).as("file not found").hasSize(5);
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null,null).getEntity()).as("file not found").hasSize(5);
 		//assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,(List<String>) __inject__(CollectionHelper.class).instanciate("a")).getEntity()
 		//		).as("file found").isEmpty();
 		assertGetMany_whereNameContains("f",20);
@@ -138,7 +138,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer count) {
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(0l,new Long(count),null,(List<String>) __inject__(CollectionHelper.class).instanciate(string)).getEntity())
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,(List<String>) __inject__(CollectionHelper.class).instanciate(string)).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 	}
 	
