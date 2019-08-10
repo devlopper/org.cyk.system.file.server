@@ -1,20 +1,25 @@
 package org.cyk.system.file.server.persistence.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Consumer;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 
+import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.array.ArrayHelper;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
-import org.cyk.utility.server.persistence.query.PersistenceQuery;
-import org.cyk.utility.server.persistence.query.PersistenceQueryRepository;
+import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
+import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
+import org.cyk.utility.string.Strings;
 
-@Singleton
+@ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -29,37 +34,58 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	
 	@Override
 	public File readBySha1(String sha1) {
-		return __readOne__(____getQueryParameters____(null,sha1));
+		Properties properties = new Properties().setQueryIdentifier(readBySha1);
+		return __readOne__(properties,____getQueryParameters____(properties,sha1));
 	}
 	
 	@Override
 	public Collection<File> readWhereNameContains(String string) {
-		return __readMany__(null,____getQueryParameters____(null,string));
+		Properties properties = new Properties().setQueryIdentifier(readWhereNameContains);
+		return __readMany__(properties,____getQueryParameters____(properties,string));
+	}
+	
+	@Override
+	protected void __listenExecuteReadAfter__(File file, Properties properties) {
+		super.__listenExecuteReadAfter__(file, properties);
+		Strings fields = __getFieldsFromProperties__(properties);
+		if(__injectCollectionHelper__().isNotEmpty(fields))
+			fields.get().forEach(new Consumer<String>() {
+				@Override
+				public void accept(String field) {
+					if(File.FIELD_BYTES.equals(field)) {
+						FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
+						if(fileBytes!=null)
+							file.setBytes(fileBytes.getBytes());
+					}
+				}
+			});
 	}
 	
 	@Override
 	public Long countWhereNameContains(String string) {
-		return __count__(null,____getQueryParameters____(null,string));
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected Object[] __getQueryParameters__(String queryIdentifier,Properties properties,Object...objects){
-		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);
-		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readBySha1,queryIdentifier))
-			return new Object[]{File.FIELD_SHA1, objects[0]};
-		else if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameContains,queryIdentifier)) {
-			if(Boolean.TRUE.equals(__inject__(ArrayHelper.class).isEmpty(objects)))
-				objects = new Object[] {__injectCollectionHelper__().getFirst((Collection<String>) Properties.getFromPath(properties,Properties.QUERY_FILTERS))};
-			return new Object[]{File.FIELD_NAME, "%"+objects[0]+"%"};
-		}
-		return super.__getQueryParameters__(queryIdentifier,properties, objects);
+		Properties properties = new Properties().setQueryIdentifier(__inject__(PersistenceQueryIdentifierStringBuilder.class).setIsDerivedFromQueryIdentifier(Boolean.TRUE)
+				.setDerivedFromQueryIdentifier(readWhereNameContains).setIsCountInstances(Boolean.TRUE)
+				.execute().getOutput());
+		return __count__(properties,____getQueryParameters____(properties,string));
 	}
 	
 	@Override
 	protected String __getQueryIdentifier__(Class<?> functionClass, Properties properties, Object... parameters) {
-		if(PersistenceFunctionReader.class.equals(functionClass) && Properties.getFromPath(properties,Properties.QUERY_FILTERS) != null)
+		if(PersistenceFunctionReader.class.equals(functionClass) && __isFilterByKeys__(properties, File.FIELD_NAME))
 			return readWhereNameContains;
 		return super.__getQueryIdentifier__(functionClass, properties, parameters);
+	}
+	
+	@Override
+	protected Object[] __getQueryParameters__(PersistenceQueryContext queryContext, Properties properties,Object... objects) {
+		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readBySha1))
+			return new Object[]{File.FIELD_SHA1, objects[0]};
+		else if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameContains)) {
+			if(Boolean.TRUE.equals(__inject__(ArrayHelper.class).isEmpty(objects)))
+				objects = new Object[] {queryContext.getFilterByKeysValue(File.FIELD_NAME)};
+			return new Object[]{File.FIELD_NAME, "%"+objects[0]+"%"};
+		}
+		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
 	
 }

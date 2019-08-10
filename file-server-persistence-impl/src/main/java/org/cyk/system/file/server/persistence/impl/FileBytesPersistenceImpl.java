@@ -2,17 +2,16 @@ package org.cyk.system.file.server.persistence.impl;
 
 import java.io.Serializable;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
-import org.cyk.utility.server.persistence.query.PersistenceQuery;
-import org.cyk.utility.server.persistence.query.PersistenceQueryRepository;
+import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
 
-@Singleton
+@ApplicationScoped
 public class FileBytesPersistenceImpl extends AbstractPersistenceEntityImpl<FileBytes> implements FileBytesPersistence,Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -26,16 +25,15 @@ public class FileBytesPersistenceImpl extends AbstractPersistenceEntityImpl<File
 	
 	@Override
 	public FileBytes readByFile(File file) {
-		return __readOne__(____getQueryParameters____(null,file));
+		Properties properties = new Properties().setQueryIdentifier(readByFile);
+		return __readOne__(properties,____getQueryParameters____(properties,file));
 	}
 	
-	protected Object[] __getQueryParameters__(String queryIdentifier,Properties properties,Object...objects){
-		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);
-		
-		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFile,queryIdentifier))
+	@Override
+	protected Object[] __getQueryParameters__(PersistenceQueryContext queryContext, Properties properties,Object... objects) {
+		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFile))
 			return new Object[]{FileBytes.FIELD_FILE, objects[0]};
-		
-		return super.__getQueryParameters__(queryIdentifier,properties, objects);
+		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
 	
 }

@@ -7,9 +7,9 @@ import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.collection.CollectionHelper;
 import org.cyk.utility.server.business.test.TestBusinessCreate;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
+import org.cyk.utility.server.persistence.query.filter.Filter;
 import org.junit.Test;
 
 public class FileBusinessIntegrationTest extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {
@@ -26,7 +26,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 			@Override
 			public void run() {
 				//We get file only
-				File file = __inject__(FileBusiness.class).findOneBySystemIdentifier(identifier);
+				File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
 				assertThat(file).isNotNull();
 				assertThat(file.getExtension()).isEqualTo("txt");
 				assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -44,7 +44,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 				//We get file and its bytes
 				Properties properties = new Properties();
 				properties.setFields(File.FIELD_BYTES);
-				file = __inject__(FileBusiness.class).findOne(identifier, properties);				
+				file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier, properties);				
 				assertThat(file).isNotNull();
 				assertThat(file.getExtension()).isEqualTo("txt");
 				assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -55,7 +55,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 				assertThat(new String(file.getBytes())).isEqualTo(text);	
 				
 				//We get many file only
-				file = __inject__(FileBusiness.class).findMany().iterator().next();
+				file = __inject__(FileBusiness.class).find().iterator().next();
 				assertThat(file).isNotNull();
 				assertThat(file.getExtension()).isEqualTo("txt");
 				assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -66,7 +66,7 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 				//We get many file and its bytes
 				properties = new Properties();
 				properties.setFields(File.FIELD_BYTES);
-				file = __inject__(FileBusiness.class).findMany(properties).iterator().next();				
+				file = __inject__(FileBusiness.class).find(properties).iterator().next();				
 				assertThat(file).isNotNull();
 				assertThat(file.getExtension()).isEqualTo("txt");
 				assertThat(file.getMimeType()).isEqualTo("text/plain");
@@ -110,20 +110,21 @@ public class FileBusinessIntegrationTest extends AbstractBusinessArquillianInteg
 			
 		}
 		
-		assertThat(__inject__(FileBusiness.class).findMany(new Properties().setQueryFilters(__inject__(CollectionHelper.class).instanciate("a")))).as("file found").isEmpty();
+		Filter filter = __inject__(Filter.class).setKlass(File.class).addField(File.FIELD_NAME, "a");
+		assertThat(__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filter))).as("file found").isEmpty();
 		assertFindMany_whereNameContains("f",20);
 		assertFindMany_whereNameContains("i",20);
 		assertFindMany_whereNameContains("10",1);
 		assertFindMany_whereNameContains("file0",1);
 		assertFindMany_whereNameContains("file1",11);
 		assertFindMany_whereNameContains("file11",1);
-		__inject__(FileBusiness.class).deleteAll();
 	}
 	
 	private void assertFindMany_whereNameContains(String string,Integer count) {
-		assertThat(__inject__(FileBusiness.class).findMany(new Properties().setQueryFilters(__inject__(CollectionHelper.class).instanciate(string))))
+		Filter filter = __inject__(Filter.class).setKlass(File.class).addField(File.FIELD_NAME, string);
+		assertThat(__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filter)))
 			.as("number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
-		assertThat(__inject__(FileBusiness.class).count(new Properties().setQueryFilters(__inject__(CollectionHelper.class).instanciate(string))))
+		assertThat(__inject__(FileBusiness.class).count(new Properties().setQueryFilters(filter)))
 		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
 	}
 }

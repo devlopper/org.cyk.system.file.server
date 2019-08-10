@@ -3,23 +3,25 @@ package org.cyk.system.file.server.representation.impl.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.server.persistence.query.filter.Filter;
+import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class FileRepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment {
+public class RepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
 	
 	@SuppressWarnings("unchecked")
-	@Test
-	public void createOneFile() throws Exception{
+	@Test @Ignore
+	public void create_file() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
 		FileDto file = new FileDto().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
@@ -86,7 +88,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void getMany_whereNameContains() throws Exception{
+	public void get_whereNameContains() throws Exception{
 		for(Integer index = 0 ; index < 20 ; index = index + 1) {
 			String identifier = __getRandomIdentifier__();
 			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
@@ -108,7 +110,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	}
 	
 	@Test
-	public void downloadOneFile() throws Exception{
+	public void download_file() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "This is a content";
 		FileDto file = new FileDto().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
@@ -120,7 +122,7 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 		__inject__(FileBusiness.class).deleteBySystemIdentifier(identifier);
 	}
 	
-	@Test
+	@Test @Ignore
 	public void createFromDirectories() throws Exception{
 		/*__inject__(FileRepresentation.class).createFromDirectories("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation");
 		@SuppressWarnings("unchecked")
@@ -138,7 +140,12 @@ public class FileRepresentationIntegrationTest extends AbstractRepresentationArq
 	
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer count) {
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,(List<String>) __inject__(CollectionHelper.class).instanciate(string)).getEntity())
+		Filter filters = __inject__(Filter.class).setKlass(File.class).addField(File.FIELD_NAME, string);
+		System.out.println("FileRepresentationIntegrationTest.assertGetMany_whereNameContains() B : "+__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filters)));
+		
+		FilterDto filter = new FilterDto().setKlass(File.class).addField(File.FIELD_NAME, string);
+		System.out.println("FileRepresentationIntegrationTest.assertGetMany_whereNameContains() : "+__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity());
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 	}
 	

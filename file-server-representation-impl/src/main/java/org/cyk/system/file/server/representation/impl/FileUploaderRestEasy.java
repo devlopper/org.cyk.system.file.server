@@ -55,7 +55,7 @@ public class FileUploaderRestEasy extends AbstractObject implements Serializable
 			}
 		}
 		if(__inject__(CollectionHelper.class).isNotEmpty(fileDtos))
-			response = __inject__(FileRepresentation.class).createMany(fileDtos);
+			response = __inject__(FileRepresentation.class).createMany(fileDtos,null);
 		return response;
 	}
 	

@@ -5,22 +5,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
-import org.apache.commons.lang3.StringUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
-import org.cyk.utility.__kernel__.constant.ConstantCharacter;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.collection.CollectionHelper;
 import org.cyk.utility.file.FileHelper;
@@ -35,13 +32,13 @@ import org.cyk.utility.server.business.BusinessFunctionRemover;
 import org.cyk.utility.string.StringHelper;
 import org.cyk.utility.string.Strings;
 
-@Singleton
+@ApplicationScoped
 public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersistence> implements FileBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void __listenExecuteCreateOneBefore__(File file, Properties properties,BusinessFunctionCreator function) {
-		super.__listenExecuteCreateOneBefore__(file, properties, function);
+	protected void __listenExecuteCreateBefore__(File file, Properties properties, BusinessFunctionCreator function) {
+		super.__listenExecuteCreateBefore__(file, properties, function);
 		function.addTryBeginRunnables(new Runnable() {
 			@Override
 			public void run() {
@@ -100,8 +97,8 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 	}
 	
 	@Override
-	protected void __listenExecuteDeleteOneBefore__(File file, Properties properties,BusinessFunctionRemover function) {
-		super.__listenExecuteDeleteOneBefore__(file, properties, function);
+	protected void __listenExecuteDeleteBefore__(File file, Properties properties, BusinessFunctionRemover function) {
+		super.__listenExecuteDeleteBefore__(file, properties, function);
 		function.addTryBeginRunnables(new Runnable() {
 			@Override
 			public void run() {
@@ -152,20 +149,20 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 				Collection<File> persistences = new ArrayList<>();
 				//System.out.println("FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
 				for(org.cyk.utility.file.File indexFile : files.get()) {
-					File persistence = null;
+					File persistenceEntity = null;
 					if(__injectStringHelper__().isNotBlank(indexFile.getMimeType()) && __injectNumberHelper__().isGreaterThanZero(indexFile.getSize())) {
 						if(__injectStringHelper__().isNotBlank(indexFile.getChecksum()))
-							persistence = getPersistence().readBySha1(indexFile.getChecksum());
-						if(persistence == null) {
-							persistence = __inject__(File.class);
-							persistence.setExtension(indexFile.getExtension());
-							persistence.setMimeType(indexFile.getMimeType());
-							persistence.setName(indexFile.getName());
-							persistence.setSha1(indexFile.getChecksum());
-							persistence.setSize(indexFile.getSize());
-							persistence.setUniformResourceLocator(indexFile.getUniformResourceLocator());
-							persistence.setBytes(indexFile.getBytes());
-							persistences.add(persistence);
+							persistenceEntity = __persistence__.readBySha1(indexFile.getChecksum());
+						if(persistenceEntity == null) {
+							persistenceEntity = __inject__(File.class);
+							persistenceEntity.setExtension(indexFile.getExtension());
+							persistenceEntity.setMimeType(indexFile.getMimeType());
+							persistenceEntity.setName(indexFile.getName());
+							persistenceEntity.setSha1(indexFile.getChecksum());
+							persistenceEntity.setSize(indexFile.getSize());
+							persistenceEntity.setUniformResourceLocator(indexFile.getUniformResourceLocator());
+							persistenceEntity.setBytes(indexFile.getBytes());
+							persistences.add(persistenceEntity);
 							if(count!=null) {
 								count--;
 								if(count == 0)
@@ -196,70 +193,15 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 	private void createFromDirectories(Collection<File> files) {
 		createMany(files);
 	}
-	
-	@Override
-	public File findOne(Object identifier, Properties properties) {
-		File file = super.findOne(identifier, properties);
-		Object fieldsObject = Properties.getFromPath(properties, Properties.FIELDS);
-		Strings fields = null;
-		if(fieldsObject instanceof Strings)
-			fields = (Strings) fieldsObject;
-		else if(fieldsObject instanceof String) {
-			fields = __inject__(Strings.class).add(StringUtils.split((String) fieldsObject,ConstantCharacter.COMA.toString()));
-		}
-		if(__injectCollectionHelper__().isNotEmpty(fields))
-			fields.get().forEach(new Consumer<String>() {
-				@Override
-				public void accept(String field) {
-					if(File.FIELD_BYTES.equals(field)) {
-						FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
-						if(fileBytes!=null)
-							file.setBytes(fileBytes.getBytes());
-					}
-				}
-			});
-		return file;
-	}
-	
-	@Override
-	public Collection<File> findMany(Properties properties) {
-		Collection<File> files = super.findMany(properties);
-		
-		Object fieldsObject = Properties.getFromPath(properties, Properties.FIELDS);
-		Strings fields = null;
-		if(fieldsObject instanceof Strings)
-			fields = (Strings) fieldsObject;
-		else if(fieldsObject instanceof String) {
-			fields = __inject__(Strings.class).add(StringUtils.split((String) fieldsObject,ConstantCharacter.COMA.toString()));
-		}
-		if(__injectCollectionHelper__().isNotEmpty(fields))
-			fields.get().forEach(new Consumer<String>() {
-				@Override
-				public void accept(String field) {
-					if(File.FIELD_BYTES.equals(field)) {
-						if(__injectCollectionHelper__().isNotEmpty(files))
-							files.forEach(new Consumer<File>() {
-								@Override
-								public void accept(File file) {
-									FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
-									if(fileBytes!=null)
-										file.setBytes(fileBytes.getBytes());
-								}
-							});
-					}
-				}
-			});
-		return files;
-	}
-	
+
 	@Override
 	public Collection<File> findWhereNameContains(String string) {
-		return getPersistence().readWhereNameContains(string);
+		return __persistence__.readWhereNameContains(string);
 	}
 	
 	@Override
-	protected Class<File> __getPersistenceEntityClass__() {
-		return File.class;
+	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
+		return Boolean.TRUE;
 	}
 	
 }

@@ -3,7 +3,7 @@ package org.cyk.system.file.server.representation.impl;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -21,7 +21,7 @@ import org.cyk.utility.number.NumberHelper;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 import org.cyk.utility.string.Strings;
 
-@Singleton
+@ApplicationScoped
 public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<File,FileBusiness,FileDto,FileDtoCollection> implements FileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	
 	@Override
 	public Response download(String identifier,String isInline) {
-		File file = __inject__(FileBusiness.class).findOneBySystemIdentifier(identifier);
+		File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
 		FileBytes fileBytes = __inject__(FileBytesBusiness.class).findByFile(file);
 	    ResponseBuilder response = Response.ok(fileBytes.getBytes());
 	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
@@ -55,11 +55,6 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	    if(size!=null && size > 0)
 	    	response.header(HttpHeaders.CONTENT_LENGTH, size);
 	    return response.build();
-	}
-	
-	@Override
-	public Class<File> getPersistenceEntityClass() {
-		return File.class;
 	}
 	
 }
