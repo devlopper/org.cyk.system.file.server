@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.persistence.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -15,24 +16,40 @@ import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
 public class FileBytesPersistenceImpl extends AbstractPersistenceEntityImpl<FileBytes> implements FileBytesPersistence,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String readByFile;
+	private String readByFilesIdentifiers;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
 		super.__listenPostConstructPersistenceQueries__();
-		addQueryCollectInstances(readByFile, __instanciateQueryReadBy__(FileBytes.FIELD_FILE));
+		addQueryCollectInstances(readByFilesIdentifiers,String.format("SELECT tuple FROM %s tuple WHERE tuple.file.identifier IN :filesIdentifiers",__getTupleName__()));
+	}
+	
+	@Override
+	public Collection<FileBytes> readByFilesIdentifiers(Collection<String> filesIdentifiers) {
+		Properties properties = new Properties().setQueryIdentifier(readByFilesIdentifiers);
+		return __readMany__(properties,____getQueryParameters____(properties,filesIdentifiers));
+	}
+	
+	@Override
+	public Collection<FileBytes> readByFilesIdentifiers(String... filesIdentifiers) {
+		return readByFilesIdentifiers(__injectCollectionHelper__().instanciate(filesIdentifiers));
+	}
+	
+	@Override
+	public FileBytes readByFileIdentifier(String fileIdentifier) {
+		return __injectCollectionHelper__().getFirst(readByFilesIdentifiers(fileIdentifier));
 	}
 	
 	@Override
 	public FileBytes readByFile(File file) {
-		Properties properties = new Properties().setQueryIdentifier(readByFile);
-		return __readOne__(properties,____getQueryParameters____(properties,file));
+		return readByFileIdentifier(file.getIdentifier());
 	}
 	
 	@Override
 	protected Object[] __getQueryParameters__(PersistenceQueryContext queryContext, Properties properties,Object... objects) {
-		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFile))
-			return new Object[]{FileBytes.FIELD_FILE, objects[0]};
+		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFilesIdentifiers)) {
+			return new Object[]{"filesIdentifiers", objects[0]};
+		}
 		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
 	

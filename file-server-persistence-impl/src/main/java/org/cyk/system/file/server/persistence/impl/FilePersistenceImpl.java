@@ -1,9 +1,8 @@
 package org.cyk.system.file.server.persistence.impl;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.function.Consumer;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -17,7 +16,6 @@ import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
 import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
-import org.cyk.utility.string.Strings;
 
 @ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
@@ -43,22 +41,15 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		Properties properties = new Properties().setQueryIdentifier(readWhereNameContains);
 		return __readMany__(properties,____getQueryParameters____(properties,string));
 	}
-	
+
 	@Override
-	protected void __listenExecuteReadAfter__(File file, Properties properties) {
-		super.__listenExecuteReadAfter__(file, properties);
-		Strings fields = __getFieldsFromProperties__(properties);
-		if(__injectCollectionHelper__().isNotEmpty(fields))
-			fields.get().forEach(new Consumer<String>() {
-				@Override
-				public void accept(String field) {
-					if(File.FIELD_BYTES.equals(field)) {
-						FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
-						if(fileBytes!=null)
-							file.setBytes(fileBytes.getBytes());
-					}
-				}
-			});
+	protected void __listenExecuteReadAfterSetFieldValue__(File file, Field field) {
+		super.__listenExecuteReadAfterSetFieldValue__(file, field);
+		if(File.FIELD_BYTES.equals(field.getName())) {
+			FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
+			if(fileBytes!=null)
+				file.setBytes(fileBytes.getBytes());
+		}
 	}
 	
 	@Override

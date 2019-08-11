@@ -2,16 +2,17 @@ package org.cyk.system.file.server.persistence.impl.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.persistence.query.filter.Filter;
-import org.cyk.utility.server.persistence.test.TestPersistenceCreate;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
+import org.cyk.utility.string.StringHelper;
 import org.junit.Test;
 
-public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment {
+public class PersistenceIntegrationTest extends AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
 	
 	@Test
@@ -21,18 +22,33 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l)
 				.setSha1("sha1");
 		FileBytes fileBytes = new FileBytes().setFile(file).setBytes(text.getBytes());
-		__inject__(TestPersistenceCreate.class).addObjects(file,fileBytes).addTryEndRunnables(new Runnable() {
-			@Override
-			public void run() {
-				File file = __inject__(FilePersistence.class).readBySystemIdentifier(identifier);
-				assertThat(file).isNotNull();
-				assertThat(file.getExtension()).isEqualTo("txt");
-				assertThat(file.getMimeType()).isEqualTo("text/plain");
-				assertThat(file.getName()).isEqualTo("file");
-				assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-				assertThat(file.getBytes()).isNull();
-			}
-		}).execute();
+		
+		userTransaction.begin();
+		__inject__(FilePersistence.class).create(file);
+		__inject__(FileBytesPersistence.class).create(fileBytes);
+		userTransaction.commit();
+		
+		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null, null);
+		
+		fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
+		assertThat(fileBytes).isNotNull();
+	}
+	
+	@Test
+	public void read_file_apllyProjection() throws Exception{
+		String identifier = __getRandomIdentifier__();
+		String text = "Hello";
+		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l)
+				.setSha1("sha1");
+		FileBytes fileBytes = new FileBytes().setFile(file).setBytes(text.getBytes());
+		
+		userTransaction.begin();
+		__inject__(FilePersistence.class).create(file);
+		__inject__(FileBytesPersistence.class).create(fileBytes);
+		userTransaction.commit();
+		
+		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null, null);
+		assertRead(identifier,"identifier", Boolean.TRUE, null, null, null, null, null);
 	}
 	
 	@Test
@@ -78,6 +94,24 @@ public class FilePersistenceIntegrationTest extends AbstractPersistenceArquillia
 		assertRead_whereNameContains("file0",1);
 		assertRead_whereNameContains("file1",11);
 		assertRead_whereNameContains("file11",1);
+	}
+	
+	/**/
+	
+	private void assertRead(String identifier,String fields,Boolean expectedIsNotNull,String expectedExtension,String expectedMimeType,String expectedName,String expectedURL,Boolean expectedBytesIsNotNull) {
+		File file = __inject__(FilePersistence.class).readBySystemIdentifier(identifier,__inject__(StringHelper.class).isBlank(fields) ? null : new Properties().setFields(fields));
+		if(expectedIsNotNull != null && expectedIsNotNull) {
+			assertThat(file).as(String.format("file with identifier %s does not exist",identifier)).isNotNull();
+			assertThat(file.getExtension()).as("extension does not match").isEqualTo(expectedExtension);
+			assertThat(file.getMimeType()).as("mime type does not match").isEqualTo(expectedMimeType);
+			assertThat(file.getName()).as("name does not match").isEqualTo(expectedName);
+			assertThat(file.getUniformResourceLocator()).as("URL does not match").isEqualTo(expectedURL);
+			if(expectedBytesIsNotNull != null && expectedBytesIsNotNull)
+				assertThat(file.getBytes()).as("bytes is null").isNotNull();
+			else
+				assertThat(file.getBytes()).as("bytes is not null").isNull();
+		}else
+			assertThat(file).as(String.format("file with identifier %s exists",identifier)).isNull();
 	}
 	
 	private void assertReadWhereNameContains(String string,Integer count) {
