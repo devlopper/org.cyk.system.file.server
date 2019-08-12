@@ -12,6 +12,7 @@ import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.array.ArrayHelper;
+import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
@@ -43,12 +44,14 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	}
 
 	@Override
-	protected void __listenExecuteReadAfterSetFieldValue__(File file, Field field) {
-		super.__listenExecuteReadAfterSetFieldValue__(file, field);
+	protected void __listenExecuteReadAfterSetFieldValue__(File file, Field field,Properties properties) {
+		super.__listenExecuteReadAfterSetFieldValue__(file, field,properties);
 		if(File.FIELD_BYTES.equals(field.getName())) {
 			FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
 			if(fileBytes!=null)
 				file.setBytes(fileBytes.getBytes());
+		}else if(File.FIELD_NAME_AND_EXTENSION.equals(field.getName())) {
+			file.setNameAndExtension(__inject__(FileHelper.class).concatenateNameAndExtension(file.getName(), file.getExtension()));	
 		}
 	}
 	
@@ -79,4 +82,6 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
 	
+	/**/
+
 }

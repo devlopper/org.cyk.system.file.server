@@ -19,7 +19,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 	public void create_file() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
-		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l)
+		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length))
 				.setSha1("sha1");
 		FileBytes fileBytes = new FileBytes().setFile(file).setBytes(text.getBytes());
 		
@@ -28,7 +28,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 		__inject__(FileBytesPersistence.class).create(fileBytes);
 		userTransaction.commit();
 		
-		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null, null);
+		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null,new Long(text.getBytes().length), null,null);
 		
 		fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
 		assertThat(fileBytes).isNotNull();
@@ -38,7 +38,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 	public void read_file_apllyProjection() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
-		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(1l)
+		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length))
 				.setSha1("sha1");
 		FileBytes fileBytes = new FileBytes().setFile(file).setBytes(text.getBytes());
 		
@@ -47,8 +47,13 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 		__inject__(FileBytesPersistence.class).create(fileBytes);
 		userTransaction.commit();
 		
-		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null, null);
-		assertRead(identifier,"identifier", Boolean.TRUE, null, null, null, null, null);
+		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null,new Long(text.getBytes().length), null,null);
+		assertRead(identifier,"identifier", Boolean.TRUE, null, null, null, null, null,null,null);
+		assertRead(identifier,"extension", Boolean.TRUE, "txt", null, null, null, null,null,null);
+		assertRead(identifier,"mimeType", Boolean.TRUE, null, "text/plain", null, null, null,null,null);
+		assertRead(identifier,"name", Boolean.TRUE, null, null, "file", null, null,null,null);
+		assertRead(identifier,"nameAndExtension", Boolean.TRUE, null, null, null, null, null,null,"file.txt");
+		assertRead(identifier,"size", Boolean.TRUE, null, null, null, null, new Long(text.getBytes().length),null,null);
 	}
 	
 	@Test
@@ -98,7 +103,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 	
 	/**/
 	
-	private void assertRead(String identifier,String fields,Boolean expectedIsNotNull,String expectedExtension,String expectedMimeType,String expectedName,String expectedURL,Boolean expectedBytesIsNotNull) {
+	private void assertRead(String identifier,String fields,Boolean expectedIsNotNull,String expectedExtension,String expectedMimeType,String expectedName,String expectedURL,Long expectedSize,Boolean expectedBytesIsNotNull,String expectedNameAndExtension) {
 		File file = __inject__(FilePersistence.class).readBySystemIdentifier(identifier,__inject__(StringHelper.class).isBlank(fields) ? null : new Properties().setFields(fields));
 		if(expectedIsNotNull != null && expectedIsNotNull) {
 			assertThat(file).as(String.format("file with identifier %s does not exist",identifier)).isNotNull();
@@ -106,6 +111,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 			assertThat(file.getMimeType()).as("mime type does not match").isEqualTo(expectedMimeType);
 			assertThat(file.getName()).as("name does not match").isEqualTo(expectedName);
 			assertThat(file.getUniformResourceLocator()).as("URL does not match").isEqualTo(expectedURL);
+			assertThat(file.getSize()).as("size does not match").isEqualTo(expectedSize);
 			if(expectedBytesIsNotNull != null && expectedBytesIsNotNull)
 				assertThat(file.getBytes()).as("bytes is null").isNotNull();
 			else

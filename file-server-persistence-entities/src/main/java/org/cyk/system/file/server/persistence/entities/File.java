@@ -70,21 +70,13 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	public File setIdentifier(String identifier) {
 		return (File) super.setIdentifier(identifier);
 	}
-	
-	public String getNameAndExtension() {
-		if(nameAndExtension == null) {
-			nameAndExtension = name;
-			if(extension!=null && !extension.isEmpty())
-				nameAndExtension += "."+extension;	
-		}
-		return nameAndExtension;
-	}
-	
+
 	/**/
 	
 	public static final String FIELD_BYTES = "bytes";
 	public static final String FIELD_NAME = "name";
 	public static final String FIELD_EXTENSION = "extension";
+	public static final String FIELD_NAME_AND_EXTENSION = "nameAndExtension";
 	public static final String FIELD_MIME_TYPE = "mimeType";
 	public static final String FIELD_UNIFORM_RESOURCE_LOCATOR = "uniformResourceLocator";
 	public static final String FIELD_SIZE = "size";

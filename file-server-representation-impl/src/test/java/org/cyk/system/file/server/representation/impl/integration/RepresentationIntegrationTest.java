@@ -8,8 +8,6 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.server.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
@@ -20,7 +18,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 	private static final long serialVersionUID = 1L;
 	
 	@SuppressWarnings("unchecked")
-	@Test @Ignore
+	@Test
 	public void create_file() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
@@ -33,7 +31,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
+		assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();
@@ -61,7 +59,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		//assertThat(file.getUniformResourceLocator()).isEqualTo("http://127.0.0.1:11080/file/server/file/"+file.getIdentifier()+"/download?isinline=true");
+		assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
 		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,"name,extension,mimeType",null).getEntity()).iterator().next();
@@ -140,11 +138,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 	
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer count) {
-		Filter filters = __inject__(Filter.class).setKlass(File.class).addField(File.FIELD_NAME, string);
-		System.out.println("FileRepresentationIntegrationTest.assertGetMany_whereNameContains() B : "+__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filters)));
-		
 		FilterDto filter = new FilterDto().setKlass(File.class).addField(File.FIELD_NAME, string);
-		System.out.println("FileRepresentationIntegrationTest.assertGetMany_whereNameContains() : "+__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity());
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 	}
