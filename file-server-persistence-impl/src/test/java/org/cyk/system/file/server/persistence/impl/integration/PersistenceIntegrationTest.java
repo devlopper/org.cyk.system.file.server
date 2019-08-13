@@ -127,8 +127,12 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 	
 	private void assertRead_whereNameContains(String string,Integer count) {
 		Filter filter = __inject__(Filter.class).setKlass(File.class).addField(File.FIELD_NAME, string);
-		assertThat(__inject__(FilePersistence.class).read(new Properties().setQueryFilters(filter))).as("number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
-		assertThat(__inject__(FilePersistence.class).count(new Properties().setQueryFilters(filter))).as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
+		assertThat(__inject__(FilePersistence.class).read(new Properties().setQueryFilters(filter))).as("specific : number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
+		assertThat(__inject__(FilePersistence.class).count(new Properties().setQueryFilters(filter))).as("specific : number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
+
+		filter = __inject__(Filter.class).setValue(string);
+		assertThat(__inject__(FilePersistence.class).read(new Properties().setQueryFilters(filter))).as("global : number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
+		assertThat(__inject__(FilePersistence.class).count(new Properties().setQueryFilters(filter))).as("global : number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
 	}
 	
 }

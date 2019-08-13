@@ -41,6 +41,8 @@ public class FileBytes extends AbstractIdentifiedByString implements Serializabl
 	@NotNull @Lob
 	@Column(name=COLUMN_BYTES) private byte[] bytes;
 	
+	@Column(name=COLUMN_TEXT,length=1024 * 10) private String text;
+	
 	/**/
 	
 	@Override
@@ -51,9 +53,11 @@ public class FileBytes extends AbstractIdentifiedByString implements Serializabl
 	/**/
 	public static final String FIELD_FILE = "file";
 	public static final String FIELD_BYTES = "bytes";
+	public static final String FIELD_TEXT = "text";
 	
 	public static final String COLUMN_FILE = FIELD_FILE;
 	public static final String COLUMN_BYTES = FIELD_BYTES;
+	public static final String COLUMN_TEXT = FIELD_TEXT;
 	
 	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"bytes";
 	

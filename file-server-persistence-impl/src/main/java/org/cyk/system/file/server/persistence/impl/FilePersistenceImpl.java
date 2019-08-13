@@ -17,6 +17,7 @@ import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
 import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
+import org.cyk.utility.server.persistence.query.filter.Filter;
 
 @ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
@@ -65,8 +66,12 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	
 	@Override
 	protected String __getQueryIdentifier__(Class<?> functionClass, Properties properties, Object... parameters) {
-		if(PersistenceFunctionReader.class.equals(functionClass) && __isFilterByKeys__(properties, File.FIELD_NAME))
-			return readWhereNameContains;
+		Filter filter = (Filter) Properties.getFromPath(properties, Properties.QUERY_FILTERS);
+		if(PersistenceFunctionReader.class.equals(functionClass)) {
+			if(__isFilterByKeys__(properties, File.FIELD_NAME) || 
+					(filter!=null && __injectCollectionHelper__().isEmpty(filter.getFields()) && __injectStringHelper__().isNotBlank(filter.getValue())) )
+				return readWhereNameContains;
+		}
 		return super.__getQueryIdentifier__(functionClass, properties, parameters);
 	}
 	
@@ -76,7 +81,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 			return new Object[]{File.FIELD_SHA1, objects[0]};
 		else if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameContains)) {
 			if(Boolean.TRUE.equals(__inject__(ArrayHelper.class).isEmpty(objects)))
-				objects = new Object[] {queryContext.getFilterByKeysValue(File.FIELD_NAME)};
+				objects = new Object[] {__injectCollectionHelper__().isEmpty(queryContext.getFilter().getFields()) ? queryContext.getFilter().getValue() : queryContext.getFilterByKeysValue(File.FIELD_NAME)};
 			return new Object[]{File.FIELD_NAME, "%"+objects[0]+"%"};
 		}
 		return super.__getQueryParameters__(queryContext, properties, objects);
