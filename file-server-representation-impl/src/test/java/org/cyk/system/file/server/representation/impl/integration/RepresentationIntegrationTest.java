@@ -104,7 +104,6 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertGetMany_whereNameContains("file0",1);
 		assertGetMany_whereNameContains("file1",11);
 		assertGetMany_whereNameContains("file11",1);		
-		__inject__(FileBusiness.class).deleteAll();
 	}
 	
 	@Test
