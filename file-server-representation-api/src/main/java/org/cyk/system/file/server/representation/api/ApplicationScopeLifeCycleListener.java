@@ -3,7 +3,10 @@ import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cyk.system.file.server.representation.entities.FileDtoMapper;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
+import org.cyk.utility.server.representation.RepresentationEntity;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -11,7 +14,8 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		
+		FileDtoMapper.DOWNLOAD_PATH_FORMAT = "%s/"+StringUtils.replace(FileRepresentation.PATH+FileRepresentation.PATH_DOWNLOAD_ONE+"?isinline=%s"
+				,RepresentationEntity.FORMAT_PARAMETER_IDENTIFIER,"%s");
 	}
 	
 	@Override

@@ -45,7 +45,7 @@ public interface FileRepresentation extends RepresentationEntity<File,FileDto,Fi
 	
 	String PATH_CREATE_FROM_DIRECTORIES = PATH_ROOT+ConstantString.CREATE+__SLASH__+ConstantString.FROM+__SLASH__+ConstantString.DIRECTORIES;
 	
-	String PATH = "/file";
+	String PATH = "file";
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = PATH+__SLASH__+PATH_UPLOAD;
 	String PATH_DOWNLOAD_ONE = PATH_IDENTIFIER+__SLASH__+ConstantString.DOWNLOAD;

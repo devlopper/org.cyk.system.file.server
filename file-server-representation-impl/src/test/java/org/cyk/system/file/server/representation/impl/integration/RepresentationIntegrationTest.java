@@ -8,6 +8,7 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
+import org.cyk.utility.__kernel__.object.__static__.representation.Action;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
@@ -31,7 +32,12 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
+		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_READ)).isNotNull();
+		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_UPDATE)).isNotNull();
+		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_DELETE)).isNotNull();
+		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_DOWNLOAD)).isNotNull();
 		assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
+		
 		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();

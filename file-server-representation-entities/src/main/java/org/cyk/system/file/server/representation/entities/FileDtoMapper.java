@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.representation.Action;
-import org.cyk.utility.identifier.resource.UniformResourceIdentifierStringBuilder;
-import org.cyk.utility.mapping.AbstractMapperSourceDestinationImpl;
+import org.cyk.utility.server.representation.AbstractMapperSourceDestinationImpl;
+import org.cyk.utility.string.Strings;
 import org.mapstruct.Mapper;
 
 @Mapper
@@ -14,12 +14,34 @@ public abstract class FileDtoMapper extends AbstractMapperSourceDestinationImpl<
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void __listenGetSourceAfter__(File destination, FileDto source) {
-		super.__listenGetSourceAfter__(destination, source);
-		source.add__download__(DependencyInjection.inject(UniformResourceIdentifierStringBuilder.class)
-				.setRequest(DependencyInjection.inject(HttpServletRequest.class))
-				.setPath(String.format(DOWNLOAD_UNIFORM_RESOURCE_FORMAT, destination.getIdentifier(),Boolean.TRUE) ).execute().getOutput(),Action.METHOD_GET);
+	protected Strings __getActionsIdentifiers__(File destination, FileDto source) {
+		Strings identifiers = super.__getActionsIdentifiers__(destination, source);
+		if(identifiers == null)
+			identifiers = DependencyInjection.inject(Strings.class);
+		identifiers.add(Action.IDENTIFIER_DOWNLOAD);
+		return identifiers;
 	}
 	
-	public static String DOWNLOAD_UNIFORM_RESOURCE_FORMAT;
+	@Override
+	protected String __getActionMethod__(String actionIdentifier, File destination, FileDto source) {
+		if(Action.IDENTIFIER_DOWNLOAD.equals(actionIdentifier))
+			return Action.METHOD_GET;
+		return super.__getActionMethod__(actionIdentifier, destination, source);
+	}
+	
+	@Override
+	protected String __getPathFormat__(String actionIdentifier, File destination, FileDto source) {
+		if(Action.IDENTIFIER_DOWNLOAD.equals(actionIdentifier))
+			return DOWNLOAD_PATH_FORMAT;
+		return super.__getPathFormat__(actionIdentifier, destination, source);
+	}
+	
+	@Override
+	protected Object[] __getPathFormatParameters__(String actionIdentifier, HttpServletRequest request,String resourcePath, File destination, FileDto source) {
+		if(Action.IDENTIFIER_DOWNLOAD.equals(actionIdentifier))
+			return new Object[] {resourcePath,source.getIdentifier(),Boolean.TRUE};
+		return super.__getPathFormatParameters__(actionIdentifier, request, resourcePath, destination, source);
+	}
+	
+	public static String DOWNLOAD_PATH_FORMAT;
 }
