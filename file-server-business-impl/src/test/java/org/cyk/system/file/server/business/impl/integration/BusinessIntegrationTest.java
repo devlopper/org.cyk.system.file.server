@@ -48,10 +48,10 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		properties.setFields(File.FIELD_BYTES+",size");
 		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier, properties);				
 		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isEqualTo(null);
-		assertThat(file.getMimeType()).isEqualTo(null);
-		assertThat(file.getName()).isEqualTo(null);
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
+		assertThat(file.getExtension()).isNotNull();
+		assertThat(file.getMimeType()).isNotNull();
+		assertThat(file.getName()).isNotNull();
+		assertThat(file.getUniformResourceLocator()).isNull();
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(file.getBytes().length).isEqualTo(file.getSize().intValue());
 		assertThat(new String(file.getBytes())).isEqualTo(text);	
@@ -70,9 +70,9 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		properties.setFields(File.FIELD_BYTES+",size");
 		file = __inject__(FileBusiness.class).find(properties).iterator().next();				
 		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isEqualTo(null);
-		assertThat(file.getMimeType()).isEqualTo(null);
-		assertThat(file.getName()).isEqualTo(null);
+		assertThat(file.getExtension()).isNotNull();
+		assertThat(file.getMimeType()).isNotNull();
+		assertThat(file.getName()).isNotNull();
 		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
 		assertThat(file.getBytes()).isNotNull();
 		assertThat(file.getBytes().length).isEqualTo(file.getSize().intValue());

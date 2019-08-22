@@ -28,8 +28,13 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
 		super.__listenPostConstructPersistenceQueries__();
-		addQueryCollectInstances(readBySha1, __instanciateQueryReadBy__(File.FIELD_SHA1));
-		addQueryCollectInstances(readWhereNameContains, "SELECT tuple FROM File tuple WHERE lower(tuple.name) LIKE lower(:name)");
+		addQueryCollectInstances(readBySha1, __instanciateQueryReadBy__(File.FIELD_SHA1));		
+		addQueryCollectInstances(readWhereNameContains, "SELECT tuple FROM File tuple WHERE lower(tuple.name) LIKE lower(:name) ORDER BY tuple.name ASC");
+	}
+	
+	@Override
+	protected void __addReadQueryCollectInstances__() {
+		addQueryCollectInstances(read, "SELECT tuple FROM File tuple ORDER BY tuple.name ASC");
 	}
 	
 	@Override

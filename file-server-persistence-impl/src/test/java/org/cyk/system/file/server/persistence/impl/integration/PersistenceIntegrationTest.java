@@ -2,11 +2,14 @@ package org.cyk.system.file.server.persistence.impl.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.Collectors;
+
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.collection.CollectionHelper;
 import org.cyk.utility.server.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.cyk.utility.string.StringHelper;
@@ -35,7 +38,7 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 	}
 	
 	@Test
-	public void read_file_apllyProjection() throws Exception{
+	public void read_file_applyProjection() throws Exception{
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello";
 		File file = new File().setIdentifier(identifier).setName("file").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length))
@@ -48,12 +51,41 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 		userTransaction.commit();
 		
 		assertRead(identifier,null, Boolean.TRUE, "txt", "text/plain", "file", null,new Long(text.getBytes().length), null,null);
-		assertRead(identifier,"identifier", Boolean.TRUE, null, null, null, null, null,null,null);
-		assertRead(identifier,"extension", Boolean.TRUE, "txt", null, null, null, null,null,null);
-		assertRead(identifier,"mimeType", Boolean.TRUE, null, "text/plain", null, null, null,null,null);
-		assertRead(identifier,"name", Boolean.TRUE, null, null, "file", null, null,null,null);
-		assertRead(identifier,"nameAndExtension", Boolean.TRUE, null, null, null, null, null,null,"file.txt");
-		assertRead(identifier,"size", Boolean.TRUE, null, null, null, null, new Long(text.getBytes().length),null,null);
+		assertRead(identifier,"nameAndExtension", Boolean.TRUE, "txt", "text/plain", "file", null,new Long(text.getBytes().length), null,"file.txt");
+	}
+	
+	@Test
+	public void read_name_alphabetic_order() throws Exception{
+		String text = "Hello";
+		userTransaction.begin();
+		__inject__(FilePersistence.class).createMany(__inject__(CollectionHelper.class).instanciate(
+				new File().setName("c").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("a").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("b").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("e").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("d").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				));
+		userTransaction.commit();
+		
+		assertThat(__inject__(FilePersistence.class).read().stream().map(File::getName).collect(Collectors.toList())).containsExactly("a","b","c","d","e");
+		
+		userTransaction.begin();
+		__inject__(FilePersistence.class).createMany(__inject__(CollectionHelper.class).instanciate(
+				new File().setName("g").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("a1").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				,new File().setName("a").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				));
+		userTransaction.commit();
+		
+		assertThat(__inject__(FilePersistence.class).read().stream().map(File::getName).collect(Collectors.toList())).containsExactly("a","a","a1","b","c","d","e","g");
+		
+		userTransaction.begin();
+		__inject__(FilePersistence.class).createMany(__inject__(CollectionHelper.class).instanciate(
+				new File().setName("f").setExtension("txt").setMimeType("text/plain").setSize(new Long(text.getBytes().length)).setSha1("sha1")
+				));
+		userTransaction.commit();
+		
+		assertThat(__inject__(FilePersistence.class).read().stream().map(File::getName).collect(Collectors.toList())).containsExactly("a","a","a1","b","c","d","e","f","g");
 	}
 	
 	@Test

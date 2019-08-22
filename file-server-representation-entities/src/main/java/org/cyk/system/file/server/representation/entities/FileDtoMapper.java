@@ -37,10 +37,10 @@ public abstract class FileDtoMapper extends AbstractMapperSourceDestinationImpl<
 	}
 	
 	@Override
-	protected Object[] __getPathFormatParameters__(String actionIdentifier, HttpServletRequest request,String resourcePath, File destination, FileDto source) {
+	protected Object[] __getPathFormatParameters__(String actionIdentifier, HttpServletRequest request, File destination, FileDto source) {
 		if(Action.IDENTIFIER_DOWNLOAD.equals(actionIdentifier))
-			return new Object[] {resourcePath,source.getIdentifier(),Boolean.TRUE};
-		return super.__getPathFormatParameters__(actionIdentifier, request, resourcePath, destination, source);
+			return new Object[] {__resourcePath__,source.getIdentifier(),Boolean.TRUE};
+		return super.__getPathFormatParameters__(actionIdentifier, request, destination, source);
 	}
 	
 	public static String DOWNLOAD_PATH_FORMAT;
