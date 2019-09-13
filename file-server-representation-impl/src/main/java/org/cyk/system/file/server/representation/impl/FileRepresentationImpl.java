@@ -18,6 +18,7 @@ import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.number.NumberHelper;
+import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 import org.cyk.utility.string.Strings;
 
@@ -41,6 +42,11 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories),null,null,null
 				,__inject__(Strings.class).add(extensions),intervals,batchSize,count == null || count == 0 ? null : count);
 		return Response.ok("Files has been created from directories").build();
+	}
+	
+	@Override
+	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter) {
+		return getMany(isPageable, from, count, fields, new FilterDto().setValue(globalFilter));
 	}
 	
 	@Override

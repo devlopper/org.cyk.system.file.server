@@ -11,6 +11,7 @@ import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.object.__static__.representation.Action;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
+import org.cyk.utility.server.representation.AbstractRepresentationFunctionReaderImpl;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,12 +33,12 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_READ)).isNotNull();
+		/*assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_READ)).isNotNull();
 		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_UPDATE)).isNotNull();
 		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_DELETE)).isNotNull();
 		assertThat(file.get__action__byIdentifier(Action.IDENTIFIER_DOWNLOAD)).isNotNull();
 		assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
-		
+		*/
 		assertThat(file.getBytes()).isNull();
 		
 		file = (FileDto) __inject__(FileRepresentation.class).getOne(identifier, "system","name,extension,mimeType").getEntity();
@@ -65,7 +66,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		assertThat(file.getMimeType()).isEqualTo("text/plain");
 		assertThat(file.getName()).isEqualTo("text01");
 		assertThat(file.getSize()).isEqualTo(text.length());
-		assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
+		//assertThat(file.get__downloadUniformResourceLocator__()).endsWith("/file/"+file.getIdentifier()+"/download?isinline=true");
 		assertThat(file.getBytes()).isNull();
 		
 		file = ((Collection<FileDto>) __inject__(FileRepresentation.class).getMany(null,null,null,"name,extension,mimeType",null).getEntity()).iterator().next();
@@ -93,7 +94,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 	@SuppressWarnings("unchecked")
 	@Test
 	public void get_whereNameContains() throws Exception{
-		for(Integer index = 0 ; index < 20 ; index = index + 1) {
+		for(Integer index = 0 ; index < 40 ; index = index + 1) {
 			String identifier = __getRandomIdentifier__();
 			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
 					.setUniformResourceLocator("url").setSha1("sha1");
@@ -101,11 +102,11 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 			
 		}
 		
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null,null).getEntity()).as("file not found").hasSize(5);
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null,null).getEntity()).as("file not found").hasSize(AbstractRepresentationFunctionReaderImpl.QUERY_NUMBER_OF_TUPLE);
 		//assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,(List<String>) __inject__(CollectionHelper.class).instanciate("a")).getEntity()
 		//		).as("file found").isEmpty();
-		assertGetMany_whereNameContains("f",20);
-		assertGetMany_whereNameContains("i",20);
+		assertGetMany_whereNameContains("f",40);
+		assertGetMany_whereNameContains("i",40);
 		assertGetMany_whereNameContains("10",1);
 		assertGetMany_whereNameContains("file0",1);
 		assertGetMany_whereNameContains("file1",11);
@@ -146,6 +147,8 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		FilterDto filter = new FilterDto().setKlass(File.class).addField(File.FIELD_NAME, string);
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,new Long(count),null,string).getEntity())
+		.as("number of file where global filter <<"+string+">> is incorrect").hasSize(count);
 	}
 	
 	@Override

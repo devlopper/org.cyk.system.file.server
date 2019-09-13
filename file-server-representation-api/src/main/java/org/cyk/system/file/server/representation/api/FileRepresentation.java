@@ -2,6 +2,7 @@ package org.cyk.system.file.server.representation.api;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,6 +37,14 @@ public interface FileRepresentation extends RepresentationEntity<File,FileDto,Fi
 	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	Response upload();
 	*/
+	
+	@GET
+	@Path(PATH_GET_MANY_BY_GLOBAL_FILTER)
+	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	Response getManyByGlobalFilter(@QueryParam(PARAMETER_IS_PAGEABLE) Boolean isPageable,@QueryParam(PARAMETER_FROM) Long from,@QueryParam(PARAMETER_COUNT) Long count
+			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter);
+	
 	@GET
 	@Path(PATH_DOWNLOAD_ONE)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
@@ -49,6 +58,6 @@ public interface FileRepresentation extends RepresentationEntity<File,FileDto,Fi
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = PATH+__SLASH__+PATH_UPLOAD;
 	String PATH_DOWNLOAD_ONE = PATH_IDENTIFIER+__SLASH__+ConstantString.DOWNLOAD;
-	String PATH_GET_MANY_NAME_CONTAINS = "/namecontains";
+	String PATH_GET_MANY_BY_GLOBAL_FILTER = "/filter/{__filter__}";
 	
 }

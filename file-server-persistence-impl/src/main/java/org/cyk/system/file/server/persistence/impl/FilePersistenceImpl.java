@@ -18,18 +18,22 @@ import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
 import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
 import org.cyk.utility.server.persistence.query.filter.Filter;
+import org.cyk.utility.string.StringHelperImpl;
 
 @ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String readBySha1,readWhereNameContains;
+	private String readBySha1,readWhereNameContains,readWhereNameOrTextContains;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
 		super.__listenPostConstructPersistenceQueries__();
 		addQueryCollectInstances(readBySha1, __instanciateQueryReadBy__(File.FIELD_SHA1));		
 		addQueryCollectInstances(readWhereNameContains, "SELECT tuple FROM File tuple WHERE lower(tuple.name) LIKE lower(:name) ORDER BY tuple.name ASC");
+		addQueryCollectInstances(readWhereNameOrTextContains, "SELECT tuple FROM File tuple WHERE lower(tuple.name) LIKE lower(:nameOrText)"
+				+ " OR EXISTS(SELECT subTuple FROM FileText subTuple WHERE subTuple.file = tuple AND lower(subTuple.text) LIKE lower(:nameOrText)) "
+				+ " ORDER BY tuple.name ASC");
 	}
 	
 	@Override
@@ -73,6 +77,8 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	protected String __getQueryIdentifier__(Class<?> functionClass, Properties properties, Object... parameters) {
 		Filter filter = (Filter) Properties.getFromPath(properties, Properties.QUERY_FILTERS);
 		if(PersistenceFunctionReader.class.equals(functionClass)) {
+			if(filter != null && StringHelperImpl.__isNotBlank__(filter.getValue()))
+				return readWhereNameOrTextContains;
 			if(__isFilterByKeys__(properties, File.FIELD_NAME) || 
 					(filter!=null && __injectCollectionHelper__().isEmpty(filter.getFields()) && __injectStringHelper__().isNotBlank(filter.getValue())) )
 				return readWhereNameContains;
@@ -84,6 +90,8 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	protected Object[] __getQueryParameters__(PersistenceQueryContext queryContext, Properties properties,Object... objects) {
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readBySha1))
 			return new Object[]{File.FIELD_SHA1, objects[0]};
+		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameOrTextContains))
+			return new Object[]{"nameOrText", "%"+queryContext.getFilter().getValue()+"%"};
 		else if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameContains)) {
 			if(Boolean.TRUE.equals(__inject__(ArrayHelper.class).isEmpty(objects)))
 				objects = new Object[] {__injectCollectionHelper__().isEmpty(queryContext.getFilter().getFields()) ? queryContext.getFilter().getValue() : queryContext.getFilterByKeysValue(File.FIELD_NAME)};

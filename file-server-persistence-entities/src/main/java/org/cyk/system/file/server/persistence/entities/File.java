@@ -63,6 +63,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	
 	@Transient private String nameAndExtension;
 	@Transient private byte[] bytes;
+	@Transient private String text;
 	
 	/**/
 	
@@ -73,8 +74,9 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 
 	/**/
 	
-	public static final String FIELD_BYTES = "bytes";
 	public static final String FIELD_NAME = "name";
+	public static final String FIELD_BYTES = "bytes";
+	public static final String FIELD_TEXT = "text";
 	public static final String FIELD_EXTENSION = "extension";
 	public static final String FIELD_NAME_AND_EXTENSION = "nameAndExtension";
 	public static final String FIELD_MIME_TYPE = "mimeType";

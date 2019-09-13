@@ -19,35 +19,36 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
-@Table(name=FileBytes.TABLE)
+@Table(name=FileText.TABLE)
 /**
- * Local physical storage of file content as bytes. <br/>
- * Because bytes can be large , this strategy has been used in order to decouple file properties and its content.
+ * Textual content of the file.<br/>
+ * Because text can be large , this strategy has been used in order to decouple file properties and its text.
  * Also to avoid eager fetching or loading when querying.
  * @author CYK
  *
  */
-public class FileBytes extends AbstractIdentifiedByString implements Serializable {
+public class FileText extends AbstractIdentifiedByString implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotNull @OneToOne @JoinColumn(name=COLUMN_FILE,unique=true) private File file;
-	@NotNull @Lob @Column(name=COLUMN_BYTES) private byte[] bytes;	
+	@NotNull @Lob @Column(name=COLUMN_TEXT) private String text;
 	
 	/**/
 	
 	@Override
-	public FileBytes setIdentifier(String identifier) {
-		return (FileBytes) super.setIdentifier(identifier);
+	public FileText setIdentifier(String identifier) {
+		return (FileText) super.setIdentifier(identifier);
 	}
 	
 	/**/
+	
 	public static final String FIELD_FILE = "file";
-	public static final String FIELD_BYTES = "bytes";
+	public static final String FIELD_TEXT = "text";
 	
 	public static final String COLUMN_FILE = FIELD_FILE;
-	public static final String COLUMN_BYTES = FIELD_BYTES;
+	public static final String COLUMN_TEXT = FIELD_TEXT;
 	
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"bytes";
+	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"text";
 	
 	/**/
 }
