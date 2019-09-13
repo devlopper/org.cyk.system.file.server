@@ -2,11 +2,15 @@ package org.cyk.system.file.server.business.impl.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
-import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
+import org.cyk.system.file.server.business.api.FileTextBusiness;
+import org.cyk.system.file.server.business.impl.FileBusinessImpl;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
 import org.cyk.utility.server.persistence.query.filter.Filter;
@@ -18,70 +22,93 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	/* Create */
 	
 	@Test
-	public void createOneFile() throws Exception{
+	public void file_create_whereFileBytesDoExists() {
+		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileBytesBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(0l);
+		
 		String identifier = __getRandomIdentifier__();
 		String text = "Hello world.";
-		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setBytes(text.getBytes());
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setText(text).setBytes(text.getBytes());
 		__inject__(FileBusiness.class).create(file);
 		
 		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(1l);
 		assertThat(__inject__(FileBytesBusiness.class).count()).isEqualTo(1l);
-		
-		//We get file only
-		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
-		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isEqualTo("txt");
-		assertThat(file.getMimeType()).isEqualTo("text/plain");
-		assertThat(file.getName()).isEqualTo("text01");
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-		assertThat(file.getBytes()).isNull();
-		
-		//We get file bytes only
-		FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
-		assertThat(fileBytes).isNotNull();
-		assertThat(fileBytes.getBytes()).isNotNull();
-		assertThat(new String(fileBytes.getBytes())).isEqualTo(text);	
-		assertThat(fileBytes.getBytes().length).isEqualTo(file.getSize().intValue());
-		
-		//We get file and its bytes
-		Properties properties = new Properties();
-		properties.setFields(File.FIELD_BYTES+",size");
-		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier, properties);				
-		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isNotNull();
-		assertThat(file.getMimeType()).isNotNull();
-		assertThat(file.getName()).isNotNull();
-		assertThat(file.getUniformResourceLocator()).isNull();
-		assertThat(file.getBytes()).isNotNull();
-		assertThat(file.getBytes().length).isEqualTo(file.getSize().intValue());
-		assertThat(new String(file.getBytes())).isEqualTo(text);	
-		
-		//We get many file only
-		file = __inject__(FileBusiness.class).find().iterator().next();
-		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isEqualTo("txt");
-		assertThat(file.getMimeType()).isEqualTo("text/plain");
-		assertThat(file.getName()).isEqualTo("text01");
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-		assertThat(file.getBytes()).isNull();
-		
-		//We get many file and its bytes
-		properties = new Properties();
-		properties.setFields(File.FIELD_BYTES+",size");
-		file = __inject__(FileBusiness.class).find(properties).iterator().next();				
-		assertThat(file).isNotNull();
-		assertThat(file.getExtension()).isNotNull();
-		assertThat(file.getMimeType()).isNotNull();
-		assertThat(file.getName()).isNotNull();
-		assertThat(file.getUniformResourceLocator()).isEqualTo(null);
-		assertThat(file.getBytes()).isNotNull();
-		assertThat(file.getBytes().length).isEqualTo(file.getSize().intValue());
-		assertThat(new String(file.getBytes())).isEqualTo(text);
-				
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(1l);
 	}
 	
 	@Test
-	public void createFileFromDirectories() throws Exception{
+	public void file_create_whereFileBytesDoNotExists() throws IOException {
+		java.io.File __file__ = new java.io.File(System.getProperty("user.dir")+"\\target\\files\\myfile001.txt");
+		__file__.createNewFile();
+		String text = "Hello world.";
+		FileUtils.writeByteArrayToFile(__file__, text.getBytes());
+		
+		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileBytesBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(0l);
+		
+		String identifier = __getRandomIdentifier__();		
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setText(text).setUniformResourceLocator(__file__.toURI().toString())
+				.setSha1("sha1").setSize(1l);
+		__inject__(FileBusiness.class).create(file);
+		
+		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(1l);
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(1l);
+		
+		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier,new Properties().setFields("bytes"));
+		assertThat(file.getUniformResourceLocator()).isNotNull();
+		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo(text);
+	}
+	
+	@Test
+	public void file_read_bytes_whereFileBytesDoExists() {
+		String identifier = __getRandomIdentifier__();
+		String text = "Hello world.";
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setText(text).setBytes(text.getBytes());
+		__inject__(FileBusiness.class).create(file);
+		
+		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier,new Properties().setFields("bytes"));
+		assertThat(file.getUniformResourceLocator()).isNull();
+		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo(text);
+	}
+	
+	@Test
+	public void file_read_bytes_whereFileBytesDoNotExists() {
+		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileBytesBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(0l);
+		FileBusinessImpl.ROOT_FOLDER_PATH = Paths.get(System.getProperty("user.dir")+"\\target\\files");
+		String identifier = __getRandomIdentifier__();
+		String text = "Hello world.";
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setText(text).setBytes(text.getBytes())
+				.setIsBytesAccessibleFromUniformResourceLocator(Boolean.TRUE);
+		__inject__(FileBusiness.class).create(file);
+		assertThat(__inject__(FileBusiness.class).count()).isEqualTo(1l);
+		assertThat(__inject__(FileBytesBusiness.class).count()).isEqualTo(0l);
+		assertThat(__inject__(FileTextBusiness.class).count()).isEqualTo(1l);
+		
+		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier,new Properties().setFields("bytes"));
+		assertThat(file.getUniformResourceLocator()).isNotNull();
+		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo(text);
+	}
+	
+	@Test
+	public void file_read_text() {
+		String identifier = __getRandomIdentifier__();
+		String text = "Hello world.";
+		File file = new File().setIdentifier(identifier).setNameAndExtension("text01.txt").setText(text).setBytes(text.getBytes());
+		__inject__(FileBusiness.class).create(file);
+		
+		file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier,new Properties().setFields("text"));
+		assertThat(file.getText()).isEqualTo(text);
+	}
+	
+	@Test
+	public void createFileFromDirectories() {
 		/*__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions\\Acclamation"));
 		Collection<File> files = __inject__(FileBusiness.class).findMany();
 		assertThat(files).withFailMessage("No file found").isNotNull();
@@ -95,12 +122,12 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 	}
 	
 	/*@Test
-	public void createFileFromDirectories() throws Exception{
+	public void createFileFromDirectories() {
 		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add("C:\\Users\\CYK\\Downloads\\Partitions"));
 	}*/
 
 	@Test
-	public void findMany_whereNameContains() throws Exception{
+	public void filter_whereContains() {
 		for(Integer index = 0 ; index < 20 ; index = index + 1) {
 			String identifier = __getRandomIdentifier__();
 			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)

@@ -1,5 +1,6 @@
 package org.cyk.system.file.server.business.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,30 +13,36 @@ import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.commons.io.FileUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
+import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
+import org.cyk.system.file.server.persistence.entities.FileText;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.collection.CollectionHelper;
-import org.cyk.utility.file.FileHelper;
+import org.cyk.utility.collection.CollectionHelperImpl;
+import org.cyk.utility.file.FileHelperImpl;
 import org.cyk.utility.file.Files;
 import org.cyk.utility.file.FilesGetter;
 import org.cyk.utility.file.Paths;
 import org.cyk.utility.file.PathsGetter;
 import org.cyk.utility.number.Intervals;
+import org.cyk.utility.number.NumberHelperImpl;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
-import org.cyk.utility.string.StringHelper;
+import org.cyk.utility.string.StringHelperImpl;
 import org.cyk.utility.string.Strings;
 
 @ApplicationScoped
 public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersistence> implements FileBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static Path ROOT_FOLDER_PATH;
+	
 	@Override
 	protected void __listenExecuteCreateBefore__(File file, Properties properties, BusinessFunctionCreator function) {
 		super.__listenExecuteCreateBefore__(file, properties, function);
@@ -43,14 +50,14 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 			@Override
 			public void run() {
 				byte[] bytes = file.getBytes();
-				if(__inject__(StringHelper.class).isBlank(file.getSha1())) {
+				if(StringHelperImpl.__isBlank__(file.getSha1())) {
 					if(bytes==null) {
 						//TODO get a way to compute sha1 : from given uniform resource locator
 					}else
 						file.setSha1(new String(new DigestUtils(MessageDigestAlgorithms.SHA_1).digestAsHex(bytes)));
 				}
 				/*
-				if(__injectStringHelper__().isNotBlank(file.getSha1())) {
+				if(StringHelperImpl.__isNotBlank__(file.getSha1())) {
 					File current = __inject__(FilePersistence.class).readBySha1(file.getSha1());
 					if(current!=null)
 						__inject__(ThrowableHelper.class).throwRuntimeException("File content already exist");
@@ -58,23 +65,22 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 				*/
 				String nameAndExtension = file.getNameAndExtension();
 				String extension = file.getExtension();
-				
-				
-				if(__injectStringHelper__().isBlank(file.getName())) {
-					if(__injectStringHelper__().isNotBlank(nameAndExtension))
-						file.setName(__inject__(FileHelper.class).getName(nameAndExtension));
+								
+				if(StringHelperImpl.__isBlank__(file.getName())) {
+					if(StringHelperImpl.__isNotBlank__(nameAndExtension))
+						file.setName(FileHelperImpl.__getName__(nameAndExtension));
 				}
 				
-				if(__injectStringHelper__().isBlank(extension)) {
-					if(__injectStringHelper__().isNotBlank(nameAndExtension))
-						file.setExtension(__inject__(FileHelper.class).getExtension(nameAndExtension));
+				if(StringHelperImpl.__isBlank__(extension)) {
+					if(StringHelperImpl.__isNotBlank__(nameAndExtension))
+						file.setExtension(FileHelperImpl.__getExtension__(nameAndExtension));
 				}
 				
-				if(__injectStringHelper__().isBlank(file.getMimeType())) {
-					if(__injectStringHelper__().isNotBlank(extension))
-						file.setMimeType(__inject__(FileHelper.class).getMimeTypeByExtension(extension));
-					else if(__injectStringHelper__().isNotBlank(nameAndExtension))
-						file.setMimeType(__inject__(FileHelper.class).getMimeTypeByNameAndExtension(nameAndExtension));
+				if(StringHelperImpl.__isBlank__(file.getMimeType())) {
+					if(StringHelperImpl.__isNotBlank__(extension))
+						file.setMimeType(FileHelperImpl.__getMimeTypeByExtension__(extension));
+					else if(StringHelperImpl.__isNotBlank__(nameAndExtension))
+						file.setMimeType(FileHelperImpl.__getMimeTypeByNameAndExtension__(nameAndExtension));
 				}
 				
 				if(file.getSize() == null) {
@@ -82,16 +88,32 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 						file.setSize(new Long(bytes.length));
 				}
 				
-				
 			}
 		});
 		
 		function.addTryEndRunnables(new Runnable() {
 			@Override
 			public void run() {
-				byte[] bytes = file.getBytes();
-				if(bytes!=null)
-					__inject__(FileBytesBusiness.class).create(__inject__(FileBytes.class).setFile(file).setBytes(bytes));
+				if(StringHelperImpl.__isBlank__(file.getUniformResourceLocator())) {
+					if(file.getBytes()!=null) {
+						if(Boolean.TRUE.equals(file.getIsBytesAccessibleFromUniformResourceLocator())) {
+							try {
+								java.io.File __file__ = new java.io.File(ROOT_FOLDER_PATH.toFile(),file.getNameAndExtension());
+								file.setUniformResourceLocator(__file__.toURI().toString());
+								FileUtils.writeByteArrayToFile(__file__, file.getBytes());
+							} catch (IOException exception) {
+								//exception.printStackTrace();
+								throw new RuntimeException(exception);
+							}
+						}else {
+							__inject__(FileBytesBusiness.class).create(new FileBytes().setFile(file).setBytes(file.getBytes()));	
+						}
+					}	
+				}else {
+					
+				}
+				if(StringHelperImpl.__isNotBlank__(file.getText()))
+					__inject__(FileTextBusiness.class).create(new FileText().setFile(file).setText(file.getText()));
 			}
 		});
 	}
@@ -144,14 +166,14 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 			filesGetter.getFileSizeIntervals(Boolean.TRUE).add(sizes);
 			Files files = filesGetter.execute().getOutput();
 			
-			System.out.println("Number of file read : "+__inject__(CollectionHelper.class).getSize(files));
-			if(__injectCollectionHelper__().isNotEmpty(files)) {
+			System.out.println("Number of file read : "+CollectionHelperImpl.__getSize__(files));
+			if(CollectionHelperImpl.__isNotEmpty__(files)) {
 				Collection<File> persistences = new ArrayList<>();
 				//System.out.println("FREE MEMORY 01 : "+Runtime.getRuntime().freeMemory());
 				for(org.cyk.utility.file.File indexFile : files.get()) {
 					File persistenceEntity = null;
-					if(__injectStringHelper__().isNotBlank(indexFile.getMimeType()) && __injectNumberHelper__().isGreaterThanZero(indexFile.getSize())) {
-						if(__injectStringHelper__().isNotBlank(indexFile.getChecksum()))
+					if(StringHelperImpl.__isNotBlank__(indexFile.getMimeType()) && NumberHelperImpl.__isGreaterThanZero__(indexFile.getSize())) {
+						if(StringHelperImpl.__isNotBlank__(indexFile.getChecksum()))
 							persistenceEntity = __persistence__.readBySha1(indexFile.getChecksum());
 						if(persistenceEntity == null) {
 							persistenceEntity = __inject__(File.class);
@@ -161,14 +183,13 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 							persistenceEntity.setSha1(indexFile.getChecksum());
 							persistenceEntity.setSize(indexFile.getSize());
 							persistenceEntity.setUniformResourceLocator(indexFile.getUniformResourceLocator());
-							persistenceEntity.setBytes(indexFile.getBytes());
+							//persistenceEntity.setBytes(indexFile.getBytes());
 							persistences.add(persistenceEntity);
 							if(count!=null) {
 								count--;
 								if(count == 0)
 									break;	
 							}
-							
 						}
 					}
 				}

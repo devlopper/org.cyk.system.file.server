@@ -1,15 +1,21 @@
 package org.cyk.system.file.server.persistence.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.io.FileUtils;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
 import org.cyk.system.file.server.persistence.api.FilePersistence;
+import org.cyk.system.file.server.persistence.api.FileTextPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
+import org.cyk.system.file.server.persistence.entities.FileText;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.array.ArrayHelper;
 import org.cyk.utility.file.FileHelper;
@@ -57,9 +63,21 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	protected void __listenExecuteReadAfterSetFieldValue__(File file, Field field,Properties properties) {
 		super.__listenExecuteReadAfterSetFieldValue__(file, field,properties);
 		if(File.FIELD_BYTES.equals(field.getName())) {
-			FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
-			if(fileBytes!=null)
-				file.setBytes(fileBytes.getBytes());
+			if(file.getUniformResourceLocator() == null) {
+				FileBytes fileBytes = __inject__(FileBytesPersistence.class).readByFile(file);
+				if(fileBytes!=null)
+					file.setBytes(fileBytes.getBytes());	
+			}else {
+				try {
+					file.setBytes(FileUtils.readFileToByteArray(Paths.get(URI.create(file.getUniformResourceLocator())).toFile()));
+				} catch (IOException exception) {
+					throw new RuntimeException(exception);
+				}
+			}			
+		}else if(File.FIELD_TEXT.equals(field.getName())) {
+			FileText fileText = __inject__(FileTextPersistence.class).readByFile(file);
+			if(fileText!=null)
+				file.setText(fileText.getText());
 		}else if(File.FIELD_NAME_AND_EXTENSION.equals(field.getName())) {
 			file.setNameAndExtension(__inject__(FileHelper.class).concatenateNameAndExtension(file.getName(), file.getExtension()));	
 		}

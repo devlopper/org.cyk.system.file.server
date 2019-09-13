@@ -63,6 +63,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	
 	@Transient private String nameAndExtension;
 	@Transient private byte[] bytes;
+	@Transient private Boolean isBytesAccessibleFromUniformResourceLocator;
 	@Transient private String text;
 	
 	/**/

@@ -25,6 +25,7 @@ public class FileDto extends AbstractEntityFromPersistenceEntity implements Seri
 	private Long size;
 	private String nameAndExtension;
 	private String sha1;
+	private String text;
 	
 	@Override
 	public FileDto setIdentifier(String identifier) {
