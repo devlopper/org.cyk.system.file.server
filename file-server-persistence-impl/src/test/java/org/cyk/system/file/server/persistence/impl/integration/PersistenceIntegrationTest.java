@@ -195,6 +195,17 @@ public class PersistenceIntegrationTest extends AbstractPersistenceArquillianInt
 		assertFilter_whereContains("content 1",11);
 	}
 	
+	@Test
+	public void file_readUniformResourceLocators() throws Exception{
+		userTransaction.begin();
+		__inject__(FilePersistence.class).create(new File().setName("file").setMimeType("text/plain").setSize(0l).setSha1("sha1").setUniformResourceLocator("url01"));
+		__inject__(FilePersistence.class).create(new File().setName("file").setMimeType("text/plain").setSize(0l).setSha1("sha1").setUniformResourceLocator("url02"));
+		__inject__(FilePersistence.class).create(new File().setName("file").setMimeType("text/plain").setSize(0l).setSha1("sha1").setUniformResourceLocator("url03"));
+		__inject__(FilePersistence.class).create(new File().setName("file").setMimeType("text/plain").setSize(0l).setSha1("sha1").setUniformResourceLocator("url00"));
+		userTransaction.commit();
+		assertThat(__inject__(FilePersistence.class).readUniformResourceLocators(null)).containsExactlyInAnyOrder("url00","url01","url02","url03");
+	}
+	
 	/**/
 	
 	private void assertRead(String identifier,String fields,Boolean expectedIsNotNull,String expectedName,String expectedExtension,String expectedMimeType,String expectedNameAndExtension,String expectedURL,Long expectedSize,Boolean expectedBytesIsNotNull,String expectedText) {

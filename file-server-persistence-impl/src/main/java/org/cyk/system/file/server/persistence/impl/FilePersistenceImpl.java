@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
 import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
@@ -30,7 +31,7 @@ import org.cyk.utility.string.StringHelperImpl;
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String readBySha1,readWhereNameContains,readWhereNameOrTextContains;
+	private String readBySha1,readWhereNameContains,readWhereNameOrTextContains,readUniformResourceLocators;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
@@ -40,6 +41,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		addQueryCollectInstances(readWhereNameOrTextContains, "SELECT tuple FROM File tuple WHERE lower(tuple.name) LIKE lower(:nameOrText)"
 				+ " OR EXISTS(SELECT subTuple FROM FileText subTuple WHERE subTuple.file = tuple AND lower(subTuple.text) LIKE lower(:nameOrText)) "
 				+ " ORDER BY tuple.name ASC");
+		addQueryCollectInstances(readUniformResourceLocators, "SELECT tuple.uniformResourceLocator FROM File tuple",String.class);
 	}
 	
 	@Override
@@ -89,6 +91,11 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 				.setDerivedFromQueryIdentifier(readWhereNameContains).setIsCountInstances(Boolean.TRUE)
 				.execute().getOutput());
 		return __count__(properties,____getQueryParameters____(properties,string));
+	}
+	
+	@Override
+	public Collection<String> readUniformResourceLocators(Properties properties) {
+		return __inject__(EntityManager.class).createNamedQuery(readUniformResourceLocators, String.class).getResultList();
 	}
 	
 	@Override

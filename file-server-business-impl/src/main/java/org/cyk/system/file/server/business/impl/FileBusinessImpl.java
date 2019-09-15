@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -26,9 +25,7 @@ import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.collection.CollectionHelperImpl;
 import org.cyk.utility.file.FileHelperImpl;
 import org.cyk.utility.file.Files;
-import org.cyk.utility.file.FilesGetter;
 import org.cyk.utility.file.Paths;
-import org.cyk.utility.file.PathsGetter;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.number.NumberHelperImpl;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
@@ -148,6 +145,72 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 		if(count!=null && count < batchSize)
 			batchSize = count;	
 		
+		Paths paths = FileHelperImpl.__getPaths__(directories.get(), null, Boolean.FALSE, Boolean.TRUE, null);
+		if(CollectionHelperImpl.__isNotEmpty__(paths)) {
+			System.out.println("Number of files paths found : "+paths.getSize());
+			paths.removeByUniformResourceIdentifiers(__persistence__.readUniformResourceLocators(null));
+			System.out.println("Number of files paths to process : "+paths.getSize());
+			Files files = FileHelperImpl.__get__(paths, null);
+			if(CollectionHelperImpl.__isNotEmpty__(files)) {
+				System.out.println("Number of files read : "+files.getSize());
+				System.out.println("Computing checksum...");
+				FileHelperImpl.__computeChecksum__(files);
+				System.out.println("Building persistables...");
+				Collection<File> persistable = null;
+				for(org.cyk.utility.file.File indexFile : files.get()) {
+					File persistenceEntity = null;
+					if(StringHelperImpl.__isNotBlank__(indexFile.getChecksum()) && StringHelperImpl.__isNotBlank__(indexFile.getMimeType()) 
+							&& NumberHelperImpl.__isGreaterThanZero__(indexFile.getSize())) {
+						//if(StringHelperImpl.__isNotBlank__(indexFile.getChecksum()))
+						//	persistenceEntity = __persistence__.readBySha1(indexFile.getChecksum());
+						if(persistenceEntity == null) {
+							persistenceEntity = new File();
+							persistenceEntity.setExtension(indexFile.getExtension());
+							persistenceEntity.setMimeType(indexFile.getMimeType());
+							persistenceEntity.setName(indexFile.getName());
+							persistenceEntity.setSha1(indexFile.getChecksum());
+							persistenceEntity.setSize(indexFile.getSize());
+							persistenceEntity.setUniformResourceLocator(indexFile.getUniformResourceLocator());
+							persistenceEntity.setBytes(indexFile.getBytes());
+							if(persistable == null)
+								persistable = new ArrayList<>();
+							persistable.add(persistenceEntity);
+						}
+					}
+				}
+				if(CollectionHelperImpl.__isNotEmpty__(persistable)) {
+					System.out.println("Persisting "+persistable.size()+" by batch of "+batchSize+"...");
+					createByBatch(persistable, batchSize);
+					persistable.stream().map(x -> x.setBytes(null));
+					persistable.clear();	
+				}
+				files.get().stream().map(x -> x.setBytes(null));
+				files.removeAll();
+				System.gc();
+			}
+		}
+		System.out.println("Done!!!");
+		return this;
+	}
+	
+	/*
+	@Override
+	public FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
+			,Integer batchSize,Integer count) {
+		System.out.println("Creating file from directories");
+		System.out.println("Directories : "+directories);
+		System.out.println("Extensions : "+extensions);
+		System.out.println("Sizes : "+sizes);
+		System.out.println("Batch size : "+batchSize);
+		System.out.println("Count : "+count);
+		
+		if(count!=null && count<1)
+			count = 1;
+		if(batchSize == null)
+			batchSize = 200;
+		if(count!=null && count < batchSize)
+			batchSize = count;	
+		
 		Paths paths = __inject__(PathsGetter.class).addDirectories(directories).setIsDirectoryGettable(Boolean.FALSE).setIsFileGettable(Boolean.TRUE).execute().getOutput();
 		System.out.println("Number of files paths : "+paths.getSize());
 		
@@ -208,7 +271,7 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 			}
 		}
 		return this;
-	}
+	}*/
 	
 	@Transactional(value=TxType.REQUIRES_NEW)
 	private void createFromDirectories(Collection<File> files) {
