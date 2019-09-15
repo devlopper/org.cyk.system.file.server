@@ -28,6 +28,7 @@ import org.cyk.utility.file.Files;
 import org.cyk.utility.file.Paths;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.number.NumberHelperImpl;
+import org.cyk.utility.regularexpression.RegularExpressionHelperImpl;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 import org.cyk.utility.server.business.BusinessFunctionRemover;
@@ -145,7 +146,7 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 		if(count!=null && count < batchSize)
 			batchSize = count;	
 		
-		Paths paths = FileHelperImpl.__getPaths__(directories.get(), null, Boolean.FALSE, Boolean.TRUE, null);
+		Paths paths = FileHelperImpl.__getPaths__(directories, RegularExpressionHelperImpl.__formatFileNameHavingExtensions__(extensions), Boolean.FALSE, Boolean.TRUE, null);
 		if(CollectionHelperImpl.__isNotEmpty__(paths)) {
 			System.out.println("Number of files paths found : "+paths.getSize());
 			paths.removeByUniformResourceIdentifiers(__persistence__.readUniformResourceLocators(null));
