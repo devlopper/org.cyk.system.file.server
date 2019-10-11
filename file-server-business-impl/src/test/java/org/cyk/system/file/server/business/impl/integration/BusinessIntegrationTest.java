@@ -131,7 +131,7 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		for(Integer index = 0 ; index < 20 ; index = index + 1) {
 			String identifier = __getRandomIdentifier__();
 			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
-					.setUniformResourceLocator("url").setSha1("sha1");
+					.setUniformResourceLocator("url"+index).setSha1("sha1");
 			__inject__(FileBusiness.class).create(file);		
 		}
 		

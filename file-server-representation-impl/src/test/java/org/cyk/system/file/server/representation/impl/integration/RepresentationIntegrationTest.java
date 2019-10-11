@@ -8,7 +8,6 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.__kernel__.object.__static__.representation.Action;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.AbstractRepresentationFunctionReaderImpl;
@@ -97,7 +96,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		for(Integer index = 0 ; index < 40 ; index = index + 1) {
 			String identifier = __getRandomIdentifier__();
 			File file = new File().setIdentifier(identifier).setName("file"+index).setExtension("txt").setMimeType("text/plain").setSize(1l)
-					.setUniformResourceLocator("url").setSha1("sha1");
+					.setUniformResourceLocator("url"+index).setSha1("sha1");
 			__inject__(FileBusiness.class).create(file);
 			
 		}

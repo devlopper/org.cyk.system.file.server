@@ -24,7 +24,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	/**
 	 * Physical location. Can be local (file:///) or remote (ftp, http,...)
 	 */
-	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR) private String uniformResourceLocator;
+	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR/*,unique=true*/) private String uniformResourceLocator;
 	
 	/**
 	 * Logical name
@@ -45,7 +45,7 @@ public class File extends AbstractIdentifiedByString implements Serializable {
 	 * Mime type
 	 */
 	@NotNull
-	@Column(name=COLUMN_MIME_TYPE,length=100) private String mimeType;
+	@Column(name=COLUMN_MIME_TYPE,length=50) private String mimeType;
 	
 	/**
 	 * Size
