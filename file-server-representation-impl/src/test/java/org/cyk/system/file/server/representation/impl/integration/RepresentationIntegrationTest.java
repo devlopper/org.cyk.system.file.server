@@ -9,7 +9,6 @@ import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
-import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.AbstractRepresentationFunctionReaderImpl;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Ignore;
@@ -102,7 +101,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		}
 		
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,null,null).getEntity()).as("file not found").hasSize(AbstractRepresentationFunctionReaderImpl.QUERY_NUMBER_OF_TUPLE);
-		//assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,(List<String>) __inject__(CollectionHelper.class).instanciate("a")).getEntity()
+		//assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,null,null,(List<String>) CollectionHelper.instanciate("a")).getEntity()
 		//		).as("file found").isEmpty();
 		assertGetMany_whereNameContains("f",40);
 		assertGetMany_whereNameContains("i",40);
@@ -143,17 +142,11 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 	
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer count) {
-		FilterDto filter = new FilterDto().setKlass(File.class).addField(File.FIELD_NAME, string);
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,new Long(count),null,filter).getEntity())
+		FilterDto filter = new FilterDto().useKlass(File.class).addField(File.FIELD_NAME, string);
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,0l,Long.valueOf(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,new Long(count),null,string).getEntity())
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,Long.valueOf(count),null,string).getEntity())
 		.as("number of file where global filter <<"+string+">> is incorrect").hasSize(count);
 	}
-	
-	@Override
-	protected <ENTITY> Class<? extends AbstractEntityCollection<ENTITY>> __getEntityCollectionClass__(Class<ENTITY> aClass) {
-		return null;
-	}
-	
 
 }

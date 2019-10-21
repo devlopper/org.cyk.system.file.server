@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.cyk.utility.server.representation.AbstractEntityFromPersistenceEntity;
+import org.cyk.utility.__kernel__.object.__static__.representation.AbstractIdentifiedByStringImpl;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @XmlRootElement @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class FileDto extends AbstractEntityFromPersistenceEntity implements Serializable {
+public class FileDto extends AbstractIdentifiedByStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String uniformResourceLocator;

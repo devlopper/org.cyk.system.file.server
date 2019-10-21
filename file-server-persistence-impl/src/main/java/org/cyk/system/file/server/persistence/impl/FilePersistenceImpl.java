@@ -17,15 +17,16 @@ import org.cyk.system.file.server.persistence.api.FileTextPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.array.ArrayHelper;
-import org.cyk.utility.file.FileHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
 import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
 import org.cyk.utility.server.persistence.query.filter.Filter;
-import org.cyk.utility.string.StringHelperImpl;
 
 @ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
@@ -81,7 +82,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 			if(fileText!=null)
 				file.setText(fileText.getText());
 		}else if(File.FIELD_NAME_AND_EXTENSION.equals(field.getName())) {
-			file.setNameAndExtension(__inject__(FileHelper.class).concatenateNameAndExtension(file.getName(), file.getExtension()));	
+			file.setNameAndExtension(FileHelper.concatenateNameAndExtension(file.getName(), file.getExtension()));	
 		}
 	}
 	
@@ -102,10 +103,10 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	protected String __getQueryIdentifier__(Class<?> functionClass, Properties properties, Object... parameters) {
 		Filter filter = (Filter) Properties.getFromPath(properties, Properties.QUERY_FILTERS);
 		if(PersistenceFunctionReader.class.equals(functionClass)) {
-			if(filter != null && StringHelperImpl.__isNotBlank__(filter.getValue()))
+			if(filter != null && StringHelper.isNotBlank(filter.getValue()))
 				return readWhereNameOrTextContains;
 			if(__isFilterByKeys__(properties, File.FIELD_NAME) || 
-					(filter!=null && __injectCollectionHelper__().isEmpty(filter.getFields()) && __injectStringHelper__().isNotBlank(filter.getValue())) )
+					(filter!=null && CollectionHelper.isEmpty(filter.getFields()) && StringHelper.isNotBlank(filter.getValue())) )
 				return readWhereNameContains;
 		}
 		return super.__getQueryIdentifier__(functionClass, properties, parameters);
@@ -118,8 +119,8 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameOrTextContains))
 			return new Object[]{"nameOrText", "%"+queryContext.getFilter().getValue()+"%"};
 		else if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameContains)) {
-			if(Boolean.TRUE.equals(__inject__(ArrayHelper.class).isEmpty(objects)))
-				objects = new Object[] {__injectCollectionHelper__().isEmpty(queryContext.getFilter().getFields()) ? queryContext.getFilter().getValue() : queryContext.getFilterByKeysValue(File.FIELD_NAME)};
+			if(Boolean.TRUE.equals(ArrayHelper.isEmpty(objects)))
+				objects = new Object[] {CollectionHelper.isEmpty(queryContext.getFilter().getFields()) ? queryContext.getFilter().getValue() : queryContext.getFilterByKeysValue(File.FIELD_NAME)};
 			return new Object[]{File.FIELD_NAME, "%"+objects[0]+"%"};
 		}
 		return super.__getQueryParameters__(queryContext, properties, objects);

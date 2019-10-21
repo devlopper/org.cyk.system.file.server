@@ -19,10 +19,10 @@ import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.object.dynamic.AbstractObject;
-import org.cyk.utility.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.map.MapHelper;
 import org.cyk.utility.server.representation.Representation;
-import org.cyk.utility.string.StringHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 
@@ -39,10 +39,10 @@ public class FileUploaderRestEasy extends AbstractObject implements Serializable
 		Collection<FileDto> fileDtos = null;
 		for(InputPart inputPart : multipartInput.getParts()) {
 			@SuppressWarnings("unchecked")
-			String contentDisposition = __inject__(CollectionHelper.class).getFirst(__inject__(MapHelper.class).get(inputPart.getHeaders(), List.class, HttpHeaders.CONTENT_DISPOSITION));
+			String contentDisposition = (String) CollectionHelper.getFirst(__inject__(MapHelper.class).get(inputPart.getHeaders(), List.class, "Content-Disposition"));
 			String nameAndExtension = StringUtils.substringBetween(contentDisposition, ConstantString.FILENAME+"=\"","\"");
-			String mimeType = __inject__(CollectionHelper.class).getFirst(inputPart.getHeaders().get(HttpHeaders.CONTENT_TYPE));
-			if(__inject__(StringHelper.class).isNotBlank(nameAndExtension)) {
+			String mimeType = (String) CollectionHelper.getFirst(inputPart.getHeaders().get(HttpHeaders.CONTENT_TYPE));
+			if(StringHelper.isNotBlank(nameAndExtension)) {
 				//There is a file to upload
 				try {
 					if(fileDtos == null)
@@ -54,7 +54,7 @@ public class FileUploaderRestEasy extends AbstractObject implements Serializable
 				}
 			}
 		}
-		if(__inject__(CollectionHelper.class).isNotEmpty(fileDtos))
+		if(CollectionHelper.isNotEmpty(fileDtos))
 			response = __inject__(FileRepresentation.class).createMany(fileDtos,null);
 		return response;
 	}

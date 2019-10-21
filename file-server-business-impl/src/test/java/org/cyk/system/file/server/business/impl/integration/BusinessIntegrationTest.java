@@ -150,6 +150,6 @@ public class BusinessIntegrationTest extends AbstractBusinessArquillianIntegrati
 		assertThat(__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filter)))
 			.as("number of file from collection where name contains <<"+string+">> is incorrect").hasSize(count);
 		assertThat(__inject__(FileBusiness.class).count(new Properties().setQueryFilters(filter)))
-		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(count));
+		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(Long.valueOf(count));
 	}
 }

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.cyk.system.file.server</groupId>
 		<artifactId>file-server-_pom</artifactId>
-		<version>0.0.1</version>
+		<version>0.1.0</version>
 	</parent>
 
 	<name>Representation Implementation based on JAXRS</name>
@@ -22,17 +22,17 @@
 		<dependency>
 			<groupId>org.cyk.system.file.server.representation</groupId>
 			<artifactId>file-server-representation-api</artifactId>
-			<version>0.0.1</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cyk.system.file.server.business</groupId>
 			<artifactId>file-server-business-impl</artifactId>
-			<version>0.0.1</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cyk.jee.utility.server.representation.impl</groupId>
 			<artifactId>jee-utility-server-representation-impl</artifactId>
-			<version>0.0.1</version>
+			<version>0.1.0</version>
 		</dependency>
 		
 		<dependency>

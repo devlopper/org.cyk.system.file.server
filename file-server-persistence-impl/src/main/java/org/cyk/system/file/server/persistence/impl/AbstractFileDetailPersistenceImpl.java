@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import org.cyk.system.file.server.persistence.api.FileDetailPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.array.ArrayHelperImpl;
-import org.cyk.utility.collection.CollectionHelperImpl;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
 
@@ -20,7 +20,7 @@ public abstract class AbstractFileDetailPersistenceImpl<T> extends AbstractPersi
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
 		super.__listenPostConstructPersistenceQueries__();
-		addQueryCollectInstances(readByFilesIdentifiers,String.format("SELECT tuple FROM %s tuple WHERE tuple.file.identifier IN :filesIdentifiers",__getTupleName__()));
+		addQueryCollectInstances(readByFilesIdentifiers,String.format("SELECT tuple FROM %s tuple WHERE tuple.file.identifier IN :filesIdentifiers",__tupleName__));
 	}
 	
 	@Override
@@ -31,27 +31,27 @@ public abstract class AbstractFileDetailPersistenceImpl<T> extends AbstractPersi
 	
 	@Override
 	public Collection<T> readByFilesIdentifiers(String... filesIdentifiers) {
-		return readByFilesIdentifiers(CollectionHelperImpl.__instanciate__(filesIdentifiers));
+		return readByFilesIdentifiers(CollectionHelper.listOf(filesIdentifiers));
 	}
 	
 	@Override
 	public Collection<T> readByFiles(Collection<File> files) {
-		return CollectionHelperImpl.__isEmpty__(files) ? null : readByFilesIdentifiers(files.stream().map(File::getIdentifier).collect(Collectors.toList()));
+		return CollectionHelper.isEmpty(files) ? null : readByFilesIdentifiers(files.stream().map(File::getIdentifier).collect(Collectors.toList()));
 	}
 	
 	@Override 
 	public Collection<T> readByFiles(File... files) {
-		return ArrayHelperImpl.__isEmpty__(files) ? null : readByFiles(CollectionHelperImpl.__instanciate__(files));
+		return ArrayHelperImpl.__isEmpty__(files) ? null : readByFiles(CollectionHelper.listOf(files));
 	}
 	
 	@Override
 	public T readByFileIdentifier(String fileIdentifier) {
-		return CollectionHelperImpl.__getFirst__(readByFilesIdentifiers(fileIdentifier));
+		return CollectionHelper.getFirst(readByFilesIdentifiers(fileIdentifier));
 	}
 	
 	@Override
 	public T readByFile(File file) {
-		return CollectionHelperImpl.__getFirst__(readByFiles(file));
+		return CollectionHelper.getFirst(readByFiles(file));
 	}
 	
 	@Override

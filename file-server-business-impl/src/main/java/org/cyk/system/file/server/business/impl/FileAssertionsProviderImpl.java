@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.cyk.system.file.server.business.api.FileAssertionsProvider;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.function.Function;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.assertion.AbstractAssertionsProviderForImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
 
@@ -19,16 +20,16 @@ public class FileAssertionsProviderImpl extends AbstractAssertionsProviderForImp
 					if(FileBusinessImpl.ROOT_FOLDER_PATH == null)
 						throw new RuntimeException("Root folder is required");
 				}
-				if(__injectStringHelper__().isBlank(file.getUniformResourceLocator())) {
+				if(StringHelper.isBlank(file.getUniformResourceLocator())) {
 					//bytes are required
-					__injectAssertionBuilderNull__().setIsAffirmation(Boolean.FALSE).setFieldValueGetter(file, File.FIELD_BYTES)
-						.setIsThrownWhenValueIsNotTrue(Boolean.TRUE).execute();					
+					//__injectAssertionBuilderNull__().setIsAffirmation(Boolean.FALSE).setFieldValueGetter(file, File.FIELD_BYTES)
+					//	.setIsThrownWhenValueIsNotTrue(Boolean.TRUE).execute();					
 				}else {
 					
 				}
 				/*
 				String sha1 = file.getSha1();
-				if(__inject__(StringHelper.class).isBlank(sha1)) {
+				if(StringHelper.isBlank(sha1)) {
 					byte[] bytes = file.getBytes();
 					if(bytes==null) {
 						
@@ -36,7 +37,7 @@ public class FileAssertionsProviderImpl extends AbstractAssertionsProviderForImp
 						file.setSha1(new String(new DigestUtils(MessageDigestAlgorithms.SHA_1).digestAsHex(bytes)));
 				}
 				
-				if(__injectStringHelper__().isNotBlank(file.getSha1())) {
+				if(StringHelper.isNotBlank(file.getSha1())) {
 					
 				}
 				*/

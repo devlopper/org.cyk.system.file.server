@@ -14,7 +14,7 @@ import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.identifier.resource.UniformResourceIdentifierStringBuilder;
 import org.cyk.utility.instance.AbstractInstanceBuilderImpl;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.cyk.utility.string.StringHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 
 @org.cyk.system.file.server.annotation.System @Server
 public class InstanceBuilderImpl extends AbstractInstanceBuilderImpl implements Serializable {
@@ -28,7 +28,7 @@ public class InstanceBuilderImpl extends AbstractInstanceBuilderImpl implements 
 		if(source instanceof File && destination instanceof FileDto) {
 			File persistence = (File) source;
 			FileDto representation = (FileDto) destination;
-			if(__inject__(StringHelper.class).isBlank(representation.getUniformResourceLocator()) 
+			if(StringHelper.isBlank(representation.getUniformResourceLocator()) 
 					&& (fields == null || fields.contains("uniformResourceLocator"))) {
 				HttpServletRequest request = __inject__(HttpServletRequest.class);
 				String uri = __inject__(UniformResourceIdentifierStringBuilder.class).setRequest(request)

@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.object.__static__.representation.Action;
+import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.server.representation.AbstractMapperSourceDestinationImpl;
-import org.cyk.utility.string.Strings;
 import org.mapstruct.Mapper;
 
 @Mapper

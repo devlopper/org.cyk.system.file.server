@@ -15,12 +15,13 @@ import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.system.file.server.representation.entities.FileDtoCollection;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
+import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.number.Intervals;
-import org.cyk.utility.number.NumberHelper;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
-import org.cyk.utility.string.Strings;
 
 @ApplicationScoped
 public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<File,FileBusiness,FileDto,FileDtoCollection> implements FileRepresentation,Serializable {
@@ -30,12 +31,12 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	public Response createFromDirectories(List<String> directories,/*List<String> mimeTypeTypes,List<String> mimeTypeSubTypes,List<String> mimeTypes,*/List<String> extensions
 			,List<String> sizes,Integer batchSize,Integer count) {
 		Intervals intervals = null;
-		if(__injectCollectionHelper__().isNotEmpty(sizes)) {
+		if(CollectionHelper.isNotEmpty(sizes)) {
 			intervals = __inject__(Intervals.class);
 			for(String index : sizes) {
 				String[] extremities = index.split(";");
 				if(extremities.length == 2) {
-					intervals.add(__inject__(NumberHelper.class).getInteger(extremities[0]), __inject__(NumberHelper.class).getInteger(extremities[1]));
+					intervals.add(NumberHelper.getInteger(extremities[0]), NumberHelper.getInteger(extremities[1]));
 				}
 			}
 		}
@@ -55,7 +56,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		FileBytes fileBytes = __inject__(FileBytesBusiness.class).findByFile(file);
 	    ResponseBuilder response = Response.ok(fileBytes.getBytes());
 	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
-	    response.header(HttpHeaders.CONTENT_DISPOSITION, (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
+	    response.header("Content-Disposition", (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
 	    		+"="+file.getNameAndExtension());
 	    Long size = file.getSize();
 	    if(size!=null && size > 0)

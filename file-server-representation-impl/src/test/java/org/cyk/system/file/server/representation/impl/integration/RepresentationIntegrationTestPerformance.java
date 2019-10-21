@@ -9,11 +9,10 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.clazz.ClassInstancesRuntime;
+import org.cyk.utility.__kernel__.klass.Property;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
-import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
-import org.cyk.utility.string.StringHelper;
 import org.junit.Test;
 
 public class RepresentationIntegrationTestPerformance extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment {
@@ -21,7 +20,7 @@ public class RepresentationIntegrationTestPerformance extends AbstractRepresenta
 	
 	@Test
 	public void get_whereNameContains() throws Exception{
-		__inject__(ClassInstancesRuntime.class).get(File.class).setIsActionable(Boolean.FALSE);//FIXME
+		Property.setProperty(File.class, Property.ACTIONABLE, Boolean.FALSE);
 		Integer numberOfFiles = 1000;
 		System.out.println("Generating files : "+numberOfFiles);
 		Collection<File> files = new ArrayList<>();
@@ -44,18 +43,12 @@ public class RepresentationIntegrationTestPerformance extends AbstractRepresenta
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer from,Integer count) {
 		System.out.print("Getting files from "+from+" , count "+count+" : ");
-		FilterDto filter = __inject__(StringHelper.class).isEmpty(string) ? null : new FilterDto().setKlass(File.class).addField(File.FIELD_NAME, string);
+		FilterDto filter = StringHelper.isEmpty(string) ? null : new FilterDto().useKlass(File.class).addField(File.FIELD_NAME, string);
 		Long t = System.currentTimeMillis();
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,new Long(from),new Long(count),null,filter).getEntity())
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(Boolean.TRUE,Long.valueOf(from),Long.valueOf(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 		t = System.currentTimeMillis() - t;
 		System.out.println(t);
 	}
-	
-	@Override
-	protected <ENTITY> Class<? extends AbstractEntityCollection<ENTITY>> __getEntityCollectionClass__(Class<ENTITY> aClass) {
-		return null;
-	}
-	
 
 }

@@ -50,7 +50,7 @@ public class BusinessIntegrationTestPerformance extends AbstractBusinessArquilli
 		assertThat(__inject__(FileBusiness.class).find(new Properties().setQueryFilters(filter)))
 			.as("number of file from collection where name contains <<"+string+">> is incorrect").hasSize(expectedCount);
 		assertThat(__inject__(FileBusiness.class).count(new Properties().setQueryFilters(filter)))
-		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(new Long(expectedCount));
+		.as("number of file from count where name contains <<"+string+">> is incorrect").isEqualTo(Long.valueOf(expectedCount));
 		t = System.currentTimeMillis() - t;
 		System.out.println(t);
 	}
