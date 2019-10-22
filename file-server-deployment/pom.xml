@@ -16,6 +16,7 @@
 	
 	<properties>
 		<microprofile.archive.name>file-server</microprofile.archive.name>
+		<web.context>file/server</web.context>
 	</properties>
 	
 	<dependencies>

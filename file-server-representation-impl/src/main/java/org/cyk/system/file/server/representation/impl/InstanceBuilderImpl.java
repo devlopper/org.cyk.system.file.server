@@ -17,6 +17,7 @@ import org.cyk.utility.server.representation.RepresentationEntity;
 import org.cyk.utility.__kernel__.string.StringHelper;
 
 @org.cyk.system.file.server.annotation.System @Server
+@Deprecated
 public class InstanceBuilderImpl extends AbstractInstanceBuilderImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 

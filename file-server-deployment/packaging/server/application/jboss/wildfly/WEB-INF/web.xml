@@ -5,8 +5,23 @@
 	id="WebApp_ID" version="3.1">
 	
 	<context-param>
-		<param-name>cyk.parameter.system.name</param-name>
-		<param-value>${cyk.parameter.system.name}</param-value>
+		<param-name>cyk.variable.system.identifier</param-name>
+		<param-value>file.management.system.server</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.name</param-name>
+		<param-value>File Management System Server</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.web.context</param-name>
+		<param-value>${jboss-web.context-root}</param-value>
+	</context-param>	
+	
+	<context-param>
+		<param-name>cyk.variable.swagger.bean.config.resource.package</param-name>
+		<param-value>org.cyk.system.file.server.representation.api</param-value>
 	</context-param>
 		
 </web-app>

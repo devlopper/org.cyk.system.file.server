@@ -8,7 +8,7 @@ import org.cyk.utility.__kernel__.annotation.Default;
 import org.cyk.utility.field.AbstractFieldValueCopyFieldsGetterImpl;
 import org.cyk.utility.field.Fields;
 
-@Default
+@Default @Deprecated
 public class FieldValueCopyFieldsGetterImpl extends AbstractFieldValueCopyFieldsGetterImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
