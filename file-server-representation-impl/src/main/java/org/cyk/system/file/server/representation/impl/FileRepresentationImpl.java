@@ -1,13 +1,16 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
@@ -18,6 +21,7 @@ import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.server.persistence.query.filter.FilterDto;
@@ -53,8 +57,21 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	@Override
 	public Response download(String identifier,String isInline) {
 		File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
-		FileBytes fileBytes = __inject__(FileBytesBusiness.class).findByFile(file);
-	    ResponseBuilder response = Response.ok(fileBytes.getBytes());
+		if(file == null)
+			return Response.status(Status.NOT_FOUND).build();
+		byte[] bytes = null;
+		if(StringHelper.isBlank(file.getUniformResourceLocator())) {
+			FileBytes fileBytes = __inject__(FileBytesBusiness.class).findByFile(file);
+			bytes = fileBytes.getBytes();
+		}else {
+			try {
+				URI uri = new URI(file.getUniformResourceLocator());
+				bytes = IOUtils.toByteArray(uri.toURL());
+			} catch (Exception exception) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exception.toString()).build();
+			}
+		}
+		ResponseBuilder response = Response.ok(bytes);
 	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
 	    response.header("Content-Disposition", (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
 	    		+"="+file.getNameAndExtension());

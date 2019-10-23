@@ -16,7 +16,8 @@
 	
 	<properties>
 		<microprofile.archive.name>file-server</microprofile.archive.name>
-		<web.context>file/server</web.context>
+		<jboss-web.context-root>file/server</jboss-web.context-root>
+		<web.context>${jboss-web.context-root}</web.context>
 	</properties>
 	
 	<dependencies>
