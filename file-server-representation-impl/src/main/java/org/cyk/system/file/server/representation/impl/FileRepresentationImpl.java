@@ -73,7 +73,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		}
 		ResponseBuilder response = Response.ok(bytes);
 	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
-	    response.header("Content-Disposition", (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
+	    response.header(HttpHeaders.CONTENT_DISPOSITION, (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
 	    		+"="+file.getNameAndExtension());
 	    Long size = file.getSize();
 	    if(size!=null && size > 0)

@@ -39,7 +39,7 @@ public class FileUploaderRestEasy extends AbstractObject implements Serializable
 		Collection<FileDto> fileDtos = null;
 		for(InputPart inputPart : multipartInput.getParts()) {
 			@SuppressWarnings("unchecked")
-			String contentDisposition = (String) CollectionHelper.getFirst(__inject__(MapHelper.class).get(inputPart.getHeaders(), List.class, "Content-Disposition"));
+			String contentDisposition = (String) CollectionHelper.getFirst(__inject__(MapHelper.class).get(inputPart.getHeaders(), List.class, HttpHeaders.CONTENT_DISPOSITION));
 			String nameAndExtension = StringUtils.substringBetween(contentDisposition, ConstantString.FILENAME+"=\"","\"");
 			String mimeType = (String) CollectionHelper.getFirst(inputPart.getHeaders().get(HttpHeaders.CONTENT_TYPE));
 			if(StringHelper.isNotBlank(nameAndExtension)) {

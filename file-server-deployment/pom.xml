@@ -17,7 +17,7 @@
 	<properties>
 		<microprofile.archive.name>file-server</microprofile.archive.name>
 		<jboss-web.context-root>file/server</jboss-web.context-root>
-		<web.context>${jboss-web.context-root}</web.context>
+		<web.context>/${jboss-web.context-root}</web.context>
 	</properties>
 	
 	<dependencies>
@@ -31,6 +31,18 @@
 			<artifactId>jee-utility-server-deployment</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-	</dependencies>		
+	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>kwordz</id>
+			<properties>
+				<cyk.variable.system.identifier>kwordz.file.server</cyk.variable.system.identifier>
+				<cyk.variable.system.name>KwordZ File Management System</cyk.variable.system.name>
+				<jboss-web.context-root>kwordz/file/server</jboss-web.context-root>
+				<data.source.schema.name>kwordz_file</data.source.schema.name>
+			</properties>
+		</profile>
+	</profiles>		
 
 </project>

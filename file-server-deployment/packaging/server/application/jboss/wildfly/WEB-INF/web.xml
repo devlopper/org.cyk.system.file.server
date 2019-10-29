@@ -4,20 +4,26 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	id="WebApp_ID" version="3.1">
 	
+	<display-name>${cyk.variable.system.name}</display-name>
+	
+	<!-- System -->
+	
 	<context-param>
 		<param-name>cyk.variable.system.identifier</param-name>
-		<param-value>file.management.system.server</param-value>
+		<param-value>{cyk.variable.system.identifier}</param-value>
 	</context-param>
 	
 	<context-param>
 		<param-name>cyk.variable.system.name</param-name>
-		<param-value>File Management System Server</param-value>
+		<param-value>${cyk.variable.system.name}</param-value>
 	</context-param>
 	
 	<context-param>
 		<param-name>cyk.variable.system.web.context</param-name>
 		<param-value>${jboss-web.context-root}</param-value>
 	</context-param>	
+	
+	<!-- Swagger -->
 	
 	<context-param>
 		<param-name>cyk.variable.swagger.enabled</param-name>
@@ -26,7 +32,7 @@
 	
 	<context-param>
 		<param-name>cyk.variable.swagger.bean.config.resource.package</param-name>
-		<param-value>org.cyk.system.file.server.representation.api</param-value>
+		<param-value>org.cyk.utility.server.representation.impl,org.cyk.system.file.server.representation.api</param-value>
 	</context-param>
-		
+	
 </web-app>
