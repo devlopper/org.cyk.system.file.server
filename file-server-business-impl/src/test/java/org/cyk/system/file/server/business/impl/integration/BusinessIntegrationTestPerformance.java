@@ -9,7 +9,7 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessArquillianIntegrationTestWithDefaultDeployment;
-import org.cyk.utility.server.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.junit.Test;
 
 public class BusinessIntegrationTestPerformance extends AbstractBusinessArquillianIntegrationTestWithDefaultDeployment {

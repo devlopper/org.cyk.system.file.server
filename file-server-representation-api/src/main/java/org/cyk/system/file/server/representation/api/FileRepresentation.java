@@ -12,14 +12,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.server.representation.RepresentationEntity;
 
 @Path(FileRepresentation.PATH)
-public interface FileRepresentation extends RepresentationEntity<File,FileDto,FileDtoCollection> {
+public interface FileRepresentation extends RepresentationEntity<FileDto> {
 	
 	@POST
 	@Path(PATH_CREATE_FROM_DIRECTORIES)

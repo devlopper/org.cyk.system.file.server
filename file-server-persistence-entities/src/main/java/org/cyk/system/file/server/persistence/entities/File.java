@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.cyk.utility.server.persistence.jpa.AbstractIdentifiedByString;
+import org.cyk.utility.__kernel__.object.__static__.persistence.AbstractIdentifiableSystemScalarStringImpl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
 @Table(name=File.TABLE)
-public class File extends AbstractIdentifiedByString implements Serializable {
+public class File extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

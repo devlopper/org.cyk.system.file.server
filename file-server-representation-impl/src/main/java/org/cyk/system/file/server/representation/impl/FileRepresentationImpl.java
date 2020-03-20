@@ -17,18 +17,18 @@ import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.system.file.server.representation.entities.FileDtoCollection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
+import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.persistence.query.filter.FilterDto;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.number.Intervals;
-import org.cyk.utility.server.persistence.query.filter.FilterDto;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
 @ApplicationScoped
-public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<File,FileBusiness,FileDto,FileDtoCollection> implements FileRepresentation,Serializable {
+public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<FileDto> implements FileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -51,7 +51,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	
 	@Override
 	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter) {
-		return getMany(isPageable, from, count, fields, new FilterDto().setValue(globalFilter));
+		return getMany(null,isPageable, from, count, fields, new FilterDto().setValue(globalFilter));
 	}
 	
 	@Override
@@ -73,8 +73,9 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		}
 		ResponseBuilder response = Response.ok(bytes);
 	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
+	    String name = FileHelper.concatenateNameAndExtension(file.getName(), file.getExtension());
 	    response.header(HttpHeaders.CONTENT_DISPOSITION, (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
-	    		+"="+file.getNameAndExtension());
+	    		+"="+name);
 	    Long size = file.getSize();
 	    if(size!=null && size > 0)
 	    	response.header(HttpHeaders.CONTENT_LENGTH, size);

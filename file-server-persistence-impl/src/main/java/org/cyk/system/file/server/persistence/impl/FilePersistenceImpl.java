@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
@@ -17,16 +18,18 @@ import org.cyk.system.file.server.persistence.api.FileTextPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.computation.LogicalOperator;
+import org.cyk.utility.__kernel__.file.FileHelper;
+import org.cyk.utility.__kernel__.persistence.query.QueryContext;
+import org.cyk.utility.__kernel__.persistence.query.QueryStringHelper;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
-import org.cyk.utility.server.persistence.query.PersistenceQueryContext;
-import org.cyk.utility.server.persistence.query.filter.Filter;
 
 @ApplicationScoped
 public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> implements FilePersistence,Serializable {
@@ -43,6 +46,11 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 				+ " OR EXISTS(SELECT subTuple FROM FileText subTuple WHERE subTuple.file = tuple AND lower(subTuple.text) LIKE lower(:nameOrText)) "
 				+ " ORDER BY tuple.name ASC");
 		addQueryCollectInstances(readUniformResourceLocators, "SELECT tuple.uniformResourceLocator FROM File tuple",String.class);
+		
+		addQueryCollectInstances(readByFiltersLike, 
+				"SELECT file FROM File file "
+				+ " WHERE ("+QueryStringHelper.formatTupleFieldLikeOrTokens("file", "name","name",4,LogicalOperator.AND)+") "
+				+ " ORDER BY file.name ASC");
 	}
 	
 	@Override
@@ -113,7 +121,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	}
 	
 	@Override
-	protected Object[] __getQueryParameters__(PersistenceQueryContext queryContext, Properties properties,Object... objects) {
+	protected Object[] __getQueryParameters__(QueryContext queryContext, Properties properties,Object... objects) {
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readBySha1))
 			return new Object[]{File.FIELD_SHA1, objects[0]};
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readWhereNameOrTextContains))
@@ -122,6 +130,15 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 			if(Boolean.TRUE.equals(ArrayHelper.isEmpty(objects)))
 				objects = new Object[] {CollectionHelper.isEmpty(queryContext.getFilter().getFields()) ? queryContext.getFilter().getValue() : queryContext.getFilterByKeysValue(File.FIELD_NAME)};
 			return new Object[]{File.FIELD_NAME, "%"+objects[0]+"%"};
+		}
+		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFiltersLike)) {
+			if(ArrayHelper.isEmpty(objects)) {
+				List<String> fileTokens = queryContext.getFieldValueLikes(File.FIELD_NAME,5);
+				objects = new Object[] {fileTokens.get(0),fileTokens.get(1),fileTokens.get(2),fileTokens.get(3),fileTokens.get(4)};
+			}
+			int index = 0;
+			objects = new Object[]{"name",objects[index++],"name1",objects[index++],"name2",objects[index++],"name3",objects[index++],"name4",objects[index++]};
+			return objects;
 		}
 		return super.__getQueryParameters__(queryContext, properties, objects);
 	}

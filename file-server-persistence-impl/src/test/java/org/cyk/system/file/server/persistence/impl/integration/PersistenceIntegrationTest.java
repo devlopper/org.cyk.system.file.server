@@ -12,7 +12,7 @@ import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.server.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceArquillianIntegrationTestWithDefaultDeployment;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.junit.Test;
