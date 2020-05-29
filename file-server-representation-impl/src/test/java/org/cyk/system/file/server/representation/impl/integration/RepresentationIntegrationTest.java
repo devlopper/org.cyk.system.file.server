@@ -8,7 +8,7 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.__kernel__.persistence.query.filter.FilterDto;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.server.representation.AbstractRepresentationFunctionReaderImpl;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Ignore;
@@ -142,7 +142,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 	
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer count) {
-		FilterDto filter = new FilterDto().useKlass(File.class).addField(File.FIELD_NAME, string);
+		Filter.Dto filter = new Filter.Dto().useKlass(File.class).addField(File.FIELD_NAME, string);
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,Boolean.TRUE,0l,Long.valueOf(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,Long.valueOf(count),null,string).getEntity())

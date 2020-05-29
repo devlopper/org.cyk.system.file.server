@@ -15,9 +15,33 @@
 	<packaging>war</packaging>
 	
 	<properties>
-		<microprofile.archive.name>file-server</microprofile.archive.name>
-		<jboss-web.context-root>file/server</jboss-web.context-root>
+		<cyk.variable.system.identifier>file</cyk.variable.system.identifier>
+		<cyk.variable.system.name>File Manager</cyk.variable.system.name>
+		<cyk.variable.system.version>0.1</cyk.variable.system.version>
+		
+		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
+		<!-- This is set here because of google replarer plugin -->
+		<jboss-web.context-root>${cyk.variable.system.identifier}/server</jboss-web.context-root>
 		<web.context>/${jboss-web.context-root}</web.context>
+		
+		<!-- Development -->
+		<data.source.mysql.dev.user>root</data.source.mysql.dev.user>
+		<data.source.mysql.dev.password>root</data.source.mysql.dev.password>
+		<!-- Test -->
+		<!--
+		<server.application.jboss.wildfly.test.hostname>51.254.200.136</server.application.jboss.wildfly.test.hostname>
+		<server.application.jboss.wildfly.test.username>dgbf</server.application.jboss.wildfly.test.username>
+		-->
+		<!-- Production -->
+		<!--
+		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
+		<data.base.management.system.mysql.prod.sid>sib</data.base.management.system.mysql.prod.sid>
+		<data.source.mysql.prod.user>collectif</data.source.mysql.prod.user>
+		
+		<server.application.jboss.wildfly.prod.hostname>51.254.200.136</server.application.jboss.wildfly.prod.hostname>
+		<server.application.jboss.wildfly.prod.username>dgbf</server.application.jboss.wildfly.prod.username>
+		<deployment.server.standalone.thorntail.prod.host>51.254.200.136</deployment.server.standalone.thorntail.prod.host>
+		-->
 	</properties>
 	
 	<dependencies>
@@ -44,5 +68,4 @@
 			</properties>
 		</profile>
 	</profiles>		
-
 </project>

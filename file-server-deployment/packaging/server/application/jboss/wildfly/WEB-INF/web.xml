@@ -10,7 +10,17 @@
 	
 	<context-param>
 		<param-name>cyk.variable.system.identifier</param-name>
-		<param-value>{cyk.variable.system.identifier}</param-value>
+		<param-value>${cyk.variable.system.identifier}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp</param-name>
+		<param-value>${cyk.variable.system.timestamp}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp.as.string</param-name>
+		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
 	</context-param>
 	
 	<context-param>
@@ -19,9 +29,24 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.host</param-name>
+		<param-value>${cyk.variable.system.host}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.port</param-name>
+		<param-value>${cyk.variable.system.port}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.web.context</param-name>
 		<param-value>${jboss-web.context-root}</param-value>
 	</context-param>	
+	
+	<context-param>
+		<param-name>cyk.variable.system.logging.throwable.print.stack.trace</param-name>
+		<param-value>${cyk.variable.system.logging.throwable.print.stack.trace}</param-value>
+	</context-param>
 	
 	<!-- Swagger -->
 	

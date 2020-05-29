@@ -10,7 +10,7 @@ import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.klass.Property;
-import org.cyk.utility.__kernel__.persistence.query.filter.FilterDto;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public class RepresentationIntegrationTestPerformance extends AbstractRepresenta
 	@SuppressWarnings("unchecked")
 	private void assertGetMany_whereNameContains(String string,Integer from,Integer count) {
 		System.out.print("Getting files from "+from+" , count "+count+" : ");
-		FilterDto filter = StringHelper.isEmpty(string) ? null : new FilterDto().useKlass(File.class).addField(File.FIELD_NAME, string);
+		Filter.Dto filter = StringHelper.isEmpty(string) ? null : new Filter.Dto().useKlass(File.class).addField(File.FIELD_NAME, string);
 		Long t = System.currentTimeMillis();
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,Boolean.TRUE,Long.valueOf(from),Long.valueOf(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);

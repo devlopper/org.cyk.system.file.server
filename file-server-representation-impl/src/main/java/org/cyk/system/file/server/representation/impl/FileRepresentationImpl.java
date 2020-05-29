@@ -21,7 +21,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.FilterDto;
+import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.number.Intervals;
@@ -51,7 +51,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	
 	@Override
 	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter) {
-		return getMany(null,isPageable, from, count, fields, new FilterDto().setValue(globalFilter));
+		return getMany(null,isPageable, from, count, fields, new Filter.Dto().setValue(globalFilter));
 	}
 	
 	@Override
