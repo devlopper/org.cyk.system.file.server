@@ -29,7 +29,7 @@
 		<!-- Production -->
 		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
 		<data.source.mysql.prod.user>root</data.source.mysql.prod.user>
-		<data.source.mysql.prod.password>@28B06L82</data.source.mysql.prod.password>
+		<data.source.mysql.prod.password>9n8fxBP?Hq}RW2HPh{6</data.source.mysql.prod.password>
 	</properties>
 	
 	<dependencies>
