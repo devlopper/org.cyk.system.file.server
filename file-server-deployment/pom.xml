@@ -25,23 +25,11 @@
 		<web.context>/${jboss-web.context-root}</web.context>
 		
 		<!-- Development -->
-		<data.source.mysql.dev.user>root</data.source.mysql.dev.user>
-		<data.source.mysql.dev.password>root</data.source.mysql.dev.password>
-		<!-- Test -->
-		<!--
-		<server.application.jboss.wildfly.test.hostname>51.254.200.136</server.application.jboss.wildfly.test.hostname>
-		<server.application.jboss.wildfly.test.username>dgbf</server.application.jboss.wildfly.test.username>
-		-->
-		<!-- Production -->
-		<!--
-		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
-		<data.base.management.system.mysql.prod.sid>sib</data.base.management.system.mysql.prod.sid>
-		<data.source.mysql.prod.user>collectif</data.source.mysql.prod.user>
 		
-		<server.application.jboss.wildfly.prod.hostname>51.254.200.136</server.application.jboss.wildfly.prod.hostname>
-		<server.application.jboss.wildfly.prod.username>dgbf</server.application.jboss.wildfly.prod.username>
-		<deployment.server.standalone.thorntail.prod.host>51.254.200.136</deployment.server.standalone.thorntail.prod.host>
-		-->
+		<!-- Production -->
+		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
+		<data.source.mysql.prod.user>root</data.source.mysql.prod.user>
+		<data.source.mysql.prod.password>@28B06L82</data.source.mysql.prod.password>
 	</properties>
 	
 	<dependencies>
