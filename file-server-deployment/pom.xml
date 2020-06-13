@@ -29,8 +29,8 @@
 		
 		<!-- Production -->
 		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
-		<data.source.mysql.prod.user>root</data.source.mysql.prod.user>
-		<data.source.mysql.prod.password>9n8fxBP?Hq}RW2HPh{6'</data.source.mysql.prod.password>
+		<data.source.mysql.prod.user>kwordz</data.source.mysql.prod.user>
+		<data.source.mysql.prod.password>kwordz@2o2O</data.source.mysql.prod.password>
 		
 		<server.application.jboss.wildfly.prod.hostname>${data.base.management.system.mysql.prod.hostname}</server.application.jboss.wildfly.prod.hostname>
 		<server.application.jboss.wildfly.prod.username>YmHbUj9LxQ2TCqY9</server.application.jboss.wildfly.prod.username>
