@@ -60,5 +60,12 @@
 				<data.source.schema.name>kwordz_file</data.source.schema.name>
 			</properties>
 		</profile>
-	</profiles>		
+	</profiles>
+	
+	<repositories>
+		<repository>
+			<id>repository.devkoms.com</id>
+			<url>ftp://devkoms.com/repository/</url>
+		</repository>
+	</repositories>
 </project>
