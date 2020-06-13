@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
-import org.cyk.utility.system.node.SystemNodeServer;
 
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener implements Serializable {
@@ -13,7 +12,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		__inject__(SystemNodeServer.class).setName("Gestion des fichiers");
+		__inject__(org.cyk.system.file.server.persistence.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
 	}
 	
 	@Override

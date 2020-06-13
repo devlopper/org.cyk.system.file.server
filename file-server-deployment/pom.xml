@@ -24,9 +24,10 @@
 		<jboss-web.context-root>${cyk.variable.system.identifier}/server</jboss-web.context-root>
 		<web.context>/${jboss-web.context-root}</web.context>
 		
+		<data.source.schema.name>kwordz_file</data.source.schema.name>
 		<!-- Development -->
 		<data.source.mysql.dev.user>root</data.source.mysql.dev.user>
-		
+		<data.source.mysql.dev.password>root</data.source.mysql.dev.password>
 		<!-- Production -->
 		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
 		<data.source.mysql.prod.user>kwordz</data.source.mysql.prod.user>
