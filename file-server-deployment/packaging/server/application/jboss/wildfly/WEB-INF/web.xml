@@ -29,6 +29,11 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>cyk.variable.system.version</param-name>
+		<param-value>${cyk.variable.system.version}</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>cyk.variable.system.host</param-name>
 		<param-value>${cyk.variable.system.host}</param-value>
 	</context-param>

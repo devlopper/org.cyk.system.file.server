@@ -21,12 +21,4 @@
 			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
-	
-	<repositories>
-	    <repository>
-	        <id>cyk</id>
-	        <url>https://rawgit.com/devlopper/artifact.maven/master</url>
-	    </repository>
-	</repositories>
-	
 </project>

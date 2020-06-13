@@ -25,6 +25,7 @@
 		<web.context>/${jboss-web.context-root}</web.context>
 		
 		<!-- Development -->
+		<data.source.mysql.dev.user>root</data.source.mysql.dev.user>
 		
 		<!-- Production -->
 		<data.base.management.system.mysql.prod.hostname>51.254.200.136</data.base.management.system.mysql.prod.hostname>
