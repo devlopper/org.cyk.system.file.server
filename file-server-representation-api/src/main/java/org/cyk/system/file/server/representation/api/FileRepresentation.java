@@ -41,7 +41,7 @@ public interface FileRepresentation extends RepresentationEntity<FileDto> {
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	Response getManyByGlobalFilter(@QueryParam(PARAMETER_IS_PAGEABLE) Boolean isPageable,@QueryParam(PARAMETER_FROM) Long from,@QueryParam(PARAMETER_COUNT) Long count
-			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter);
+			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter,@QueryParam("loggableAsInfo")Boolean loggableAsInfo);
 	
 	@GET
 	@Path(PATH_DOWNLOAD_ONE)

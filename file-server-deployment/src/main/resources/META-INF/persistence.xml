@@ -1,7 +1,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd" version="2.0">
   
     <persistence-unit name="filePersistenceUnit" transaction-type="JTA">
-    	<jta-data-source>${data.source.jndi.name}</jta-data-source>
+    	<jta-data-source>java:/file/server/dataSource</jta-data-source>
     	<class>org.cyk.system.file.server.persistence.entities.File</class>
     	<class>org.cyk.system.file.server.persistence.entities.FileBytes</class>
     	<class>org.cyk.system.file.server.persistence.entities.FileText</class>
@@ -11,6 +11,5 @@
 			<property name="hibernate.show_sql" value="false"/>
 			<property name="hibernate.format_sql" value="false"/>
 		</properties>
-
     </persistence-unit>  
 </persistence>

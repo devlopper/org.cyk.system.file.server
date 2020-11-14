@@ -23,6 +23,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		String path = ConfigurationHelper.getValueAsString("cyk.file.root.folder.path");
 		if(StringHelper.isNotBlank(path))
 			FileBusinessImpl.ROOT_FOLDER_PATH = Paths.get(path);
+		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
 	}
 	
 }

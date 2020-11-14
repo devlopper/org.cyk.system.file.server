@@ -145,7 +145,7 @@ public class RepresentationIntegrationTest extends AbstractRepresentationArquill
 		Filter.Dto filter = new Filter.Dto().useKlass(File.class).addField(File.FIELD_NAME, string);
 		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getMany(null,Boolean.TRUE,0l,Long.valueOf(count),null,filter).getEntity())
 				.as("number of file where name contains <<"+string+">> is incorrect").hasSize(count);
-		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,Long.valueOf(count),null,string).getEntity())
+		assertThat((Collection<FileDto>)__inject__(FileRepresentation.class).getManyByGlobalFilter(Boolean.TRUE,0l,Long.valueOf(count),null,string,null).getEntity())
 		.as("number of file where global filter <<"+string+">> is incorrect").hasSize(count);
 	}
 

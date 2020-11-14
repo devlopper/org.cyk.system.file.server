@@ -95,5 +95,4 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"file";
 	
 	/**/
-
 }

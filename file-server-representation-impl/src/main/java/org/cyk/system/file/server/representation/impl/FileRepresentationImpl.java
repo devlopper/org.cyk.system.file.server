@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
+import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
@@ -21,7 +22,9 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
+import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.__kernel__.representation.Arguments;
+import org.cyk.utility.__kernel__.representation.EntityReader;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.number.Intervals;
@@ -50,8 +53,15 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	}
 	
 	@Override
-	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter) {
-		return getMany(null,isPageable, from, count, fields, new Filter.Dto().setValue(globalFilter));
+	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter,Boolean loggableAsInfo) {
+		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class);
+		arguments.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_VIEW_01)
+				.addFilterField(File.FIELD_NAME, globalFilter)
+				.setFirstTupleIndex(NumberHelper.getInteger(from))
+				.setNumberOfTuples(NumberHelper.getInteger(count))
+				).setCountable(Boolean.TRUE).setLoggableAsInfo(loggableAsInfo);
+		return EntityReader.getInstance().read(arguments);
+		//return getMany(null,isPageable, from, count, fields, new Filter.Dto().setValue(globalFilter));
 	}
 	
 	@Override
@@ -80,6 +90,5 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	    if(size!=null && size > 0)
 	    	response.header(HttpHeaders.CONTENT_LENGTH, size);
 	    return response.build();
-	}
-	
+	}	
 }
