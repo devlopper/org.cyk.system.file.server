@@ -1,20 +1,13 @@
 package org.cyk.system.file.server.persistence.api;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.cyk.system.file.server.persistence.api.query.FileQuerier;
-import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.entities.FileBytes;
-import org.cyk.system.file.server.persistence.entities.FileText;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
-import org.cyk.utility.__kernel__.klass.PersistableClassesGetter;
 import org.cyk.utility.__kernel__.persistence.query.EntityCounter;
 import org.cyk.utility.__kernel__.persistence.query.EntityReader;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
 import org.cyk.utility.__kernel__.persistence.query.QueryResultMapper;
 
 @ApplicationScoped
@@ -30,10 +23,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	public void __destroy__(Object object) {}	
 
 	public static void initialize() {
-		DependencyInjection.setQualifierClassTo(org.cyk.system.file.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class);
-		PersistableClassesGetter.COLLECTION.set(List.of(FileBytes.class,FileText.class,File.class));
-		
-		FileQuerier.initialize();
-		QueryHelper.scan(List.of(FileQuerier.class.getPackage()));	
+		DependencyInjection.setQualifierClassTo(org.cyk.system.file.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class);	
 	}
 }

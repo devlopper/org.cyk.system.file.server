@@ -3,118 +3,91 @@ package org.cyk.system.file.server.business.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.commons.io.FileUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
 import org.cyk.system.file.server.business.api.FileTextBusiness;
-import org.cyk.system.file.server.persistence.api.FileBytesPersistence;
-import org.cyk.system.file.server.persistence.api.FilePersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.file.FileHelper;
-import org.cyk.utility.__kernel__.file.Files;
-import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.__kernel__.string.RegularExpressionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
+import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
+import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.number.Intervals;
-import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
-import org.cyk.utility.server.business.BusinessFunctionCreator;
-import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 @ApplicationScoped
-public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersistence> implements FileBusiness,Serializable {
+public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> implements FileBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static Path ROOT_FOLDER_PATH;
 	
 	@Override
-	protected void __listenExecuteCreateBefore__(File file, Properties properties, BusinessFunctionCreator function) {
-		super.__listenExecuteCreateBefore__(file, properties, function);
-		function.addTryBeginRunnables(new Runnable() {
-			@Override
-			public void run() {
-				byte[] bytes = file.getBytes();
-				if(StringHelper.isBlank(file.getSha1())) {
-					if(bytes==null) {
-						//TODO get a way to compute sha1 : from given uniform resource locator
-					}else
-						file.setSha1(new String(new DigestUtils(MessageDigestAlgorithms.SHA_1).digestAsHex(bytes)));
-				}
-				/*
-				if(StringHelper.isNotBlank(file.getSha1())) {
-					File current = __inject__(FilePersistence.class).readBySha1(file.getSha1());
-					if(current!=null)
-						__inject__(ThrowableHelper.class).throwRuntimeException("File content already exist");
-				}
-				*/
-				String nameAndExtension = file.getNameAndExtension();
-				String extension = file.getExtension();
-								
-				if(StringHelper.isBlank(file.getName())) {
-					if(StringHelper.isNotBlank(nameAndExtension))
-						file.setName(FileHelper.getName(nameAndExtension));
-				}
-				
-				if(StringHelper.isBlank(extension)) {
-					if(StringHelper.isNotBlank(nameAndExtension))
-						file.setExtension(FileHelper.getExtension(nameAndExtension));
-				}
-				
-				if(StringHelper.isBlank(file.getMimeType())) {
-					if(StringHelper.isNotBlank(extension))
-						file.setMimeType(FileHelper.getMimeTypeByExtension(extension));
-					else if(StringHelper.isNotBlank(nameAndExtension))
-						file.setMimeType(FileHelper.getMimeTypeByNameAndExtension(nameAndExtension));
-				}
-				
-				if(file.getSize() == null) {
-					if(bytes!=null)
-						file.setSize(Long.valueOf(bytes.length));
-				}
-				
-			}
-		});
+	protected void __create__(File file) {
+		byte[] bytes = file.getBytes();
+		if(StringHelper.isBlank(file.getSha1())) {
+			if(bytes==null) {
+				//TODO get a way to compute sha1 : from given uniform resource locator
+			}else
+				file.setSha1(FileHelper.computeSha1(bytes));
+		}
 		
-		function.addTryEndRunnables(new Runnable() {
-			@Override
-			public void run() {
-				if(StringHelper.isBlank(file.getUniformResourceLocator())) {
-					if(file.getBytes()!=null) {
-						if(Boolean.TRUE.equals(file.getIsBytesAccessibleFromUniformResourceLocator())) {
-							try {
-								java.io.File __file__ = new java.io.File(ROOT_FOLDER_PATH.toFile(),file.getNameAndExtension());
-								file.setUniformResourceLocator(__file__.toURI().toString());
-								FileUtils.writeByteArrayToFile(__file__, file.getBytes());
-							} catch (IOException exception) {
-								//exception.printStackTrace();
-								throw new RuntimeException(exception);
-							}
-						}else {
-							__inject__(FileBytesBusiness.class).create(new FileBytes().setFile(file).setBytes(file.getBytes()));	
-						}
-					}	
+		String nameAndExtension = file.getNameAndExtension();
+		String extension = file.getExtension();
+						
+		if(StringHelper.isBlank(file.getName())) {
+			if(StringHelper.isNotBlank(nameAndExtension))
+				file.setName(FileHelper.getName(nameAndExtension));
+		}
+		
+		if(StringHelper.isBlank(extension)) {
+			if(StringHelper.isNotBlank(nameAndExtension))
+				file.setExtension(FileHelper.getExtension(nameAndExtension));
+		}
+		
+		if(StringHelper.isBlank(file.getMimeType())) {
+			if(StringHelper.isNotBlank(extension))
+				file.setMimeType(FileHelper.getMimeTypeByExtension(extension));
+			else if(StringHelper.isNotBlank(nameAndExtension))
+				file.setMimeType(FileHelper.getMimeTypeByNameAndExtension(nameAndExtension));
+		}
+		
+		if(file.getSize() == null) {
+			if(bytes!=null)
+				file.setSize(Long.valueOf(bytes.length));
+		}
+		
+		super.__create__(file);
+		
+		if(StringHelper.isBlank(file.getUniformResourceLocator())) {
+			if(file.getBytes()!=null) {
+				if(Boolean.TRUE.equals(file.getIsBytesAccessibleFromUniformResourceLocator())) {
+					try {
+						java.io.File __file__ = new java.io.File(ROOT_FOLDER_PATH.toFile(),file.getNameAndExtension());
+						file.setUniformResourceLocator(__file__.toURI().toString());
+						FileUtils.writeByteArrayToFile(__file__, file.getBytes());
+					} catch (IOException exception) {
+						//exception.printStackTrace();
+						throw new RuntimeException(exception);
+					}
 				}else {
-					
+					__inject__(FileBytesBusiness.class).create(new FileBytes().setFile(file).setBytes(file.getBytes()));	
 				}
-				if(StringHelper.isNotBlank(file.getText()))
-					__inject__(FileTextBusiness.class).create(new FileText().setFile(file).setText(file.getText()));
-			}
-		});
+			}	
+		}else {
+			
+		}
+		if(StringHelper.isNotBlank(file.getText()))
+			__inject__(FileTextBusiness.class).create(new FileText().setFile(file).setText(file.getText()));
 	}
-	
+
+	/*
 	@Override
 	protected void __listenExecuteDeleteBefore__(File file, Properties properties, BusinessFunctionRemover function) {
 		super.__listenExecuteDeleteBefore__(file, properties, function);
@@ -127,10 +100,11 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 			}
 		});
 	}
+	*/
 	
 	@Override
 	public FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
-			,Integer batchSize,Integer count) {
+			,Integer batchSize,Integer count) {/*
 		System.out.println("Creating file from directories");
 		System.out.println("Directories : "+directories);
 		System.out.println("Extensions : "+extensions);
@@ -145,10 +119,10 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 		if(count!=null && count < batchSize)
 			batchSize = count;	
 		
-		Collection<Path> paths = FileHelper.getPaths(directories, RegularExpressionHelper.formatFileNameHavingExtensions(extensions), Boolean.FALSE, Boolean.TRUE, null);
+		Collection<Path> paths = null;//FileHelper.getPaths(directories, RegularExpressionHelper.formatFileNameHavingExtensions(extensions), Boolean.FALSE, Boolean.TRUE, null);
 		if(CollectionHelper.isNotEmpty(paths)) {
 			System.out.println("Number of files paths found : "+paths.size());
-			FileHelper.removePathsByUniformResourceIdentifiers(paths, __persistence__.readUniformResourceLocators(null));
+			//FileHelper.removePathsByUniformResourceIdentifiers(paths, __persistence__.readUniformResourceLocators(null));
 			System.out.println("Number of files paths to process : "+paths.size());
 			Files files = FileHelper.get(paths, null);
 			if(CollectionHelper.isNotEmpty(files)) {
@@ -180,7 +154,7 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 				}
 				if(CollectionHelper.isNotEmpty(persistable)) {
 					System.out.println("Persisting "+persistable.size()+" by batch of "+batchSize+"...");
-					createByBatch(persistable, batchSize);
+					//createByBatch(persistable, batchSize);
 					persistable.stream().map(x -> x.setBytes(null));
 					persistable.clear();	
 				}
@@ -190,6 +164,7 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 			}
 		}
 		System.out.println("Done!!!");
+		*/
 		return this;
 	}
 	
@@ -275,17 +250,12 @@ public class FileBusinessImpl extends AbstractBusinessEntityImpl<File, FilePersi
 	
 	@Transactional(value=TxType.REQUIRES_NEW)
 	private void createFromDirectories(Collection<File> files) {
-		createMany(files);
+		//createMany(files);
 	}
 
 	@Override
 	public Collection<File> findWhereNameContains(String string) {
-		return __persistence__.readWhereNameContains(string);
-	}
-	
-	@Override
-	protected Boolean __isCallDeleteByInstanceOnDeleteByIdentifier__() {
-		return Boolean.TRUE;
+		return null;//__persistence__.readWhereNameContains(string);
 	}
 	
 }

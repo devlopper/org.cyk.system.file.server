@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.cyk.system.file.server.persistence.api.FileDetailPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryContext;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.array.ArrayHelperImpl;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
@@ -53,7 +52,7 @@ public abstract class AbstractFileDetailPersistenceImpl<T> extends AbstractPersi
 	public T readByFile(File file) {
 		return CollectionHelper.getFirst(readByFiles(file));
 	}
-	
+	/*
 	@Override
 	protected Object[] __getQueryParameters__(QueryContext queryContext, Properties properties,Object... objects) {
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByFilesIdentifiers)) {
@@ -61,6 +60,6 @@ public abstract class AbstractFileDetailPersistenceImpl<T> extends AbstractPersi
 		}
 		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
-	
+	*/
 	
 }

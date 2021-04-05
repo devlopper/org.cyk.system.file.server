@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
@@ -18,11 +17,9 @@ import org.cyk.system.file.server.persistence.api.FileTextPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
-import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.LogicalOperator;
 import org.cyk.utility.__kernel__.file.FileHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryContext;
 import org.cyk.utility.__kernel__.persistence.query.QueryStringHelper;
 import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.properties.Properties;
@@ -119,7 +116,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		}
 		return super.__getQueryIdentifier__(functionClass, properties, parameters);
 	}
-	
+	/*
 	@Override
 	protected Object[] __getQueryParameters__(QueryContext queryContext, Properties properties,Object... objects) {
 		if(queryContext.getQuery().isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readBySha1))
@@ -142,7 +139,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		}
 		return super.__getQueryParameters__(queryContext, properties, objects);
 	}
-	
+	*/
 	/**/
 
 }

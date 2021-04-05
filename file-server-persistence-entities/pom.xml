@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>Persistence Entities</name>
@@ -13,12 +15,54 @@
 	<groupId>org.cyk.system.file.server.persistence</groupId>
 	<artifactId>file-server-persistence-entities</artifactId>
 	<packaging>jar</packaging>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.jee.utility.server.persistence</groupId>
 			<artifactId>jee-utility-server-persistence</artifactId>
 			<version>0.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cyk.jee.utility.persistence.server.hibernate</groupId>
+			<artifactId>jee-utility-persistence-server-hibernate</artifactId>
+			<version>0.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.cyk.jee.utility.file</groupId>
+			<artifactId>jee-utility-file</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<!-- Test -->
+		<dependency>
+			<groupId>org.cyk.jee.utility.test.persistence.server</groupId>
+			<artifactId>jee-utility-test-persistence-server</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.4.12.Final</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.mysql-connector-java.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

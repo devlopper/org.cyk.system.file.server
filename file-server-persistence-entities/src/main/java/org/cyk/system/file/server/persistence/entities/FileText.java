@@ -45,10 +45,10 @@ public class FileText extends AbstractIdentifiedByString implements Serializable
 	public static final String FIELD_FILE = "file";
 	public static final String FIELD_TEXT = "text";
 	
-	public static final String COLUMN_FILE = FIELD_FILE;
-	public static final String COLUMN_TEXT = FIELD_TEXT;
+	public static final String COLUMN_FILE = "file";
+	public static final String COLUMN_TEXT = "text";
 	
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"text";
+	public static final String TABLE = "file_text";
 	
 	/**/
 }

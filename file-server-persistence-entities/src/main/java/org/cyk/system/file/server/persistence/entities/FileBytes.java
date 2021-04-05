@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
-@Table(name=FileBytes.TABLE)
+@Table(name=FileBytes.TABLE_NAME)
 /**
  * Local physical storage of file content as bytes. <br/>
  * Because bytes can be large , this strategy has been used in order to decouple file properties and its content.
@@ -44,10 +44,8 @@ public class FileBytes extends AbstractIdentifiedByString implements Serializabl
 	public static final String FIELD_FILE = "file";
 	public static final String FIELD_BYTES = "bytes";
 	
-	public static final String COLUMN_FILE = FIELD_FILE;
-	public static final String COLUMN_BYTES = FIELD_BYTES;
+	public static final String COLUMN_FILE = "file";
+	public static final String COLUMN_BYTES = "bytes";
 	
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"bytes";
-	
-	/**/
+	public static final String TABLE_NAME = "file_bytes";
 }

@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
-@Table(name=File.TABLE)
+@Table(name=File.TABLE_NAME)
 public class File extends AbstractIdentifiableSystemScalarStringImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	 * Logical name
 	 */
 	@NotNull
-	@Column(name=COLUMN_NAME) private String name;
+	@Column(name=COLUMN_NAME,nullable = false) private String name;
 	
 	/* 
 	 * Derived informations. Those informations can be derived from bytes or collected from inputed file.
@@ -45,19 +45,19 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	 * Mime type
 	 */
 	@NotNull
-	@Column(name=COLUMN_MIME_TYPE,length=50) private String mimeType;
+	@Column(name=COLUMN_MIME_TYPE,nullable = false,length=50) private String mimeType;
 	
 	/**
 	 * Size
 	 */
 	@NotNull
-	@Column(name=COLUMN_SIZE) private Long size;
+	@Column(name=COLUMN_SIZE,nullable = false) private Long size;
 		
 	/**
 	 * SHA1
 	 */
 	@NotNull
-	@Column(name=COLUMN_SHA1,length=40) private String sha1;
+	@Column(name=COLUMN_SHA1,nullable = false,length=40) private String sha1;
 	
 	/**/
 	
@@ -92,7 +92,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public static final String COLUMN_SIZE = FIELD_SIZE;
 	public static final String COLUMN_SHA1 = FIELD_SHA1;
 	
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"file";
+	public static final String TABLE_NAME = "file";
 	
 	/**/
 }
