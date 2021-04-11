@@ -61,6 +61,9 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	
 	/**/
 	
+	@Transient private Boolean isBytesPersistableOnCreate;
+	@Transient private Boolean isTextPersistableOnCreate;
+	
 	@Transient private String nameAndExtension;
 	@Transient private byte[] bytes;
 	@Transient private Boolean isBytesAccessibleFromUniformResourceLocator;

@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.persistence.query.EntityCounter;
 import org.jboss.arquillian.junit.InSequence;
 import org.junit.Test;
@@ -15,21 +16,22 @@ public class FileBusinessIT extends AbstractBusinessIT {
 	@Inject private FileBusiness fileBusiness;
 	
     @Test @InSequence(1)
-    public void file_create() {
-    	File file = new File();
-    	
-    	Long count = EntityCounter.getInstance().count(File.class);
-		
-    	fileBusiness.create(file);		
-		
-		assertThat(EntityCounter.getInstance().count(File.class)).isEqualTo(count+1);
-    	/*assertThat(scopeFunction.getCode()).isEqualTo("G100000");
-    	assertThat(scopeFunction.getName()).isEqualTo("Gestionnaire de credits DTI");
-    	scopeFunction = EntityFinder.getInstance().find(ScopeFunction.class, "A1000000");
-    	assertThat(scopeFunction.getCode()).isEqualTo("A1000000");
-    	assertThat(scopeFunction.getName()).isEqualTo("Assistant gestionnaire de credits DTI");
-    	assertThat(scopeFunction.getParentIdentifier()).as("G100000 is parent of A1000000").isEqualTo("G100000");    	
-    	assertThat(ScopeFunctionQuerier.getInstance().countByParentsIdentifiers(List.of("G100000"))).as("children of G100000").isEqualTo(1l);
-    	*/
+    public void file_create_withoutBytesPersisted() {
+    	File file = new File().setName("MyFile01").setExtension("txt").setBytes(new String("Hello 01").getBytes());    	
+    	Long filesCount = EntityCounter.getInstance().count(File.class);
+    	Long filesBytesCount = EntityCounter.getInstance().count(FileBytes.class); 	
+		fileBusiness.create(file);			
+		assertThat(EntityCounter.getInstance().count(File.class)).isEqualTo(filesCount+1);
+		assertThat(EntityCounter.getInstance().count(FileBytes.class)).isEqualTo(filesBytesCount);
+    }
+    
+    @Test @InSequence(2)
+    public void file_create_withBytesPersisted() {
+    	File file = new File().setName("MyFile02").setExtension("txt").setBytes(new String("Hello 02").getBytes()).setIsBytesPersistableOnCreate(Boolean.TRUE);    	
+    	Long filesCount = EntityCounter.getInstance().count(File.class);
+    	Long filesBytesCount = EntityCounter.getInstance().count(FileBytes.class);
+    	fileBusiness.create(file);				
+		assertThat(EntityCounter.getInstance().count(File.class)).isEqualTo(filesCount+1);
+		assertThat(EntityCounter.getInstance().count(FileBytes.class)).isEqualTo(filesBytesCount+1);
     }
 }
