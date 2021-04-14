@@ -42,6 +42,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 
 	public static Path ROOT_FOLDER_PATH;
 	public static final String FILES_PATHS_NAMES = "FILES_PATHS_NAMES";
+	public static final Long MAXIMAL_FILE_SIZE = 1024l * 1024; // 1M
 	
 	@Inject private FileBytesBusiness fileBytesBusiness;
 	@Inject private FileTextBusiness fileTextBusiness;
@@ -55,7 +56,8 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 			return null;
 		}
 		String[] array = pathsNames.split(";");
-		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf"));
+		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf")
+				.setMaximalSize(MAXIMAL_FILE_SIZE));
 		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
 		Collection<File> files = new ArrayList<>();
 		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {			

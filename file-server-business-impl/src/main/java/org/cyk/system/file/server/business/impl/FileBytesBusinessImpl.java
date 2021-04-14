@@ -38,8 +38,8 @@ public class FileBytesBusinessImpl extends AbstractSpecificBusinessImpl<FileByte
 		collectionProcessorArguments.setProcessing(new CollectionProcessor.Arguments.Processing.AbstractImpl<File>() {
 			@Override
 			protected void __process__(File file) {
-				if(NumberHelper.compare(file.getSize(), 1024 * 512, ComparisonOperator.GT))
-					return;
+				//if(NumberHelper.compare(file.getSize(), 1024 * 512, ComparisonOperator.GT))
+				//	return;
 				if(file.getBytes() == null && StringHelper.isNotBlank(file.getUniformResourceLocator()))
 					file.setBytes(Helper.getBytesFromURL(file.getUniformResourceLocator()));
 			}
