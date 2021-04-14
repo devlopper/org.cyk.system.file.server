@@ -8,7 +8,10 @@ import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.impl.query.FileQuerierImpl;
 import org.cyk.utility.__kernel__.AbstractApplicationScopeLifeCycleListener;
 import org.cyk.utility.__kernel__.DependencyInjection;
+import org.cyk.utility.persistence.query.EntityCounter;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryManager;
+import org.cyk.utility.persistence.query.QueryResultMapper;
 import org.cyk.utility.persistence.server.TransientFieldsProcessor;
 import org.cyk.utility.persistence.server.hibernate.Initializer;
 import org.cyk.utility.persistence.server.query.string.RuntimeQueryStringBuilder;
@@ -19,6 +22,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
+		DependencyInjection.setQualifierClassTo(org.cyk.system.file.server.annotation.System.class,QueryResultMapper.class, EntityReader.class,EntityCounter.class);	
 		DependencyInjection.setQualifierClassTo(org.cyk.system.file.server.annotation.System.class, RuntimeQueryStringBuilder.class,TransientFieldsProcessor.class);
 		__inject__(org.cyk.utility.server.persistence.impl.ApplicationScopeLifeCycleListener.class).initialize(null);
 		__inject__(org.cyk.system.file.server.persistence.api.ApplicationScopeLifeCycleListener.class).initialize(null);
@@ -30,7 +34,6 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 	public static void initialize() {
 		Initializer.initialize();
 		QueryManager.getInstance().scan(List.of(FileQuerier.class.getPackage()));
-		org.cyk.system.file.server.persistence.api.ApplicationScopeLifeCycleListener.initialize();	
 		FileQuerierImpl.initialize();
 	}
 }

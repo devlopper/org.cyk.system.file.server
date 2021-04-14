@@ -2,6 +2,7 @@ package org.cyk.system.file.server.business.impl;
 
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -12,18 +13,27 @@ import javax.transaction.Transactional.TxType;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
+import org.cyk.system.file.server.business.api.FileTextBusiness;
+import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.collection.CollectionProcessor;
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.enumeration.Action;
+import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.file.FileHelper;
+import org.cyk.utility.file.PathsProcessor;
+import org.cyk.utility.file.PathsScanner;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 @ApplicationScoped
@@ -31,15 +41,53 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	private static final long serialVersionUID = 1L;
 
 	public static Path ROOT_FOLDER_PATH;
+	public static final String FILES_PATHS_NAMES = "FILES_PATHS_NAMES";
 	
 	@Inject private FileBytesBusiness fileBytesBusiness;
+	@Inject private FileTextBusiness fileTextBusiness;
 	
 	@Override
-	protected void __prepare__(File file,Action action) {
-		super.__prepare__(file, action);
-		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
+	public TransactionResult collect() {
+		TransactionResult result = new TransactionResult().setName("files collector");
+		String pathsNames = ConfigurationHelper.getValueAsString(FILES_PATHS_NAMES);
+		if(StringHelper.isBlank(pathsNames)) {
+			LogHelper.logWarning(String.format("No files paths names found under variable named %s", FILES_PATHS_NAMES), getClass());
+			return null;
+		}
+		String[] array = pathsNames.split(";");
+		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf"));
+		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
+		Collection<File> files = new ArrayList<>();
+		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {			
+			@Override
+			protected void __process__(Path path) {
+				if(path.toFile().length() <= 0)
+					return;
+				String url = path.toFile().toURI().toString();
+				if(existingsURLs.contains(url))
+					return;
+				files.add(instantiateFile(path,url));
+			}
+		});
+		create(files);
+		result.setNumberOfCreation(Long.valueOf(files.size()));
+		result.log(getClass());
+		return result;
+	}
+	
+	private static File instantiateFile(Path path,String url) {
+		File file = new File();
+		file.setNameAndExtension(path.toFile().getName());
+		file.setSize(path.toFile().length());
+		file.setUniformResourceLocator(url);		
+		return file;
+	}
+	
+	@Override
+	protected void __prepare__(File file,Action action,ThrowablesMessages throwablesMessages) {
+		super.__prepare__(file, action,throwablesMessages);
 		if(Action.CREATE.equals(action)) {
-			if(file.getBytes() == null && file.getBytes().length == 0 && StringHelper.isBlank(file.getUniformResourceLocator()))
+			if((file.getBytes() == null || file.getBytes().length == 0) && StringHelper.isBlank(file.getUniformResourceLocator()))
 				throw new RuntimeException("file bytes or uri is required");
 			if(StringHelper.isBlank(file.getSha1())) {
 				if(file.getBytes() == null) {
@@ -72,7 +120,6 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 			if(NumberHelper.isLessThanOrEqualZero(file.getSize()))
 				throwablesMessages.add("file cannot be empty");
 		}
-		throwablesMessages.throwIfNotEmpty();
 	}
 
 	@Override
@@ -81,6 +128,26 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		super.__create__(arguments);
 		fileBytesBusiness.createFromFiles(CollectionHelper.cast(File.class, arguments.getObjects()).stream()
 				.filter(x -> Boolean.TRUE.equals(x.getIsBytesPersistableOnCreate())).collect(Collectors.toList()),arguments.getEntityManager());
+	}
+	
+	@Override
+	public TransactionResult extractBytes() {
+		TransactionResult result = new TransactionResult().setName("files bytes extractor");
+		Long filesCount = FileQuerier.getInstance().countWhereBytesDoNotExists(null);
+		LogHelper.logInfo(String.format("%s file(s) to process", filesCount), getClass());
+		Collection<File> files = FileQuerier.getInstance().readWhereBytesDoNotExists(null);
+		TransactionResult intermediateResult = fileBytesBusiness.createFromFiles(files);
+		result.add(intermediateResult);
+		result.log(getClass());
+		return result;
+	}
+	
+	@Override
+	public TransactionResult extractText() {
+		TransactionResult result = new TransactionResult().setName("files texts extractor");
+		Collection<File> files = EntityReader.getInstance().readMany(File.class);
+		fileTextBusiness.createFromFiles(files);
+		return result;
 	}
 	
 	/*

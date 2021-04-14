@@ -19,11 +19,13 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	@Override
 	public void __initialize__(ServletContext context) {
 		super.__initialize__(context);
+		org.cyk.system.file.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
+		
 		__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
+		
 		String path = ConfigurationHelper.getValueAsString("cyk.file.root.folder.path");
 		if(StringHelper.isNotBlank(path))
 			FileBusinessImpl.ROOT_FOLDER_PATH = Paths.get(path);
 		//QueryExecutor.AbstractImpl.LOG_LEVEL = Level.INFO;
-	}
-	
+	}	
 }

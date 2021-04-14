@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 
+import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
@@ -12,6 +13,11 @@ import org.junit.jupiter.api.Test;
 public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;
 
+	@Test
+	public void file_readUniformResourceLocators(){
+		assertThat(FileQuerier.getInstance().readUniformResourceLocators()).contains("file:///C:/Users/CYK/Downloads/Partitions/temps%20de%20carême/Chant%20à%20la%20croix.pdf");
+	}
+	
 	@Test
 	public void file_read_dynamic_filter(){
 		assertFileReadDynamicFilter("vivant"

@@ -24,7 +24,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	/**
 	 * Physical location. Can be local (file:///) or remote (ftp, http,...)
 	 */
-	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR/*,unique=true*/) private String uniformResourceLocator;
+	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR,unique=true) private String uniformResourceLocator;
 	
 	/**
 	 * Logical name
@@ -56,8 +56,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	/**
 	 * SHA1
 	 */
-	@NotNull
-	@Column(name=COLUMN_SHA1,nullable = false,length=40) private String sha1;
+	@Column(name=COLUMN_SHA1,length=40) private String sha1;
 	
 	/**/
 	
@@ -75,7 +74,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public File setIdentifier(String identifier) {
 		return (File) super.setIdentifier(identifier);
 	}
-
+	
 	/**/
 	
 	public static final String FIELD_NAME = "name";

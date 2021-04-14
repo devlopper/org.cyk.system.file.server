@@ -17,15 +17,11 @@ import org.cyk.system.file.server.persistence.api.FileTextPersistence;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.computation.LogicalOperator;
 import org.cyk.utility.__kernel__.file.FileHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryStringHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.persistence.query.QueryStringHelper;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
-import org.cyk.utility.server.persistence.PersistenceFunctionReader;
 import org.cyk.utility.server.persistence.PersistenceQueryIdentifierStringBuilder;
 
 @ApplicationScoped
@@ -104,18 +100,7 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 		return __inject__(EntityManager.class).createNamedQuery(readUniformResourceLocators, String.class).getResultList();
 	}
 	
-	@Override
-	protected String __getQueryIdentifier__(Class<?> functionClass, Properties properties, Object... parameters) {
-		Filter filter = (Filter) Properties.getFromPath(properties, Properties.QUERY_FILTERS);
-		if(PersistenceFunctionReader.class.equals(functionClass)) {
-			if(filter != null && StringHelper.isNotBlank(filter.getValue()))
-				return readWhereNameOrTextContains;
-			if(__isFilterByKeys__(properties, File.FIELD_NAME) || 
-					(filter!=null && CollectionHelper.isEmpty(filter.getFields()) && StringHelper.isNotBlank(filter.getValue())) )
-				return readWhereNameContains;
-		}
-		return super.__getQueryIdentifier__(functionClass, properties, parameters);
-	}
+	
 	/*
 	@Override
 	protected Object[] __getQueryParameters__(QueryContext queryContext, Properties properties,Object... objects) {

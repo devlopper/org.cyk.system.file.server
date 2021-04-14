@@ -1,15 +1,15 @@
 package org.cyk.system.file.server.persistence.impl.query;
 
-import static org.cyk.utility.__kernel__.persistence.query.Language.jpql;
-import static org.cyk.utility.__kernel__.persistence.query.Language.parenthesis;
-import static org.cyk.utility.__kernel__.persistence.query.Language.From.from;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.asc;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Order.order;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.fields;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Select.select;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.like;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.or;
-import static org.cyk.utility.__kernel__.persistence.query.Language.Where.where;
+import static org.cyk.utility.persistence.query.Language.jpql;
+import static org.cyk.utility.persistence.query.Language.parenthesis;
+import static org.cyk.utility.persistence.query.Language.From.from;
+import static org.cyk.utility.persistence.query.Language.Order.asc;
+import static org.cyk.utility.persistence.query.Language.Order.order;
+import static org.cyk.utility.persistence.query.Language.Select.fields;
+import static org.cyk.utility.persistence.query.Language.Select.select;
+import static org.cyk.utility.persistence.query.Language.Where.like;
+import static org.cyk.utility.persistence.query.Language.Where.or;
+import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -20,12 +20,12 @@ import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.file.FileHelper;
-import org.cyk.utility.__kernel__.persistence.query.Query;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutor;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.persistence.query.QueryHelper;
-import org.cyk.utility.__kernel__.persistence.query.filter.Filter;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.persistence.query.Query;
+import org.cyk.utility.persistence.query.QueryExecutor;
+import org.cyk.utility.persistence.query.QueryExecutorArguments;
+import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
 
 public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Serializable {
@@ -34,8 +34,6 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	public Collection<File> readMany(QueryExecutorArguments arguments) {
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return readWhereFilter(arguments);	
-		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_VIEW_01.equals(arguments.getQuery().getIdentifier()))
-			prepare(arguments);				
 		return QueryExecutor.getInstance().executeReadMany(File.class, arguments);
 	}
 	
@@ -43,18 +41,25 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	public Long count(QueryExecutorArguments arguments) {
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return countWhereFilter(arguments);
-		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_VIEW_01.equals(arguments.getQuery().getIdentifier()))
-			prepare(arguments);			
 		return QueryExecutor.getInstance().executeCount(arguments);
 	}
 	
-	private static void prepare(QueryExecutorArguments arguments) {
-		Filter filter = new Filter();
-		int[] index = {1};
-		arguments.getFilterFieldValueLikes(File.FIELD_NAME, 3).forEach(value -> {
-			filter.addField(File.FIELD_NAME+(index[0]++), value);
-		});
-		arguments.setFilter(filter);
+	@Override
+	public Collection<File> readWhereBytesDoNotExists(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_READ_WHERE_BYTES_DO_NOT_EXISTS);
+		return QueryExecutor.getInstance().executeReadMany(File.class, arguments);
+	}
+	
+	@Override
+	public Long countWhereBytesDoNotExists(QueryExecutorArguments arguments) {
+		if(arguments == null)
+			arguments = new QueryExecutorArguments();
+		if(arguments.getQuery() == null)
+			arguments.setQueryFromIdentifier(QUERY_IDENTIFIER_COUNT_WHERE_BYTES_DO_NOT_EXISTS);
+		return QueryExecutor.getInstance().executeCount(arguments);
 	}
 	
 	@Override
@@ -79,6 +84,13 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 		Filter filter = new Filter();
 		filter.addFieldContainsStringOrWords(PARAMETER_NAME_NAME, NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME, arguments);
 		arguments.setFilter(filter);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<String> readUniformResourceLocators() {
+		return EntityManagerGetter.getInstance().get().createNativeQuery(String.format("SELECT t.%1$s FROM File t ORDER BY t.%1$s ASC",File.FIELD_UNIFORM_RESOURCE_LOCATOR))
+				.getResultList();
 	}
 	
 	@Override
@@ -119,17 +131,15 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	/**/
 	
 	public static void initialize() {
-		QueryHelper.addQueries(
-			Query.build(Query.FIELD_IDENTIFIER,QUERY_IDENTIFIER_READ_VIEW_01,Query.FIELD_TUPLE_CLASS,File.class,Query.FIELD_RESULT_CLASS
-			,File.class,Query.FIELD_VALUE,QUERY_VALUE_READ_VIEW_01).setTupleFieldsNamesIndexes(QUERY_VALUE_READ_VIEW_01_TUPLE_FIELDS_NAMES_INDEXES)
-			
-			,Query.buildCount(QUERY_IDENTIFIER_COUNT_VIEW_01,QUERY_VALUE_COUNT_VIEW_01)
-			
-			,Query.buildSelect(File.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(
+		QueryManager.getInstance().register(
+			Query.buildSelect(File.class, QUERY_IDENTIFIER_READ_WHERE_FILTER, jpql(
 					select(fields("t",File.FIELD_IDENTIFIER,File.FIELD_EXTENSION,File.FIELD_MIME_TYPE,File.FIELD_NAME,File.FIELD_SIZE))
 					,getReadWhereFilterFromWhere(),order(asc("t",File.FIELD_NAME))))
 				.setTupleFieldsNamesIndexesFromFieldsNames(File.FIELD_IDENTIFIER,File.FIELD_EXTENSION,File.FIELD_MIME_TYPE,File.FIELD_NAME,File.FIELD_SIZE)
 			,Query.buildSelect(File.class, QUERY_IDENTIFIER_COUNT_WHERE_FILTER, jpql(select("COUNT(t.identifier)"),getReadWhereFilterFromWhere()))
+			
+			,Query.buildSelect(File.class, QUERY_IDENTIFIER_READ_WHERE_BYTES_DO_NOT_EXISTS, jpql(select("t"),getReadWhereBytesDoNotExistsFromWhere(),"ORDER BY t.identifier"))
+			,Query.buildSelect(File.class, QUERY_IDENTIFIER_COUNT_WHERE_BYTES_DO_NOT_EXISTS, jpql(select("COUNT(t.identifier)"),getReadWhereBytesDoNotExistsFromWhere()))
 		);
 	}
 	
@@ -140,5 +150,9 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 					like("t", File.FIELD_NAME, PARAMETER_NAME_NAME,NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME)	
 				)))
 			);
+	}
+	
+	private static String getReadWhereBytesDoNotExistsFromWhere() {
+		return "FROM File t WHERE NOT EXISTS(SELECT fb FROM FileBytes fb WHERE fb.file = t)";
 	}
 }

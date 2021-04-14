@@ -7,15 +7,16 @@ import javax.persistence.EntityManager;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.business.SpecificBusiness;
+import org.cyk.utility.business.TransactionResult;
 
 public interface FileBytesBusiness extends SpecificBusiness<FileBytes> {
 	
-	void createFromFilesIdentifiers(Collection<String> filesIdentifiers);
+	TransactionResult createFromFilesIdentifiers(Collection<String> filesIdentifiers);
 	
-	void createFromFilesIdentifiers(String...filesIdentifiers);
+	TransactionResult createFromFilesIdentifiers(String...filesIdentifiers);
 	
-	void createFromFiles(Collection<File> files,EntityManager entityManager);
-	void createFromFiles(Collection<File> files);
+	TransactionResult createFromFiles(Collection<File> files,EntityManager entityManager);
+	TransactionResult createFromFiles(Collection<File> files);
 	
-	void createFromFiles(File...files);
+	TransactionResult createFromFiles(File...files);
 }

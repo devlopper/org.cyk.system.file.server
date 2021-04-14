@@ -1,32 +1,22 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.HttpHeaders;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
-import org.cyk.system.file.server.business.api.FileBytesBusiness;
-import org.cyk.system.file.server.persistence.api.query.FileQuerier;
-import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.constant.ConstantString;
-import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.__kernel__.representation.Arguments;
-import org.cyk.utility.__kernel__.representation.EntityReader;
-import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.rest.RequestProcessor;
+import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.Strings;
+import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 
@@ -34,6 +24,54 @@ import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<FileDto> implements FileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Inject private FileBusiness fileBusiness;
+	
+	@Override
+	public Response collect() {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						TransactionResult transactionResult = fileBusiness.collect();
+						if(transactionResult == null)
+							return;
+						runnerArguments.setResult(String.format("%s file(s) collected.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response extractBytes() {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						TransactionResult transactionResult = fileBusiness.extractBytes();
+						if(transactionResult == null)
+							return;
+						runnerArguments.setResult(String.format("%s file(s) byte(s) extracted.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
+					}
+				};
+			}
+		});
+	}
+	
 	@Override
 	public Response createFromDirectories(List<String> directories,/*List<String> mimeTypeTypes,List<String> mimeTypeSubTypes,List<String> mimeTypes,*/List<String> extensions
 			,List<String> sizes,Integer batchSize,Integer count) {
@@ -54,7 +92,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	
 	@Override
 	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter,Boolean loggableAsInfo) {
-		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class);
+		/*Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class);
 		arguments.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_VIEW_01)
 				.addFilterField(File.FIELD_NAME, globalFilter)
 				.setFirstTupleIndex(NumberHelper.getInteger(from))
@@ -62,10 +100,13 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 				).setCountable(Boolean.TRUE).setLoggableAsInfo(loggableAsInfo);
 		return EntityReader.getInstance().read(arguments);
 		//return getMany(null,isPageable, from, count, fields, new Filter.Dto().setValue(globalFilter));
+		*/
+		return null;
 	}
 	
 	@Override
 	public Response download(String identifier,String isInline) {
+		/*
 		File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
 		if(file == null)
 			return Response.status(Status.NOT_FOUND).build();
@@ -90,5 +131,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	    if(size!=null && size > 0)
 	    	response.header(HttpHeaders.CONTENT_LENGTH, size);
 	    return response.build();
-	}	
+	    */
+		return null;
+	}
 }

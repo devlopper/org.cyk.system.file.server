@@ -61,5 +61,17 @@
 				<data.source.schema.name>kwordz_file</data.source.schema.name>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>dev</id>
+			<properties>
+				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
+				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
+				<wildfly.port>10090</wildfly.port>
+				
+				<cyk.variable.system.uri.host>localhost</cyk.variable.system.uri.host>
+				<cyk.variable.system.uri.port>8180</cyk.variable.system.uri.port>
+			</properties>
+		</profile>
 	</profiles>
 </project>
