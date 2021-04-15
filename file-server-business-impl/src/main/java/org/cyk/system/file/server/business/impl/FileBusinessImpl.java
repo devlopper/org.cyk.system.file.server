@@ -42,13 +42,12 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 
 	public static Path ROOT_FOLDER_PATH;
 	public static final String FILES_PATHS_NAMES = "FILES_PATHS_NAMES";
-	public static final Long MAXIMAL_FILE_SIZE = 1024l * 1024; // 1M
 	
 	@Inject private FileBytesBusiness fileBytesBusiness;
 	@Inject private FileTextBusiness fileTextBusiness;
 	
 	@Override
-	public TransactionResult collect() {
+	public TransactionResult import_() {
 		TransactionResult result = new TransactionResult().setName("files collector");
 		String pathsNames = ConfigurationHelper.getValueAsString(FILES_PATHS_NAMES);
 		if(StringHelper.isBlank(pathsNames)) {
@@ -57,14 +56,12 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		}
 		String[] array = pathsNames.split(";");
 		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf")
-				.setMaximalSize(MAXIMAL_FILE_SIZE));
+				.setMinimalSize(File.MINIMAL_SIZE).setMaximalSize(File.MAXIMAL_SIZE));
 		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
 		Collection<File> files = new ArrayList<>();
 		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {			
 			@Override
 			protected void __process__(Path path) {
-				if(path.toFile().length() <= 0)
-					return;
 				String url = path.toFile().toURI().toString();
 				if(existingsURLs.contains(url))
 					return;

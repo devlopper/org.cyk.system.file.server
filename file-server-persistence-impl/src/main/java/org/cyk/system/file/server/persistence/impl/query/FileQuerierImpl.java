@@ -63,6 +63,13 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	}
 	
 	@Override
+	public Boolean isSizeAllowed(Long size) {
+		if(size == null)
+			return null;
+		return size <= 1024 * 1024;
+	}
+	
+	@Override
 	public Collection<File> readWhereFilter(QueryExecutorArguments arguments) {
 		prepareWhereFilter(arguments);
 		Collection<File> files = QueryExecutor.getInstance().executeReadMany(File.class, arguments);

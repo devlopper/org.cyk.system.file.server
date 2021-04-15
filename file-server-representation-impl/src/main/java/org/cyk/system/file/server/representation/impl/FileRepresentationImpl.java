@@ -27,7 +27,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 	@Inject private FileBusiness fileBusiness;
 	
 	@Override
-	public Response collect() {
+	public Response import_() {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
@@ -39,10 +39,10 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 				return new Runnable() {					
 					@Override
 					public void run() {
-						TransactionResult transactionResult = fileBusiness.collect();
+						TransactionResult transactionResult = fileBusiness.import_();
 						if(transactionResult == null)
 							return;
-						runnerArguments.setResult(String.format("%s file(s) collected.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
+						runnerArguments.setResult(String.format("%s file(s) imported.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
 					}
 				};
 			}

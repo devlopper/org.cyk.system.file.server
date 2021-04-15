@@ -97,4 +97,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public static final String TABLE_NAME = "file";
 	
 	/**/
+	
+	public static final Long MINIMAL_SIZE = 1l; // 1
+	public static final Long MAXIMAL_SIZE = 1024l * 1024; // 1M
 }

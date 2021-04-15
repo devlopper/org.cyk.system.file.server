@@ -9,14 +9,15 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
+import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.utility.__kernel__.Helper;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.collection.CollectionProcessor;
-import org.cyk.utility.__kernel__.computation.ComparisonOperator;
-import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.runnable.RunnableHelper;
+import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
@@ -34,12 +35,14 @@ public class FileBytesBusinessImpl extends AbstractSpecificBusinessImpl<FileByte
 		TransactionResult result = new TransactionResult().setName("create from "+files.size()+" files");
 		CollectionProcessor.Arguments<File> collectionProcessorArguments = new CollectionProcessor.Arguments<File>();
 		collectionProcessorArguments.setList((List<Object>) CollectionHelper.cast(Object.class, files));
-		collectionProcessorArguments.setBatchSize(100);
+		collectionProcessorArguments.setBatchSize(50);
+		collectionProcessorArguments.setRunnerArguments(new Runner.Arguments().setName(result.getName()).setExecutorService(RunnableHelper.instantiateExecutorService(4))
+				.setTimeOut(files.size() * 1000l * 5));
 		collectionProcessorArguments.setProcessing(new CollectionProcessor.Arguments.Processing.AbstractImpl<File>() {
 			@Override
 			protected void __process__(File file) {
-				//if(NumberHelper.compare(file.getSize(), 1024 * 512, ComparisonOperator.GT))
-				//	return;
+				if(!Boolean.TRUE.equals(FileQuerier.getInstance().isSizeAllowed(file.getSize())))
+					return;
 				if(file.getBytes() == null && StringHelper.isNotBlank(file.getUniformResourceLocator()))
 					file.setBytes(Helper.getBytesFromURL(file.getUniformResourceLocator()));
 			}
@@ -57,33 +60,9 @@ public class FileBytesBusinessImpl extends AbstractSpecificBusinessImpl<FileByte
 				});
 				filesBytes.clear();
 			}
-		});
+		}.setParallelizable(Boolean.TRUE));
 		CollectionProcessor.getInstance().process(File.class, collectionProcessorArguments);
 		return result;
-		/*
-		ThrowablesMessages throwablesMessages = new ThrowablesMessages();
-		Collection<FileBytes> filesBytes = null;
-		for(File file : files) {
-			byte[] bytes = file.getBytes();
-			if(bytes == null && StringHelper.isNotBlank(file.getUniformResourceLocator()))
-				bytes = Helper.getBytesFromURL(file.getUniformResourceLocator());
-			if(bytes == null)
-				throwablesMessages.add(String.format("file identified by %s has no bytes", file.getIdentifier()));
-			else {
-				if(filesBytes == null)
-					filesBytes = new ArrayList<>();
-				filesBytes.add(new FileBytes().setFile(file).setBytes(bytes));
-			}
-		}
-		throwablesMessages.throwIfNotEmpty();
-		if(CollectionHelper.isEmpty(filesBytes))
-			return null;
-		TransactionResult transactionResult = new TransactionResult();		
-		transactionResult.setNumberOfCreation(Long.valueOf(filesBytes.size()));
-		if(CollectionHelper.isNotEmpty(filesBytes))
-			create(new QueryExecutorArguments().setObjects(CollectionHelper.cast(Object.class, filesBytes)).setEntityManager(entityManager));		
-		return transactionResult;
-		*/
 	}
 	
 	@Override

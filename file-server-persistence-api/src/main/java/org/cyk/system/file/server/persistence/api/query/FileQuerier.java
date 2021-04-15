@@ -25,6 +25,8 @@ public interface FileQuerier extends Querier {
 	String QUERY_IDENTIFIER_COUNT_WHERE_BYTES_DO_NOT_EXISTS = QueryIdentifierBuilder.getInstance().build(File.class, "countWhereBytesDoNotExists");
 	Long countWhereBytesDoNotExists(QueryExecutorArguments arguments);
 	
+	Boolean isSizeAllowed(Long size);
+	
 	Integer NUMBER_OF_WORDS_OF_PARAMETER_NAME_NAME = 6;
 	
 	String QUERY_IDENTIFIER_READ_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.READ_WHERE_FILTER.getValue());

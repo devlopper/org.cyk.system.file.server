@@ -36,18 +36,18 @@ public class FileBusinessIT extends AbstractBusinessIT {
     }
     
     @Test @InSequence(3)
-    public void file_collect() {
+    public void file_import() {
     	Long filesCount = EntityCounter.getInstance().count(File.class);
     	Long filesBytesCount = EntityCounter.getInstance().count(FileBytes.class);    	
-		fileBusiness.collect();
+		fileBusiness.import_();
 		assertThat(EntityCounter.getInstance().count(File.class)).isEqualTo(filesCount+3);
 		assertThat(EntityCounter.getInstance().count(FileBytes.class)).isEqualTo(filesBytesCount);
     }
     
     @Test @InSequence(4)
-    public void file_collect_again() {
+    public void file_import_again() {
     	Long filesCount = EntityCounter.getInstance().count(File.class);
-    	fileBusiness.collect();
+    	fileBusiness.import_();
 		assertThat(EntityCounter.getInstance().count(File.class)).as("No file has been collected").isEqualTo(filesCount);
     }
 }

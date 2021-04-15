@@ -20,9 +20,9 @@ import org.cyk.utility.server.representation.RepresentationEntity;
 public interface FileRepresentation extends RepresentationEntity<FileDto> {
 	
 	@POST
-	@Path(PATH_COLLECT)
+	@Path(PATH_IMPORT)
 	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	Response collect();
+	Response import_();
 	
 	@POST
 	@Path(PATH_EXTRACT_BYTES)
@@ -63,7 +63,7 @@ public interface FileRepresentation extends RepresentationEntity<FileDto> {
 	String PATH_CREATE_FROM_DIRECTORIES = PATH_ROOT+ConstantString.CREATE+__SLASH__+ConstantString.FROM+__SLASH__+ConstantString.DIRECTORIES;
 	
 	String PATH = "file";
-	String PATH_COLLECT = "/collect";
+	String PATH_IMPORT = "/import";
 	String PATH_EXTRACT_BYTES = "/extractbytes";
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = PATH+__SLASH__+PATH_UPLOAD;

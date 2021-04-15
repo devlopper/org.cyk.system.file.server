@@ -1,7 +1,6 @@
 package org.cyk.system.file.server.business.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,15 +8,11 @@ import javax.persistence.EntityManager;
 
 import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.entities.FileBytes;
 import org.cyk.system.file.server.persistence.entities.FileText;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.persistence.query.EntityFinder;
-import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
 @ApplicationScoped
 public class FileTextBusinessImpl extends AbstractSpecificBusinessImpl<FileText> implements FileTextBusiness,Serializable {

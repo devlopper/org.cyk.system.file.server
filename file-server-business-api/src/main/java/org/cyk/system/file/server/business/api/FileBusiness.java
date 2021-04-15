@@ -13,8 +13,8 @@ public interface FileBusiness extends SpecificBusiness<File> {
 	/**
 	 * Get file from some where (the file system, social network and so on) and store it in the database
 	 */
-	TransactionResult collect();
-	String COLLECT = "COLLECT";
+	TransactionResult import_();
+	String IMPORT = "IMPORT";
 	
 	TransactionResult extractBytes();
 	String EXTRACT_BYTES = "EXTRACT_BYTES";
