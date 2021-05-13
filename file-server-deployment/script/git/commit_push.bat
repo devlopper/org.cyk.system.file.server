@@ -15,6 +15,7 @@ cd E:\Repositories\source code\git\org\cyk\pom
 git add .
 git commit --all -m %commit_message%
 git tag -a %tag_name% -m "version %timestamp%"
+git push cyk_file_server develop:cyk_pom
 git push cyk_file_server %tag_name% develop:cyk_pom
 
 @echo on
