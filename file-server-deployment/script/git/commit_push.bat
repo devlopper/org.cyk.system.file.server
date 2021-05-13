@@ -28,7 +28,7 @@ echo file server publishing
 @echo off
 cd E:\Repositories\source\git\org\cyk\system\file\server
 git add .
-git commit --all -m "file server publishing %timestamp%"
+git commit --all -m "%timestamp%"
 git push origin
 
 cd %current_directory%
