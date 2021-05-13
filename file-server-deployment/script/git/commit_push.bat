@@ -5,6 +5,7 @@ For /f "tokens=1-2 delims=/:" %%a in ("%TIME%") do (set mytime=%%a%%b)
 set mytime=%mytime: =0%
 SET timestamp=%mydate%%mytime%
 SET commit_message="file server publishing %timestamp%"
+SET tag_name="file_server_v%timestamp%"
 SET current_directory=%CD%
 
 @echo on
@@ -13,8 +14,8 @@ echo pom publishing
 cd E:\Repositories\source code\git\org\cyk\pom
 git add .
 git commit --all -m %commit_message%
-git tag -a v%timestamp% -m "version %timestamp%"
-git push cyk_file_server develop:cyk_pom
+git tag -a %tag_name% -m "version %timestamp%"
+git push cyk_file_server %tag_name% develop:cyk_pom
 
 @echo on
 echo utility publishing
