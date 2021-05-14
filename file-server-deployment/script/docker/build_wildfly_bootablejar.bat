@@ -1,0 +1,1 @@
+docker build --file ../../Dockerfile.wildfly.bootablejar --tag "file-server:latest" ../../

@@ -1,0 +1,16 @@
+FROM adoptopenjdk/openjdk11-openj9:jre-11.0.3_7_openj9-0.14.0-alpine
+
+# -- DATABASE MANAGEMENT SYSTEM : MYSQL --
+ENV FILES_PATHS_NAMES C:\Users\CYK\Downloads\Partitions-20210412T141603Z-001\Partitions
+ENV MYSQL_DATABASE file
+ENV MYSQL_DATASOURCE file/server
+ENV MYSQL_PASSWORD root
+ENV MYSQL_SERVICE_HOST localhost
+ENV MYSQL_SERVICE_PORT 3306
+ENV MYSQL_USER root
+
+# -- Files --
+ADD gitignore/wildfly/bootablejar/ROOT-bootable.jar /opt/ROOT-bootable.jar
+ADD target/ROOT.war /opt/ROOT.war
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true","/opt/ROOT-bootable.jar","--deployment=/opt/ROOT.war"]

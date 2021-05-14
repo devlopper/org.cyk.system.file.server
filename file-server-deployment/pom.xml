@@ -63,6 +63,16 @@
 		</profile>
 		
 		<profile>
+			<id>prod</id>
+			<properties>
+				<jboss-web.context-root></jboss-web.context-root>
+				<deployment.standalone.port.offset>0</deployment.standalone.port.offset>
+				<swagger.json>/api/swagger.json</swagger.json>
+				
+			</properties>
+		</profile>
+		
+		<profile>
 			<id>dev</id>
 			<properties>
 				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>

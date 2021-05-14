@@ -1,1 +1,1 @@
-docker run -p 8080:8080 file-server:latest
+docker run -e "MYSQL_SERVICE_HOST=172.30.118.97" -p 8080:8080 file-server:latest

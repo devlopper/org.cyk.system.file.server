@@ -1,1 +1,1 @@
-mvn -f ../.. clean package -Dwildfly.bootable.hollow=true -P package.war,package.wildfly.bootable.jaxrs.oracle,prod
+mvn -f ../.. clean package -Dwildfly.bootable.hollow=true -P package.war,package.wildfly.bootable.jaxrs.mysql,prod

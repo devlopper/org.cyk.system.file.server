@@ -44,8 +44,8 @@ public class FileBytes extends AbstractIdentifiedByString implements Serializabl
 	public static final String FIELD_FILE = "file";
 	public static final String FIELD_BYTES = "bytes";
 	
+	public static final String TABLE_NAME = "at_file_bytes";
+	
 	public static final String COLUMN_FILE = "file";
 	public static final String COLUMN_BYTES = "bytes";
-	
-	public static final String TABLE_NAME = "file_bytes";
 }

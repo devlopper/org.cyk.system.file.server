@@ -87,14 +87,14 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public static final String FIELD_SIZE = "size";
 	public static final String FIELD_SHA1 = "sha1";
 	
-	public static final String COLUMN_NAME = FIELD_NAME;
-	public static final String COLUMN_EXTENSION = FIELD_EXTENSION;
-	public static final String COLUMN_MIME_TYPE = FIELD_MIME_TYPE;
-	public static final String COLUMN_UNIFORM_RESOURCE_LOCATOR = FIELD_UNIFORM_RESOURCE_LOCATOR;
-	public static final String COLUMN_SIZE = FIELD_SIZE;
-	public static final String COLUMN_SHA1 = FIELD_SHA1;
+	public static final String TABLE_NAME = "at_file";
 	
-	public static final String TABLE_NAME = "file";
+	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_EXTENSION = "extension";
+	public static final String COLUMN_MIME_TYPE = "mime";
+	public static final String COLUMN_UNIFORM_RESOURCE_LOCATOR = "uri";
+	public static final String COLUMN_SIZE = "size";
+	public static final String COLUMN_SHA1 = "sha1";
 	
 	/**/
 	
