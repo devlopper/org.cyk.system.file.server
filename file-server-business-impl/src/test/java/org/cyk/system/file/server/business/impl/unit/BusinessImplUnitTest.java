@@ -18,7 +18,7 @@ public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	//private String rootPath = "src\\test\\resources\\org\\cyk\\system\\file\\server\\business\\impl";
 	private String rootPath = "C:\\Users\\CYK\\Downloads";
 	
-	@Test
+	//@Test
 	public void readFromFileSystem() throws Exception{
 		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(rootPath).setAcceptedPathNameRegularExpression(".pdf"));
 		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {
