@@ -6,6 +6,7 @@ set mytime=%mytime: =0%
 SET timestamp=%mydate%%mytime%
 SET commit_message="file server publishing %timestamp%"
 SET tag_name="file_server_v%timestamp%"
+SET tag_version=%tag_name%
 SET current_directory=%CD%
 
 @echo on
@@ -14,7 +15,7 @@ echo pom publishing
 cd E:\Repositories\source code\git\org\cyk\pom
 git add .
 git commit --all -m %commit_message%
-git tag -a %tag_name% -m "version %timestamp%"
+git tag -a %tag_name% -m %tag_version%
 git push cyk_file_server develop:cyk_pom
 git push cyk_file_server %tag_name% develop:cyk_pom
 
@@ -24,7 +25,9 @@ echo utility publishing
 cd E:\Repositories\source\git\org\cyk\utility
 git add .
 git commit --all -m %commit_message%
+git tag -a %tag_name% -m %tag_version%
 git push cyk_file_server develop_0_1_0:cyk_utility
+git push cyk_file_server %tag_name% develop_0_1_0:cyk_utility
 
 @echo on
 echo file server publishing
@@ -32,6 +35,8 @@ echo file server publishing
 cd E:\Repositories\source\git\org\cyk\system\file\server
 git add .
 git commit --all -m %commit_message%
+git tag -a v%timestamp% -m "version of %timestamp%"
 git push origin
+git push origin v%timestamp%
 
 cd %current_directory%
