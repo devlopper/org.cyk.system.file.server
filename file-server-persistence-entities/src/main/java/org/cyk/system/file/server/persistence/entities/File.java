@@ -27,7 +27,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR,unique=true) private String uniformResourceLocator;
 	
 	/** 
-	 * Logical nam
+	 * Logical name
 	 */
 	@NotNull
 	@Column(name=COLUMN_NAME,nullable = false) private String name;
