@@ -22,7 +22,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Physical location. Can be local (file:///) or remote (ftp, http,...)
+	 * Physical location. Can be local (file:///) or remote (ftp, http, ...)
 	 */
 	@Column(name=COLUMN_UNIFORM_RESOURCE_LOCATOR,unique=true) private String uniformResourceLocator;
 	
