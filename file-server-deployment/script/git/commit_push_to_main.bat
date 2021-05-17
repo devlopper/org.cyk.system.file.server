@@ -37,6 +37,7 @@ git add .
 git commit --all -m %commit_message%
 git tag -a v%timestamp% -m "version of %timestamp%"
 git push origin
-git push origin v%timestamp%
+git push origin develop:main
+git push origin v%timestamp% develop:main
 
 cd %current_directory%
