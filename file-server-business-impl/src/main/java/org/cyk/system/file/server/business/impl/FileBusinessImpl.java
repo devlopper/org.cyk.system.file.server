@@ -122,10 +122,10 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	}
 
 	@Override
-	protected void __create__(QueryExecutorArguments arguments) {
+	protected TransactionResult __create__(QueryExecutorArguments arguments) {
 		arguments.setEntityManager(EntityManagerGetter.getInstance().get());
 		super.__create__(arguments);
-		fileBytesBusiness.createFromFiles(CollectionHelper.cast(File.class, arguments.getObjects()).stream()
+		return fileBytesBusiness.createFromFiles(CollectionHelper.cast(File.class, arguments.getObjects()).stream()
 				.filter(x -> Boolean.TRUE.equals(x.getIsBytesPersistableOnCreate())).collect(Collectors.toList()),arguments.getEntityManager());
 	}
 	

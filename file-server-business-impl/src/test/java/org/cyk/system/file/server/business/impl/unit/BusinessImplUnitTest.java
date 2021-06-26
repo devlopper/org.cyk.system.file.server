@@ -10,7 +10,6 @@ import org.cyk.utility.file.PathsProcessor;
 import org.cyk.utility.file.PathsScanner;
 import org.cyk.utility.persistence.query.EntityCreator;
 import org.cyk.utility.persistence.query.EntityReader;
-import org.junit.jupiter.api.Test;
 
 public class BusinessImplUnitTest extends AbstractUnitTestMemory {
 	private static final long serialVersionUID = 1L;

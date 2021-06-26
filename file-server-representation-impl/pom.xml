@@ -36,6 +36,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>org.cyk.jee.utility.representation.server</groupId>
+			<artifactId>jee-utility-representation-server</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
 		    <groupId>org.jboss.resteasy</groupId>
 		    <artifactId>resteasy-multipart-provider</artifactId>
 		    <version>${org.jboss.resteasy-resteasy-multipart-provider.version}</version>
@@ -48,21 +54,4 @@
 		    <version>2.6</version>
 		</dependency>		
 	</dependencies>		
-	
-	<profiles>
-		<profile>
-			<id>org.cyk.test</id>
-			<properties>
-				<org.cyk.test.classes>org.cyk.system.file.server.representation.impl.integration.DataSourceDefinition</org.cyk.test.classes>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
-					<version>1.4.197</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>	
-	
 </project>
