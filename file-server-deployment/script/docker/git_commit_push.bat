@@ -8,12 +8,12 @@ SET current_directory=%CD%
 
 echo cyk pom publishing
 cd E:\Repositories\source code\git\org\cyk\pom
-git commit -a -m dgbf actor server publishing %timestamp%
-git push myssh develop:dgbf_actor_server_cyk_pom_ssh
+git commit -a -m cyk file server publishing %timestamp%
+git push cyk_file_server develop:cyk_pom
 
 echo cyk utility publishing
 cd E:\Repositories\source\git\org\cyk\utility
-git commit -a -m dgbf actor server publishing %timestamp%
-git push myssh develop_0_1_0:dgbf_actor_server_cyk_utility_ssh
+git commit -a -m cyk utility server publishing %timestamp%
+git push cyk_file_server develop_0_1_0:cyk_utility
 
 cd %current_directory%
