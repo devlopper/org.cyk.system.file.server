@@ -6,8 +6,8 @@ import java.util.Collection;
 
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
-import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.junit.jupiter.api.Test;
 
 public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
@@ -42,7 +42,7 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 	}
 	
 	private void assertFileReadDynamicFilter(String name,String[] expectedIdentifiers,String[] expectedNamesAndExtensions){
-		Collection<File> files = DynamicManyExecutor.getInstance().read(File.class,new QueryExecutorArguments().addFilterField(File.FIELD_NAME, name));
+		Collection<File> files = EntityReader.getInstance().readManyDynamically(File.class,new QueryExecutorArguments().addFilterField(File.FIELD_NAME, name));
 		assertThat(files).isNotEmpty();		
 		assertThat(files.stream().map(x -> x.getIdentifier())).containsExactly(expectedIdentifiers);
 		//assertThat(files.stream().map(x -> x.getName())).containsExactly((String)null);

@@ -27,11 +27,22 @@ import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryManager;
 import org.cyk.utility.persistence.server.query.ReaderByCollection;
+import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
+import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
 
 public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Serializable {
 
 	@Override
+	public File readOne(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC_ONE.equals(arguments.getQuery().getIdentifier()))
+			return DynamicOneExecutor.getInstance().read(File.class,arguments.setQuery(null));
+		throw new RuntimeException("Not yet handled : "+arguments);
+	}
+	
+	@Override
 	public Collection<File> readMany(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_READ_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().read(File.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_READ_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return readWhereFilter(arguments);	
 		return QueryExecutor.getInstance().executeReadMany(File.class, arguments);
@@ -39,6 +50,8 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	
 	@Override
 	public Long count(QueryExecutorArguments arguments) {
+		if(QUERY_IDENTIFIER_COUNT_DYNAMIC.equals(arguments.getQuery().getIdentifier()))
+			return DynamicManyExecutor.getInstance().count(File.class,arguments.setQuery(null));
 		if(arguments != null && arguments.getQuery() != null && QUERY_IDENTIFIER_COUNT_WHERE_FILTER.equals(arguments.getQuery().getIdentifier()))
 			return countWhereFilter(arguments);
 		return QueryExecutor.getInstance().executeCount(arguments);
@@ -96,7 +109,7 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<String> readUniformResourceLocators() {
-		return EntityManagerGetter.getInstance().get().createNativeQuery(String.format("SELECT t.%1$s FROM File t ORDER BY t.%1$s ASC",File.FIELD_UNIFORM_RESOURCE_LOCATOR))
+		return EntityManagerGetter.getInstance().get().createNativeQuery(String.format("SELECT t.%1$s FROM at_File t ORDER BY t.%1$s ASC",File.COLUMN_UNIFORM_RESOURCE_LOCATOR))
 				.getResultList();
 	}
 	
@@ -108,7 +121,7 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 			@SuppressWarnings("unchecked")
 			@Override
 			protected Collection<Object[]> __read__(Collection<String> values) {
-				return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT t.identifier,t.name,t.extension FROM File t WHERE t.identifier IN :identifiers")
+				return EntityManagerGetter.getInstance().get().createNativeQuery("SELECT t.identifier,t.name,t.extension FROM at_File t WHERE t.identifier IN :identifiers")
 						.setParameter("identifiers", values).getResultList();
 			}			
 		}.read(identifiers);

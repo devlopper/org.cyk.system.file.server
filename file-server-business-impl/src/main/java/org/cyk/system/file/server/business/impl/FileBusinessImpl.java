@@ -48,11 +48,11 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	
 	@Override
 	public TransactionResult import_() {
-		TransactionResult result = new TransactionResult().setName("files collector");
+		TransactionResult result = new TransactionResult().setName("files collector").setTupleName("file");
 		String pathsNames = ConfigurationHelper.getValueAsString(FILES_PATHS_NAMES);
 		if(StringHelper.isBlank(pathsNames)) {
 			LogHelper.logWarning(String.format("No files paths names found under variable named %s", FILES_PATHS_NAMES), getClass());
-			return null;
+			return result;
 		}
 		String[] array = pathsNames.split(";");
 		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf")
@@ -69,7 +69,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 			}
 		});
 		create(files);
-		result.setNumberOfCreation(Long.valueOf(files.size()));
+		result.incrementNumberOfCreation(Long.valueOf(files.size()));
 		result.log(getClass());
 		return result;
 	}

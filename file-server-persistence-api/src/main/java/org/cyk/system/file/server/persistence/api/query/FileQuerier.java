@@ -12,6 +12,14 @@ import org.cyk.utility.__kernel__.value.Value;
 
 public interface FileQuerier extends Querier {
 
+	File readOne(QueryExecutorArguments arguments);
+	Collection<File> readMany(QueryExecutorArguments arguments);
+	Long count(QueryExecutorArguments arguments);
+	
+	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.READ_DYNAMIC_ONE);
+	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.READ_DYNAMIC);
+	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.COUNT_DYNAMIC);
+	
 	Collection<Object[]> readNamesAndExtensionsByIdentifiers(Collection<String> identifiers);
 	Collection<Object[]> readNamesAndExtensionsByIdentifiers(String...identifiers);
 	Collection<Object[]> readNamesAndExtensions(Collection<File> files);
@@ -34,11 +42,6 @@ public interface FileQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.COUNT_WHERE_FILTER.getValue());
 	Long countWhereFilter(QueryExecutorArguments arguments);
-	
-	/**/
-	
-	Collection<File> readMany(QueryExecutorArguments arguments);
-	Long count(QueryExecutorArguments arguments);
 	
 	/**/
 	

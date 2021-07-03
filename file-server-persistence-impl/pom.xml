@@ -54,5 +54,12 @@
 			<version>1.4.197</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github.marcosemiao.log4jdbc</groupId>
+			<artifactId>log4jdbc-file</artifactId>
+			<version>0.2.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>		
 </project>

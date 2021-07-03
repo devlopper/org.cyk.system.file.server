@@ -6,6 +6,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
@@ -18,10 +19,10 @@ import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.number.Intervals;
-import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
+import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
 
 @ApplicationScoped
-public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<FileDto> implements FileRepresentation,Serializable {
+public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<FileDto> implements FileRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject private FileBusiness fileBusiness;
@@ -36,13 +37,13 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 			}
 			@Override
 			public Runnable getRunnable() {
-				return new Runnable() {					
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
-					public void run() {
-						TransactionResult transactionResult = fileBusiness.import_();
-						if(transactionResult == null)
-							return;
-						runnerArguments.setResult(String.format("%s file(s) imported.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
+					public TransactionResult transact() {						
+						TransactionResult result = fileBusiness.import_();
+						if(Boolean.TRUE.equals(NumberHelper.isGreaterThanZero(result.getNumberOfCreation())))
+							responseBuilderArguments.setStatus(Status.CREATED);
+						return result;
 					}
 				};
 			}
@@ -72,7 +73,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		});
 	}
 	
-	@Override
+	//@Override
 	public Response createFromDirectories(List<String> directories,/*List<String> mimeTypeTypes,List<String> mimeTypeSubTypes,List<String> mimeTypes,*/List<String> extensions
 			,List<String> sizes,Integer batchSize,Integer count) {
 		Intervals intervals = null;
@@ -90,7 +91,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		return Response.ok("Files has been created from directories").build();
 	}
 	
-	@Override
+	//@Override
 	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter,Boolean loggableAsInfo) {
 		/*Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class);
 		arguments.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_VIEW_01)
@@ -104,7 +105,7 @@ public class FileRepresentationImpl extends AbstractRepresentationEntityImpl<Fil
 		return null;
 	}
 	
-	@Override
+	//@Override
 	public Response download(String identifier,String isInline) {
 		/*
 		File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
