@@ -64,7 +64,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 			@Override
 			protected void __process__(Path path) {
 				String url = path.toFile().toURI().toString();
-				if(existingsURLs.contains(url))
+				if(Boolean.TRUE.equals(CollectionHelper.contains(existingsURLs, url)))
 					return;
 				files.add(instantiateFile(path,url));
 			}

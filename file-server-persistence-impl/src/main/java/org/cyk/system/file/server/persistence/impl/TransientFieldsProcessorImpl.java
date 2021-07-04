@@ -23,16 +23,6 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		for(String fieldName : fieldsNames) {
 			if(File.FIELD_NAME_AND_EXTENSION.equals(fieldName))
 				new FileNameAndExtensionReader().readThenSet(files, null);
-				/*Collection<Object[]> arrays = FileQuerier.getInstance().readNamesAndExtensions(files);
-				if(CollectionHelper.isNotEmpty(arrays)) {
-					for(File file : files) {
-						for(Object[] array : arrays) {
-							if(array[0].equals(file.getIdentifier()))
-								file.setNameAndExtension(FileHelper.concatenateNameAndExtension((String)array[1], (String)array[2]));
-						}
-					}
-				}*/
-			
 		}		
 	}
 }

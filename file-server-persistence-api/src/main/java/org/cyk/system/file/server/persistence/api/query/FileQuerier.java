@@ -19,12 +19,7 @@ public interface FileQuerier extends Querier {
 	String QUERY_IDENTIFIER_READ_DYNAMIC_ONE = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.READ_DYNAMIC_ONE);
 	String QUERY_IDENTIFIER_READ_DYNAMIC = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.READ_DYNAMIC);
 	String QUERY_IDENTIFIER_COUNT_DYNAMIC = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.COUNT_DYNAMIC);
-	/*
-	Collection<Object[]> readNamesAndExtensionsByIdentifiers(Collection<String> identifiers);
-	Collection<Object[]> readNamesAndExtensionsByIdentifiers(String...identifiers);
-	Collection<Object[]> readNamesAndExtensions(Collection<File> files);
-	Collection<Object[]> readNamesAndExtensions(File...files);
-	*/
+	
 	Collection<String> readUniformResourceLocators();
 	
 	String QUERY_IDENTIFIER_READ_WHERE_BYTES_DO_NOT_EXISTS = QueryIdentifierBuilder.getInstance().build(File.class, "readWhereBytesDoNotExists");
