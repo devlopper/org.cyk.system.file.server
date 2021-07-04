@@ -1,7 +1,6 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;

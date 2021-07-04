@@ -3,10 +3,9 @@ package org.cyk.system.file.server.persistence.impl;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.query.FileNameAndExtensionReader;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.file.FileHelper;
 import org.cyk.utility.persistence.query.Filter;
 
 @org.cyk.system.file.server.annotation.System
@@ -22,8 +21,9 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 	
 	public void processFiles(Collection<File> files,Collection<String> fieldsNames) {
 		for(String fieldName : fieldsNames) {
-			if(File.FIELD_NAME_AND_EXTENSION.equals(fieldName)) {
-				Collection<Object[]> arrays = FileQuerier.getInstance().readNamesAndExtensions(files);
+			if(File.FIELD_NAME_AND_EXTENSION.equals(fieldName))
+				new FileNameAndExtensionReader().readThenSet(files, null);
+				/*Collection<Object[]> arrays = FileQuerier.getInstance().readNamesAndExtensions(files);
 				if(CollectionHelper.isNotEmpty(arrays)) {
 					for(File file : files) {
 						for(Object[] array : arrays) {
@@ -31,8 +31,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 								file.setNameAndExtension(FileHelper.concatenateNameAndExtension((String)array[1], (String)array[2]));
 						}
 					}
-				}
-			}
+				}*/
+			
 		}		
 	}
 }

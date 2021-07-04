@@ -16,19 +16,16 @@ import java.util.Collection;
 
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.file.FileHelper;
-import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryManager;
-import org.cyk.utility.persistence.server.query.ReaderByCollection;
 import org.cyk.utility.persistence.server.query.executor.DynamicManyExecutor;
 import org.cyk.utility.persistence.server.query.executor.DynamicOneExecutor;
+import org.cyk.utility.persistence.server.query.executor.field.GenericFieldExecutor;
 
 public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Serializable {
 
@@ -106,13 +103,11 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 		arguments.setFilter(filter);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<String> readUniformResourceLocators() {
-		return EntityManagerGetter.getInstance().get().createNativeQuery(String.format("SELECT t.%1$s FROM at_File t ORDER BY t.%1$s ASC",File.COLUMN_UNIFORM_RESOURCE_LOCATOR))
-				.getResultList();
+		return GenericFieldExecutor.getInstance().getValues(File.class, String.class, File.FIELD_UNIFORM_RESOURCE_LOCATOR);
 	}
-	
+	/*
 	@Override
 	public Collection<Object[]> readNamesAndExtensionsByIdentifiers(Collection<String> identifiers) {
 		if(CollectionHelper.isEmpty(identifiers))
@@ -147,7 +142,7 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 			return null;
 		return readNamesAndExtensions(CollectionHelper.listOf(files));
 	}
-	
+	/
 	/**/
 	
 	public static void initialize() {
