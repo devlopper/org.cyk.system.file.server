@@ -1,8 +1,11 @@
 package org.cyk.system.file.server.representation.api;
 
+import java.util.List;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -18,13 +21,14 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	String PATH_IMPORT = "/import";
 	@POST
 	@Path(PATH_IMPORT)
-	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	Response import_();
+	@Produces({ MediaType.APPLICATION_JSON})
+	Response import_(@QueryParam(PARAMETER_PATHS_NAMES) List<String> pathsNames
+			,@QueryParam(PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) String acceptedPathNameRegularExpression);
 	
 	String PATH_EXTRACT_BYTES = "/extractbytes";
 	@POST
 	@Path(PATH_EXTRACT_BYTES)
-	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON})
 	Response extractBytes();
 	/*
 	String PATH_CREATE_FROM_DIRECTORIES = "create_from_directories";
@@ -63,10 +67,11 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	
 	//String PATH = "file";
 	
-	
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = "/upload";
 	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
 	String PATH_GET_MANY_BY_GLOBAL_FILTER = "/filter/{__filter__}";
 	
+	String PARAMETER_PATHS_NAMES = "paths";
+	String PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION = "accepted";
 }

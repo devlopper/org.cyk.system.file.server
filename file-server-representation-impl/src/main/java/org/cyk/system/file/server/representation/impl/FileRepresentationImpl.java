@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,12 +10,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
+import org.cyk.system.file.server.business.impl.FileBusinessImpl;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
+import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
@@ -28,7 +32,7 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	@Inject private FileBusiness fileBusiness;
 	
 	@Override
-	public Response import_() {
+	public Response import_(List<String> pathsNames, String acceptedPathNameRegularExpression) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
@@ -39,8 +43,11 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			public Runnable getRunnable() {
 				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){
 					@Override
-					public TransactionResult transact() {						
-						TransactionResult result = fileBusiness.import_();
+					public TransactionResult transact() {
+						TransactionResult result = fileBusiness.import_(CollectionHelper.isEmpty(pathsNames) 
+								? ConfigurationHelper.getValueAsStrings(FileBusinessImpl.FILES_PATHS_NAMES) : pathsNames
+								, StringHelper.isBlank(acceptedPathNameRegularExpression) 
+								? ConfigurationHelper.getValueAsString(FileBusinessImpl.ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) : acceptedPathNameRegularExpression);
 						if(Boolean.TRUE.equals(NumberHelper.isGreaterThanZero(result.getNumberOfCreation())))
 							responseBuilderArguments.setStatus(Status.CREATED);
 						return result;

@@ -10,17 +10,18 @@ import org.cyk.utility.number.Intervals;
 
 public interface FileBusiness extends SpecificBusiness<File> {
 
+	String IMPORT = "IMPORT";
 	/**
 	 * Get file from some where (the file system, social network and so on) and store it in the database
 	 */
+	TransactionResult import_(Collection<String> pathsNames,String acceptedPathNameRegularExpression);	
 	TransactionResult import_();
-	String IMPORT = "IMPORT";
 	
-	TransactionResult extractBytes();
 	String EXTRACT_BYTES = "EXTRACT_BYTES";
+	TransactionResult extractBytes();
 	
-	TransactionResult extractText();
 	String EXTRACT_TEXT = "EXTRACT_TEXT";
+	TransactionResult extractText();
 	
 	FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
 			,Integer batchSize,Integer count);

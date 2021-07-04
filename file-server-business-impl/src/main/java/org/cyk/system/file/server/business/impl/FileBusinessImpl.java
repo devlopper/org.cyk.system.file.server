@@ -42,20 +42,21 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 
 	public static Path ROOT_FOLDER_PATH;
 	public static final String FILES_PATHS_NAMES = "FILES_PATHS_NAMES";
+	public static final String ACCEPTED_PATH_NAME_REGULAR_EXPRESSION = "ACCEPTED_PATH_NAME_REGULAR_EXPRESSION";
 	
 	@Inject private FileBytesBusiness fileBytesBusiness;
 	@Inject private FileTextBusiness fileTextBusiness;
 	
 	@Override
-	public TransactionResult import_() {
+	public TransactionResult import_(Collection<String> pathsNames,String acceptedPathNameRegularExpression) {
+		if(CollectionHelper.isEmpty(pathsNames))
+			throw new RuntimeException("paths names required");
+		if(StringHelper.isBlank(acceptedPathNameRegularExpression))
+			throw new RuntimeException("accepted path name regular expression required");
+		
 		TransactionResult result = new TransactionResult().setName("files collector").setTupleName("file");
-		String pathsNames = ConfigurationHelper.getValueAsString(FILES_PATHS_NAMES);
-		if(StringHelper.isBlank(pathsNames)) {
-			LogHelper.logWarning(String.format("No files paths names found under variable named %s", FILES_PATHS_NAMES), getClass());
-			return result;
-		}
-		String[] array = pathsNames.split(";");
-		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(array).setAcceptedPathNameRegularExpression(".pdf")
+		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(pathsNames)
+				.setAcceptedPathNameRegularExpression(acceptedPathNameRegularExpression)
 				.setMinimalSize(File.MINIMAL_SIZE).setMaximalSize(File.MAXIMAL_SIZE));
 		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
 		Collection<File> files = new ArrayList<>();
@@ -72,6 +73,23 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		result.incrementNumberOfCreation(Long.valueOf(files.size()));
 		result.log(getClass());
 		return result;
+	}
+	
+	@Override
+	public TransactionResult import_() {
+		Collection<String> pathsNames = ConfigurationHelper.getValueAsStrings(FILES_PATHS_NAMES);
+		if(CollectionHelper.isEmpty(pathsNames)) {
+			LogHelper.logWarning(String.format("No files paths names found under variable named %s", FILES_PATHS_NAMES), getClass());
+			return null;
+		}
+		String acceptedPathNameRegularExpression = ConfigurationHelper.getValueAsString(ACCEPTED_PATH_NAME_REGULAR_EXPRESSION);
+		if(StringHelper.isBlank(acceptedPathNameRegularExpression))
+			acceptedPathNameRegularExpression = ".pdf";
+		if(StringHelper.isBlank(acceptedPathNameRegularExpression)) {
+			LogHelper.logWarning(String.format("No accepted path name regular expression found under variable named %s", ACCEPTED_PATH_NAME_REGULAR_EXPRESSION), getClass());
+			return null;
+		}
+		return import_(pathsNames, acceptedPathNameRegularExpression);
 	}
 	
 	private static File instantiateFile(Path path,String url) {

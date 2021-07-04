@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.representation.impl.openapi;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -16,8 +17,8 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	public static final String PATH = "open/file";
 	
 	@Override
-	public Response import_() {
-		return __inject__(FileRepresentation.class).import_();
+	public Response import_(List<String> pathsNames,String acceptedPathNameRegularExpression) {
+		return __inject__(FileRepresentation.class).import_(pathsNames, acceptedPathNameRegularExpression);
 	}
 	
 	@Override
