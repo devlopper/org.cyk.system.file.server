@@ -34,7 +34,7 @@ public class FileOpenAPIIT extends AbstractClientIT {
 	
     @Test @InSequence(2)
     public void import_() {
-    	Response response = given().contentType(ContentType.URLENC).formParam("nom", "komenan").when().post(FileOpenAPI.OPERATION_IMPORT);
+    	Response response = given().contentType(ContentType.URLENC).when().post(FileOpenAPI.OPERATION_IMPORT);
     	response.then().statusCode(201);
     	assertThat(response.getHeader(Action.CREATE.name())).isEqualTo("1");
     	assertThat(response.getHeader(Action.UPDATE.name())).isEqualTo(null);

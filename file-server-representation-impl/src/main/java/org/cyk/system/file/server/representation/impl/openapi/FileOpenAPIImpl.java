@@ -25,6 +25,7 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	public Response get() {
 		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
+		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
 		return EntityReader.getInstance().read(arguments);
 	}
 }
