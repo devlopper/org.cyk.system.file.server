@@ -14,7 +14,6 @@ public class FileNameAndExtensionReader extends AbstractFileReader implements Se
 
 	@Override
 	protected void __set__(File file, Object[] array) {
-		super.__set__(file, array);
 		Integer index = 1;
 		file.setNameAndExtension(FileHelper.concatenateNameAndExtension((String)array[index++], (String)array[index++]));
 	}
