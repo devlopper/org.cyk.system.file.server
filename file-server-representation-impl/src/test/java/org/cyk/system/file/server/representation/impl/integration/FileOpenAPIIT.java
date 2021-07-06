@@ -3,7 +3,6 @@ package org.cyk.system.file.server.representation.impl.integration;
 import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 
 import java.nio.charset.Charset;
 
@@ -28,8 +27,27 @@ public class FileOpenAPIIT extends AbstractClientIT {
 	
 	@Test @InSequence(1)
     public void get() {
-		Response response = given().when().get(FileOpenAPI.OPERATION_GET);
-		response.then().statusCode(200).assertThat().body("nameAndExtension", hasItems("Beni soit la Sainte Trinité (couplets).pdf"));
+		assertGet(null, null, null, "10", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"});
+    }
+	
+	@Test @InSequence(1)
+    public void get_page() {
+		assertGet(null, 0, 1, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"});
+    }
+	
+	@Test @InSequence(1)
+    public void get_filter_Sainte() {
+		assertGet("Sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"});
+    }
+	
+	@Test @InSequence(1)
+    public void get_filter_sainte() {
+		assertGet("sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"});
+    }
+	
+	@Test @InSequence(1)
+    public void get_filter_croix() {
+		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.pdf"});
     }
 	
     @Test @InSequence(2)

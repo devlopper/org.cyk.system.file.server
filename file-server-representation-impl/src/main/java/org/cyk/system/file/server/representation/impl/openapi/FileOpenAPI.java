@@ -11,15 +11,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.cyk.system.file.server.representation.api.FileRepresentation;
+import org.cyk.utility.representation.EntityReader;
+import org.cyk.utility.representation.server.OpenAPI;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(FileOpenAPI.PATH)
 @Tag(name = "File")
-public interface FileOpenAPI {
+public interface FileOpenAPI extends OpenAPI {
 	
 	public static final String PATH = "open/file";
 	
@@ -32,8 +35,11 @@ public interface FileOpenAPI {
 			@APIResponse(description = "Files imported",responseCode = "201", content = @Content(mediaType = MediaType.TEXT_PLAIN))
 			,@APIResponse(description = "Error while importing files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
-	Response import_(@QueryParam(FileRepresentation.PARAMETER_PATHS_NAMES) List<String> pathsNames
-			,@QueryParam(FileRepresentation.PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) String acceptedPathNameRegularExpression);
+	Response import_(
+			@Parameter(name = "Paths names") 
+			@QueryParam(FileRepresentation.PARAMETER_PATHS_NAMES) List<String> pathsNames
+			,@Parameter(name = "Accepted path name regular expression") 
+			@QueryParam(FileRepresentation.PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) String acceptedPathNameRegularExpression);
 	
 	String OPERATION_GET = "get";
 	@GET
@@ -42,12 +48,16 @@ public interface FileOpenAPI {
 	@Operation(description = "Get files",operationId = "get_files")
 	@APIResponses(value = {
 			@APIResponse(description = "Files got",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON))
-			,@APIResponse(description = "Error while getting file list",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+			,@APIResponse(description = "Error while getting files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
-	Response get();
+	Response get(
+			@Parameter(name = "Filter as string")
+			@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString
+			,@Parameter(name = "First tuple index")
+			@QueryParam(EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			,@Parameter(name = "Number of tuples")
+			@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
 	
-	/**/
-	
-	public static final String PARAMETER_FILE_IDENTIFIER = "file";
-	
+	/**/	
 }

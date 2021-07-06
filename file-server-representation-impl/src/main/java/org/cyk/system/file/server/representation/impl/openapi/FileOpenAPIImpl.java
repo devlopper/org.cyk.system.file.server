@@ -22,9 +22,11 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	}
 	
 	@Override
-	public Response get() {
+	public Response get(String filterAsString,Integer firstTupleIndex,Integer numberOfTuples) {
 		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class);
-		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);		
+		arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
 		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
 		return EntityReader.getInstance().read(arguments);
 	}
