@@ -53,7 +53,7 @@ public interface FileOpenAPI extends OpenAPI {
 	Response get(
 			@Parameter(name = EntityReader.PARAMETER_NAME_FILTER_AS_STRING,description = "Filter")
 			@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString
-			,@Parameter(name = EntityReader.PARAMETER_NAME_FILTER_AS_STRING,description = "Countable")
+			,@Parameter(name = EntityReader.PARAMETER_NAME_COUNTABLE,description = "Countable")
 			@QueryParam(EntityReader.PARAMETER_NAME_COUNTABLE) Boolean countable
 			,@Parameter(name = EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX,description = "First file index")
 			@QueryParam(EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX) Integer firstTupleIndex
