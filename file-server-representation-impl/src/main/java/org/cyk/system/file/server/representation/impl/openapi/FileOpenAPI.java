@@ -36,9 +36,9 @@ public interface FileOpenAPI extends OpenAPI {
 			,@APIResponse(description = "Error while importing files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
 	Response import_(
-			@Parameter(name = "Paths names") 
+			@Parameter(name = FileRepresentation.PARAMETER_PATHS_NAMES) 
 			@QueryParam(FileRepresentation.PARAMETER_PATHS_NAMES) List<String> pathsNames
-			,@Parameter(name = "Accepted path name regular expression") 
+			,@Parameter(name = FileRepresentation.PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) 
 			@QueryParam(FileRepresentation.PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) String acceptedPathNameRegularExpression);
 	
 	String OPERATION_GET = "get";
@@ -51,11 +51,13 @@ public interface FileOpenAPI extends OpenAPI {
 			,@APIResponse(description = "Error while getting files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
 	Response get(
-			@Parameter(name = "Filter as string")
+			@Parameter(name = EntityReader.PARAMETER_NAME_FILTER_AS_STRING,description = "Filter")
 			@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString
-			,@Parameter(name = "First tuple index")
+			,@Parameter(name = EntityReader.PARAMETER_NAME_FILTER_AS_STRING,description = "Countable")
+			@QueryParam(EntityReader.PARAMETER_NAME_COUNTABLE) Boolean countable
+			,@Parameter(name = EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX,description = "First file index")
 			@QueryParam(EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX) Integer firstTupleIndex
-			,@Parameter(name = "Number of tuples")
+			,@Parameter(name = EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES,description = "Number of files")
 			@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
