@@ -3,9 +3,11 @@ package org.cyk.system.file.server.persistence.impl.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.query.FileExtensionMimeTypeBytesReader;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,19 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 						,"il est vivant le seigneur mon dieu.pdf"
 					}
 			);
+	}
+	
+	@Test
+	public void file_reader_ExtensionMimeTypeBytesReader(){
+		Collection<File> files = new FileExtensionMimeTypeBytesReader().readByIdentifiersThenInstantiate(List.of("002aadb8-2f00-4bda-8e41-67e7938eed2b"), null);
+		assertThat(files).hasSize(1);
+		File file = files.iterator().next();
+		assertThat(file).isNotNull();
+		assertThat(file.getIdentifier()).isEqualTo("002aadb8-2f00-4bda-8e41-67e7938eed2b");
+		assertThat(file.getExtension()).isEqualTo("pdf");
+		assertThat(file.getMimeType()).isEqualTo("application/pdf");
+		assertThat(file.getBytes()).isNotNull();
+		assertThat(new String(file.getBytes())).isEqualTo("hello world!");
 	}
 	
 	private void assertFileReadDynamicFilter(String name,String[] expectedIdentifiers,String[] expectedNamesAndExtensions){

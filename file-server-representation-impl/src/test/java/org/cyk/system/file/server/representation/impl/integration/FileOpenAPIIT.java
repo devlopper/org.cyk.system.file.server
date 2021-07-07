@@ -47,10 +47,15 @@ public class FileOpenAPIIT extends AbstractClientIT {
 	
 	@Test @InSequence(1)
     public void get_filter_croix() {
-		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.pdf"});
+		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.txt"});
     }
 	
-    @Test @InSequence(2)
+	@Test @InSequence(2)
+    public void download() {
+		assertDownload("002aadb8-2f00-4bda-8e41-67e7938eed2b", "Chant à la croix", "txt","text/plain", 2l, "hello world!");
+    }
+	
+    @Test @InSequence(3)
     public void import_() {
     	Response response = given().contentType(ContentType.URLENC).when().post(FileOpenAPI.OPERATION_IMPORT);
     	response.then().statusCode(201);

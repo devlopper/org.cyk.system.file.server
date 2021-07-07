@@ -33,4 +33,9 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
 		return EntityReader.getInstance().read(arguments);
 	}
+	
+	@Override
+	public Response download(String identifier, Boolean isInline) {
+		return __inject__(FileRepresentation.class).download(identifier, isInline);
+	}
 }

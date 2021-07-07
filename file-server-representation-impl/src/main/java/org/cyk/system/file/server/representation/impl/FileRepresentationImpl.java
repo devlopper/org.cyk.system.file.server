@@ -5,15 +5,18 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.impl.FileBusinessImpl;
+import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
+import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
@@ -21,6 +24,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.number.Intervals;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
 
@@ -111,34 +115,30 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 		return null;
 	}
 	
-	//@Override
-	public Response download(String identifier,String isInline) {
-		/*
-		File file = __inject__(FileBusiness.class).findBySystemIdentifier(identifier);
-		if(file == null)
-			return Response.status(Status.NOT_FOUND).build();
-		byte[] bytes = null;
-		if(StringHelper.isBlank(file.getUniformResourceLocator())) {
-			FileBytes fileBytes = __inject__(FileBytesBusiness.class).findByFile(file);
-			bytes = fileBytes.getBytes();
-		}else {
-			try {
-				URI uri = new URI(file.getUniformResourceLocator());
-				bytes = IOUtils.toByteArray(uri.toURL());
-			} catch (Exception exception) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exception.toString()).build();
+	@Override
+	public Response download(String identifier,Boolean isInline) {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
 			}
-		}
-		ResponseBuilder response = Response.ok(bytes);
-	    response.header(HttpHeaders.CONTENT_TYPE, file.getMimeType());
-	    String name = FileHelper.concatenateNameAndExtension(file.getName(), file.getExtension());
-	    response.header(HttpHeaders.CONTENT_DISPOSITION, (Boolean.parseBoolean(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
-	    		+"="+name);
-	    Long size = file.getSize();
-	    if(size!=null && size > 0)
-	    	response.header(HttpHeaders.CONTENT_LENGTH, size);
-	    return response.build();
-	    */
-		return null;
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						File file = fileBusiness.download(identifier);
+						responseBuilderArguments.setEntity(file.getBytes());
+						responseBuilderArguments.setHeader(HttpHeaders.CONTENT_TYPE, file.getMimeType());
+					    String name = FileHelper.concatenateNameAndExtension(file.getName(), file.getExtension());
+					    responseBuilderArguments.setHeader(HttpHeaders.CONTENT_DISPOSITION, (Boolean.TRUE.equals(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
+					    		+"="+name);
+					    if(NumberHelper.isGreaterThanZero(file.getSize()))
+					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());						
+					}
+				};
+			}
+		});
 	}
 }

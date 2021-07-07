@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.impl.openapi.FileOpenAPI;
 import org.cyk.utility.__kernel__.rest.ResponseHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -34,5 +35,20 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		Response response = requestSpecification.get(FileOpenAPI.OPERATION_GET);
 		response.then().statusCode(200).assertThat().body(File.FIELD_NAME_AND_EXTENSION, hasItems(expectedNameAndExtension));
 		assertThat(response.getHeader(ResponseHelper.HEADER_COLLECTION_SIZE)).isEqualTo(expectedCollectionSize);
+    }
+	
+	protected void assertDownload(String identifier,String expectedName,String expectedExtension,String expectedMimeType,Long expectedSize,String expectedBytes) {
+		RequestSpecification requestSpecification = given().when();
+		requestSpecification.queryParam(FileRepresentation.PARAMETER_IS_INLINE, Boolean.TRUE);	
+		Response response = requestSpecification.get(identifier+"/download");
+		response.then().statusCode(200);
+		//System.out.println("AbstractClientIT.assertDownload() :::::::::::: "+response.getBody().as(File.class));
+		/*
+		try {
+			assertThat(IOUtils.toString(response.getBody().asInputStream(),"UTF-8")).isEqualTo(expectedBytes);
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
+		*/
     }
 }

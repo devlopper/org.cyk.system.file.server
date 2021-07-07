@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -60,6 +61,12 @@ public interface FileOpenAPI extends OpenAPI {
 			,@Parameter(name = EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES,description = "Number of files")
 			@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
+	
+	String OPERATION_DOWNLOAD = "{identifier}/download";
+	@GET
+	@Path(OPERATION_DOWNLOAD)
+	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
+	Response download(@PathParam(FileRepresentation.PARAMETER_IDENTIFIER) String identifier,@QueryParam(FileRepresentation.PARAMETER_IS_INLINE) Boolean isInline);
 	
 	/**/	
 }

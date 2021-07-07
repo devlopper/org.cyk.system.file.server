@@ -27,4 +27,6 @@ public interface FileBusiness extends SpecificBusiness<File> {
 			,Integer batchSize,Integer count);
 	
 	Collection<File> findWhereNameContains(String string);
+	
+	File download(String identifier);
 }

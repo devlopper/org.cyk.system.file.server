@@ -1,9 +1,11 @@
 package org.cyk.system.file.server.business.impl;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -11,11 +13,13 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.api.FileBytesBusiness;
 import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.query.FileExtensionMimeTypeBytesReader;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.collection.CollectionProcessor;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
@@ -25,6 +29,7 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.string.Strings;
+import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
@@ -165,6 +170,26 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		Collection<File> files = EntityReader.getInstance().readMany(File.class);
 		fileTextBusiness.createFromFiles(files);
 		return result;
+	}
+	
+	@Override
+	public File download(String identifier) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("File identifier", identifier);
+		Collection<File> files = new FileExtensionMimeTypeBytesReader().readByIdentifiersThenInstantiate(List.of(identifier), null);
+		if(CollectionHelper.isEmpty(files))
+			throw new RuntimeException("File bytes instance not found");
+		if(files.size() > 1)
+			throw new RuntimeException("Too much files found");
+		File file = (File) files.iterator().next();
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("File", file);
+		if(file.getBytes() == null && StringHelper.isNotBlank(file.getUniformResourceLocator())) {
+			try {
+				file.setBytes(IOUtils.toByteArray(new URI(file.getUniformResourceLocator()).toURL()));
+			} catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		}
+		return file;
 	}
 	
 	/*

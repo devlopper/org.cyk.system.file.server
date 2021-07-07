@@ -2,8 +2,10 @@ package org.cyk.system.file.server.representation.api;
 
 import java.util.List;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -55,21 +57,20 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	Response getManyByGlobalFilter(@QueryParam(PARAMETER_IS_PAGEABLE) Boolean isPageable,@QueryParam(PARAMETER_FROM) Long from,@QueryParam(PARAMETER_COUNT) Long count
 			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter,@QueryParam("loggableAsInfo")Boolean loggableAsInfo);
+	*/
 	
+	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
 	@GET
 	@Path(PATH_DOWNLOAD_ONE)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
-	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) String isInline);
-	*/
+	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) Boolean isInline);
+	
 	/**/
-	
-	
-	
+
 	//String PATH = "file";
 	
 	String PATH_UPLOAD = ConstantString.UPLOAD;
 	String PATH_UPLOAD__ = "/upload";
-	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
 	String PATH_GET_MANY_BY_GLOBAL_FILTER = "/filter/{__filter__}";
 	
 	String PARAMETER_PATHS_NAMES = "paths";
