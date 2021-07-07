@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.impl.query.FileExtensionMimeTypeBytesReader;
+import org.cyk.system.file.server.persistence.impl.query.FileNameExtensionMimeTypeSizeBytesReader;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 	
 	@Test
 	public void file_reader_ExtensionMimeTypeBytesReader(){
-		Collection<File> files = new FileExtensionMimeTypeBytesReader().readByIdentifiersThenInstantiate(List.of("002aadb8-2f00-4bda-8e41-67e7938eed2b"), null);
+		Collection<File> files = new FileNameExtensionMimeTypeSizeBytesReader().readByIdentifiersThenInstantiate(List.of("002aadb8-2f00-4bda-8e41-67e7938eed2b"), null);
 		assertThat(files).hasSize(1);
 		File file = files.iterator().next();
 		assertThat(file).isNotNull();

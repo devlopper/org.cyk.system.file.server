@@ -52,7 +52,7 @@ public class FileOpenAPIIT extends AbstractClientIT {
 	
 	@Test @InSequence(2)
     public void download() {
-		assertDownload("002aadb8-2f00-4bda-8e41-67e7938eed2b", "Chant à la croix", "txt","text/plain", 2l, "hello world!");
+		assertDownload("002aadb8-2f00-4bda-8e41-67e7938eed2b", "Chant à la croix", "txt","text/plain", "25", "hello world!");
     }
 	
     @Test @InSequence(3)

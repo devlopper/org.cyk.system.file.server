@@ -19,7 +19,7 @@ import org.cyk.system.file.server.business.api.FileBytesBusiness;
 import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.system.file.server.persistence.impl.query.FileExtensionMimeTypeBytesReader;
+import org.cyk.system.file.server.persistence.impl.query.FileNameExtensionMimeTypeSizeBytesReader;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.collection.CollectionProcessor;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
@@ -175,7 +175,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	@Override
 	public File download(String identifier) {
 		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("File identifier", identifier);
-		Collection<File> files = new FileExtensionMimeTypeBytesReader().readByIdentifiersThenInstantiate(List.of(identifier), null);
+		Collection<File> files = new FileNameExtensionMimeTypeSizeBytesReader().readByIdentifiersThenInstantiate(List.of(identifier), null);
 		if(CollectionHelper.isEmpty(files))
 			throw new RuntimeException("File bytes instance not found");
 		if(files.size() > 1)
@@ -185,7 +185,10 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		if(file.getBytes() == null && StringHelper.isNotBlank(file.getUniformResourceLocator())) {
 			try {
 				file.setBytes(IOUtils.toByteArray(new URI(file.getUniformResourceLocator()).toURL()));
+				if(file.getBytes() != null)
+					file.setSize(Long.valueOf(file.getBytes().length));
 			} catch (Exception exception) {
+				exception.printStackTrace();
 				throw new RuntimeException(exception);
 			}
 		}

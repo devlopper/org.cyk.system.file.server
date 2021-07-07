@@ -37,12 +37,28 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		assertThat(response.getHeader(ResponseHelper.HEADER_COLLECTION_SIZE)).isEqualTo(expectedCollectionSize);
     }
 	
-	protected void assertDownload(String identifier,String expectedName,String expectedExtension,String expectedMimeType,Long expectedSize,String expectedBytes) {
+	protected void assertDownload(String identifier,String expectedName,String expectedExtension,String expectedMimeType,String expectedSize,String expectedBytes) {
 		RequestSpecification requestSpecification = given().when();
 		requestSpecification.queryParam(FileRepresentation.PARAMETER_IS_INLINE, Boolean.TRUE);	
 		Response response = requestSpecification.get(identifier+"/download");
 		response.then().statusCode(200);
-		//System.out.println("AbstractClientIT.assertDownload() :::::::::::: "+response.getBody().as(File.class));
+		assertThat(response.getHeader("Content-Length")).isEqualTo(expectedSize);
+		/*
+		InputStream inputStream = response.getBody().asInputStream();
+		
+		StringBuilder textBuilder = new StringBuilder();
+	    try (Reader reader = new BufferedReader(new InputStreamReader
+	      (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+	        int c = 0;
+	        while ((c = reader.read()) != -1) {
+	            textBuilder.append((char) c);
+	        }
+	    }catch(Exception exception) {
+	    	exception.printStackTrace();
+		}
+		
+		System.out.println("AbstractClientIT.assertDownload() :::::::::::: "+response.getBody().asPrettyString());
+		*/
 		/*
 		try {
 			assertThat(IOUtils.toString(response.getBody().asInputStream(),"UTF-8")).isEqualTo(expectedBytes);
