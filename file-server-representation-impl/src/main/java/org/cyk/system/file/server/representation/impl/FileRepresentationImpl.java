@@ -132,7 +132,8 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 					    responseBuilderArguments.setHeader(HttpHeaders.CONTENT_DISPOSITION, (Boolean.TRUE.equals(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
 					    		+"="+name);
 					    if(NumberHelper.isGreaterThanZero(file.getSize()))
-					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());						
+					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());
+					    responseBuilderArguments.setHeadersCORS();
 					}
 				};
 			}
