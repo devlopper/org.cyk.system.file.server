@@ -3,10 +3,8 @@ package org.cyk.system.file.server.business.api;
 import java.util.Collection;
 
 import org.cyk.system.file.server.persistence.entities.File;
-import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.business.SpecificBusiness;
 import org.cyk.utility.business.TransactionResult;
-import org.cyk.utility.number.Intervals;
 
 public interface FileBusiness extends SpecificBusiness<File> {
 
@@ -23,10 +21,13 @@ public interface FileBusiness extends SpecificBusiness<File> {
 	String EXTRACT_TEXT = "EXTRACT_TEXT";
 	TransactionResult extractText();
 	
+	String DOWNLOAD = "DOWNLOAD";
+	File download(String identifier);
+	
+	/*
 	FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
 			,Integer batchSize,Integer count);
 	
 	Collection<File> findWhereNameContains(String string);
-	
-	File download(String identifier);
+	*/	
 }

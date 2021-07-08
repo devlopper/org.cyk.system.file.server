@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
@@ -28,7 +26,6 @@ import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.TransactionResult;
@@ -36,7 +33,6 @@ import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.file.PathsProcessor;
 import org.cyk.utility.file.PathsScanner;
-import org.cyk.utility.number.Intervals;
 import org.cyk.utility.persistence.EntityManagerGetter;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
@@ -192,6 +188,12 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 				throw new RuntimeException(exception);
 			}
 		}
+		if(file.getBytes() == null) {
+			if(StringHelper.isBlank(file.getUniformResourceLocator()))
+				throw new RuntimeException(String.format("File bytes with identifier <<%s>> not found",file.getIdentifier()));
+			else
+				throw new RuntimeException(String.format("File bytes with identifier <<%s>> from url <<%s>> not found",file.getIdentifier(),file.getUniformResourceLocator()));
+		}
 		return file;
 	}
 	
@@ -209,10 +211,10 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		});
 	}
 	*/
-	
+	/*
 	@Override
 	public FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
-			,Integer batchSize,Integer count) {/*
+			,Integer batchSize,Integer count) {
 		System.out.println("Creating file from directories");
 		System.out.println("Directories : "+directories);
 		System.out.println("Extensions : "+extensions);
@@ -272,10 +274,9 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 			}
 		}
 		System.out.println("Done!!!");
-		*/
 		return this;
 	}
-	
+	*/
 	/*
 	@Override
 	public FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
@@ -355,7 +356,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		}
 		return this;
 	}*/
-	
+	/*
 	@Transactional(value=TxType.REQUIRES_NEW)
 	private void createFromDirectories(Collection<File> files) {
 		//createMany(files);
@@ -365,5 +366,5 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	public Collection<File> findWhereNameContains(String string) {
 		return null;//__persistence__.readWhereNameContains(string);
 	}
-	
+	*/
 }

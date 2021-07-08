@@ -5,13 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.cyk.system.file.server.persistence.api.query.FileQuerier;
-import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
-import org.cyk.system.file.server.representation.entities.FileDto;
-import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.representation.Arguments;
-import org.cyk.utility.representation.EntityReader;
 
 public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,Serializable {
 
@@ -24,14 +18,7 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	
 	@Override
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
-		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class)
-				.setCountable(countable);
-		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
-		if(StringHelper.isNotBlank(filterAsString))
-			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
-		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
-		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
-		return EntityReader.getInstance().read(arguments);
+		return __inject__(FileRepresentation.class).get(filterAsString, countable, firstTupleIndex, numberOfTuples);
 	}
 	
 	@Override

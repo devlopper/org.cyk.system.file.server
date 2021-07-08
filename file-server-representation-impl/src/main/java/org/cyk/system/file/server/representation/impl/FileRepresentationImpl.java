@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.impl.FileBusinessImpl;
+import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
@@ -21,11 +22,11 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.string.Strings;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.file.FileHelper;
-import org.cyk.utility.number.Intervals;
+import org.cyk.utility.representation.Arguments;
+import org.cyk.utility.representation.EntityReader;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
 
 @ApplicationScoped
@@ -33,6 +34,18 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	private static final long serialVersionUID = 1L;
 
 	@Inject private FileBusiness fileBusiness;
+	
+	@Override
+	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
+		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class)
+				.setCountable(countable);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
+		if(StringHelper.isNotBlank(filterAsString))
+			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
+		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
+		return EntityReader.getInstance().read(arguments);
+	}
 	
 	@Override
 	public Response import_(List<String> pathsNames, String acceptedPathNameRegularExpression) {
@@ -83,38 +96,6 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 		});
 	}
 	
-	//@Override
-	public Response createFromDirectories(List<String> directories,/*List<String> mimeTypeTypes,List<String> mimeTypeSubTypes,List<String> mimeTypes,*/List<String> extensions
-			,List<String> sizes,Integer batchSize,Integer count) {
-		Intervals intervals = null;
-		if(CollectionHelper.isNotEmpty(sizes)) {
-			intervals = __inject__(Intervals.class);
-			for(String index : sizes) {
-				String[] extremities = index.split(";");
-				if(extremities.length == 2) {
-					intervals.add(NumberHelper.getInteger(extremities[0]), NumberHelper.getInteger(extremities[1]));
-				}
-			}
-		}
-		__inject__(FileBusiness.class).createFromDirectories(__inject__(Strings.class).add(directories),null,null,null
-				,__inject__(Strings.class).add(extensions),intervals,batchSize,count == null || count == 0 ? null : count);
-		return Response.ok("Files has been created from directories").build();
-	}
-	
-	//@Override
-	public Response getManyByGlobalFilter(Boolean isPageable, Long from, Long count, String fields,String globalFilter,Boolean loggableAsInfo) {
-		/*Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class);
-		arguments.setQueryExecutorArguments(new QueryExecutorArguments.Dto().setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_VIEW_01)
-				.addFilterField(File.FIELD_NAME, globalFilter)
-				.setFirstTupleIndex(NumberHelper.getInteger(from))
-				.setNumberOfTuples(NumberHelper.getInteger(count))
-				).setCountable(Boolean.TRUE).setLoggableAsInfo(loggableAsInfo);
-		return EntityReader.getInstance().read(arguments);
-		//return getMany(null,isPageable, from, count, fields, new Filter.Dto().setValue(globalFilter));
-		*/
-		return null;
-	}
-	
 	@Override
 	public Response download(String identifier,Boolean isInline) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
@@ -138,6 +119,11 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());						
 					}
 				};
+			}
+			
+			@Override
+			public Response getResponseWhenThrowableIsNotNull(Runner.Arguments arguments) {
+				return Response.status(Response.Status.NOT_FOUND).build();
 			}
 		});
 	}

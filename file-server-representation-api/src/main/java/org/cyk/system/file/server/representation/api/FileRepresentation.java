@@ -13,12 +13,24 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.constant.ConstantString;
+import org.cyk.utility.representation.EntityReader;
 import org.cyk.utility.representation.SpecificRepresentation;
 
 @Path(FileRepresentation.PATH)
 public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	
 	String PATH = "file";
+	
+	String PATH_GET = "get";
+	@GET
+	@Path(PATH_GET)
+	@Produces({MediaType.APPLICATION_JSON})
+	Response get(
+			@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString
+			,@QueryParam(EntityReader.PARAMETER_NAME_COUNTABLE) Boolean countable
+			,@QueryParam(EntityReader.PARAMETER_NAME_FIRST_TUPLE_INDEX) Integer firstTupleIndex
+			,@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
+			);
 	
 	String PATH_IMPORT = "/import";
 	@POST
@@ -32,6 +44,13 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	@Path(PATH_EXTRACT_BYTES)
 	@Produces({ MediaType.APPLICATION_JSON})
 	Response extractBytes();
+	
+	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
+	@GET
+	@Path(PATH_DOWNLOAD_ONE)
+	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
+	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) Boolean isInline);
+	
 	/*
 	String PATH_CREATE_FROM_DIRECTORIES = "create_from_directories";
 	@POST
@@ -58,12 +77,6 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	Response getManyByGlobalFilter(@QueryParam(PARAMETER_IS_PAGEABLE) Boolean isPageable,@QueryParam(PARAMETER_FROM) Long from,@QueryParam(PARAMETER_COUNT) Long count
 			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter,@QueryParam("loggableAsInfo")Boolean loggableAsInfo);
 	*/
-	
-	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
-	@GET
-	@Path(PATH_DOWNLOAD_ONE)
-	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
-	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) Boolean isInline);
 	
 	/**/
 
