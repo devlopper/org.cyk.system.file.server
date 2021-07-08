@@ -25,4 +25,14 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	public Response download(String identifier, Boolean isInline) {
 		return __inject__(FileRepresentation.class).download(identifier, isInline);
 	}
+	
+	@Override
+	public Response extractBytesOfAll() {
+		return __inject__(FileRepresentation.class).extractBytesOfAll();
+	}
+	
+	@Override
+	public Response extractBytes(List<String> identifiers) {
+		return __inject__(FileRepresentation.class).extractBytes(identifiers);
+	}
 }

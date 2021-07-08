@@ -32,18 +32,24 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 			,@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
-	String PATH_IMPORT = "/import";
+	String PATH_IMPORT = "import";
 	@POST
 	@Path(PATH_IMPORT)
 	@Produces({ MediaType.APPLICATION_JSON})
 	Response import_(@QueryParam(PARAMETER_PATHS_NAMES) List<String> pathsNames
 			,@QueryParam(PARAMETER_ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) String acceptedPathNameRegularExpression);
 	
-	String PATH_EXTRACT_BYTES = "/extractbytes";
+	String PATH_EXTRACT_BYTES_OF_ALL = "extractbytesofall";
+	@POST
+	@Path(PATH_EXTRACT_BYTES_OF_ALL)
+	@Produces({ MediaType.TEXT_PLAIN})
+	Response extractBytesOfAll();
+	
+	String PATH_EXTRACT_BYTES = "{identifier}/extractbytes";
 	@POST
 	@Path(PATH_EXTRACT_BYTES)
-	@Produces({ MediaType.APPLICATION_JSON})
-	Response extractBytes();
+	@Produces({ MediaType.TEXT_PLAIN})
+	Response extractBytes(@QueryParam(PARAMETER_IDENTIFIERS) List<String> identifiers);
 	
 	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
 	@GET

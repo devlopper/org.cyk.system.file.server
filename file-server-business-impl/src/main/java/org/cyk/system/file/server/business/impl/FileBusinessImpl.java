@@ -18,6 +18,7 @@ import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.impl.query.FileNameExtensionMimeTypeSizeBytesReader;
+import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.collection.CollectionProcessor;
 import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
@@ -34,6 +35,7 @@ import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.file.PathsProcessor;
 import org.cyk.utility.file.PathsScanner;
 import org.cyk.utility.persistence.EntityManagerGetter;
+import org.cyk.utility.persistence.query.EntityFinder;
 import org.cyk.utility.persistence.query.EntityReader;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 
@@ -149,15 +151,41 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	}
 	
 	@Override
-	public TransactionResult extractBytes() {
-		TransactionResult result = new TransactionResult().setName("files bytes extractor");
-		Long filesCount = FileQuerier.getInstance().countWhereBytesDoNotExists(null);
-		LogHelper.logInfo(String.format("%s file(s) to process", filesCount), getClass());
+	public TransactionResult extractBytesOfAll() {
+		Long count = FileQuerier.getInstance().countWhereBytesDoNotExists(null);
+		LogHelper.logInfo(String.format("%s file(s) having bytes not yet extracted", count), getClass());
+		if(NumberHelper.isLessThanOrEqualZero(count))
+			return null;
 		Collection<File> files = FileQuerier.getInstance().readWhereBytesDoNotExists(null);
-		TransactionResult intermediateResult = fileBytesBusiness.createFromFiles(files);
-		result.add(intermediateResult);
+		if(CollectionHelper.isEmpty(files))
+			return null;
+		return extractBytes(files);
+	}
+	
+	@Override
+	public TransactionResult extractBytes(Collection<File> files) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("files", files);
+		TransactionResult result = new TransactionResult().setName("files bytes extractor").setTupleName("file bytes");		
+		result.add(fileBytesBusiness.createFromFiles(files));
 		result.log(getClass());
 		return result;
+	}
+	
+	@Override
+	public TransactionResult extractBytes(File... files) {
+		return extractBytes(ArrayHelper.isEmpty(files) ? null : CollectionHelper.listOf(files));
+	}
+	
+	@Override
+	public TransactionResult extractBytesFromIdentifiers(Collection<String> identifiers) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfEmpty("files identifiers", identifiers);
+		Collection<File> files = EntityFinder.getInstance().findMany(File.class, identifiers);		
+		return extractBytes(files);
+	}
+	
+	@Override
+	public TransactionResult extractBytesFromIdentifiers(String... identifiers) {
+		return extractBytesFromIdentifiers(ArrayHelper.isEmpty(identifiers) ? null : CollectionHelper.listOf(identifiers));
 	}
 	
 	@Override

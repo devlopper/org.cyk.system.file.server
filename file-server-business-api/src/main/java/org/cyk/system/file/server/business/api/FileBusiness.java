@@ -16,7 +16,11 @@ public interface FileBusiness extends SpecificBusiness<File> {
 	TransactionResult import_();
 	
 	String EXTRACT_BYTES = "EXTRACT_BYTES";
-	TransactionResult extractBytes();
+	TransactionResult extractBytes(Collection<File> files);
+	TransactionResult extractBytes(File...files);
+	TransactionResult extractBytesOfAll();
+	TransactionResult extractBytesFromIdentifiers(Collection<String> identifiers);
+	TransactionResult extractBytesFromIdentifiers(String...identifiers);
 	
 	String EXTRACT_TEXT = "EXTRACT_TEXT";
 	TransactionResult extractText();

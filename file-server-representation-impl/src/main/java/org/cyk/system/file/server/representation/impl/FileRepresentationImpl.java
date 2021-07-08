@@ -22,7 +22,6 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
 import org.cyk.utility.__kernel__.runnable.Runner;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.representation.Arguments;
@@ -74,7 +73,7 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	}
 	
 	@Override
-	public Response extractBytes() {
+	public Response extractBytesOfAll() {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
 			@Override
@@ -83,13 +82,30 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			}
 			@Override
 			public Runnable getRunnable() {
-				return new Runnable() {					
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){			
 					@Override
-					public void run() {
-						TransactionResult transactionResult = fileBusiness.extractBytes();
-						if(transactionResult == null)
-							return;
-						runnerArguments.setResult(String.format("%s file(s) byte(s) extracted.", ValueHelper.defaultToIfNull(transactionResult.getNumberOfCreation(),0)));						
+					public TransactionResult transact() {
+						return fileBusiness.extractBytesOfAll();						
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
+	public Response extractBytes(List<String> identifiers) {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+			@Override
+			public Runnable getRunnable() {
+				return new AbstractRunnableImpl.TransactionImpl(responseBuilderArguments){			
+					@Override
+					public TransactionResult transact() {
+						return fileBusiness.extractBytesFromIdentifiers(identifiers);						
 					}
 				};
 			}

@@ -66,7 +66,38 @@ public interface FileOpenAPI extends OpenAPI {
 	@GET
 	@Path(OPERATION_DOWNLOAD)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
+	@Operation(description = "Download file",operationId = "download_file")
+	@APIResponses(value = {
+			@APIResponse(description = "File downloaded",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+			,@APIResponse(description = "File not found",responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Error while downloading file",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
 	Response download(@PathParam(FileRepresentation.PARAMETER_IDENTIFIER) String identifier,@QueryParam(FileRepresentation.PARAMETER_IS_INLINE) Boolean isInline);
+	
+	String OPERATION_EXTRACT_BYTES_OF_ALL = "extractbytesofall";
+	@POST
+	@Path(OPERATION_EXTRACT_BYTES_OF_ALL)
+	@Produces({ MediaType.TEXT_PLAIN})
+	@Operation(description = "Extract bytes of all file",operationId = "extract_bytes_of_all_files")
+	@APIResponses(value = {
+			@APIResponse(description = "Bytes of all files extracted",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Error while extracting bytes of all files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	Response extractBytesOfAll();
+	
+	String OPERATION_EXTRACT_BYTES = "{identifier}/extractbytes";
+	@POST
+	@Path(OPERATION_EXTRACT_BYTES)
+	@Produces({ MediaType.TEXT_PLAIN})
+	@Operation(description = "Extract bytes of files",operationId = "extract_bytes_of_files")
+	@APIResponses(value = {
+			@APIResponse(description = "Bytes of files extracted",responseCode = "200", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Error while extracting bytes of files",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	Response extractBytes(
+			@Parameter(name = FileRepresentation.PARAMETER_IDENTIFIERS) 
+			@QueryParam(FileRepresentation.PARAMETER_IDENTIFIERS) List<String> identifiers
+		);
 	
 	/**/	
 }
