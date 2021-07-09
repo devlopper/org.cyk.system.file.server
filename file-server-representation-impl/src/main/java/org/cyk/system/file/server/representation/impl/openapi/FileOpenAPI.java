@@ -62,6 +62,20 @@ public interface FileOpenAPI extends OpenAPI {
 			@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
+	String OPERATION_COUNT = "count";
+	@GET
+	@Path(OPERATION_COUNT)
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Count files",operationId = "count_files")
+	Response count(@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString);
+	
+	String OPERATION_COUNT_IN_DIRECTORY = "countindirectory";
+	@GET
+	@Path(OPERATION_COUNT_IN_DIRECTORY)
+	@Produces({MediaType.TEXT_PLAIN})
+	@Operation(description = "Count files in directory",operationId = "count_files_in_directory")
+	Response countInDirectory();
+	
 	String OPERATION_DOWNLOAD = "{identifier}/download";
 	@GET
 	@Path(OPERATION_DOWNLOAD)

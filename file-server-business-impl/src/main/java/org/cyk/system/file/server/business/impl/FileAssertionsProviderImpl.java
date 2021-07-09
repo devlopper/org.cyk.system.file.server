@@ -16,10 +16,7 @@ public class FileAssertionsProviderImpl extends AbstractAssertionsProviderForImp
 	protected void ____execute____(Function<?,?> function,Object filter, File file) {
 		if(function instanceof BusinessFunctionCreator) {
 			if(filter==null) {
-				if(Boolean.TRUE.equals(file.getIsBytesAccessibleFromUniformResourceLocator())) {
-					if(FileBusinessImpl.ROOT_FOLDER_PATH == null)
-						throw new RuntimeException("Root folder is required");
-				}
+				
 				if(StringHelper.isBlank(file.getUniformResourceLocator())) {
 					//bytes are required
 					//__injectAssertionBuilderNull__().setIsAffirmation(Boolean.FALSE).setFieldValueGetter(file, File.FIELD_BYTES)

@@ -50,6 +50,21 @@ public class FileOpenAPIIT extends AbstractClientIT {
 		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.txt"});
     }
 	
+	@Test @InSequence(1)
+    public void count_null() {
+		assertCount(null, "10");
+    }
+	
+	@Test @InSequence(1)
+    public void count_croix() {
+		assertCount("croix", "2");
+    }
+	
+	@Test @InSequence(1)
+    public void countInDirectory() {
+		assertCountInDirectory("2");
+    }
+	
 	@Test @InSequence(2)
     public void download() {
 		assertDownload("002aadb8-2f00-4bda-8e41-67e7938eed2b", "Chant à la croix", "txt","text/plain", "25", "hello world!");
@@ -59,8 +74,18 @@ public class FileOpenAPIIT extends AbstractClientIT {
     public void import_() {
     	Response response = given().contentType(ContentType.URLENC).when().post(FileOpenAPI.OPERATION_IMPORT);
     	response.then().statusCode(201);
-    	assertThat(response.getHeader(Action.CREATE.name())).isEqualTo("1");
+    	assertThat(response.getHeader(Action.CREATE.name())).isEqualTo("2");
     	assertThat(response.getHeader(Action.UPDATE.name())).isEqualTo(null);
     	assertThat(response.getHeader(Action.DELETE.name())).isEqualTo(null);
+    }
+    
+    @Test @InSequence(4)
+    public void countInDirectory2() {
+		assertCountInDirectory("2");
+    }
+    
+    @Test @InSequence(4)
+    public void count_null2() {
+		assertCount(null, "12");
     }
 }

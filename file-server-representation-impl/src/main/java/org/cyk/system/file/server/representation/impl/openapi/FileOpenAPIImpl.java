@@ -35,4 +35,14 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	public Response extractBytes(List<String> identifiers) {
 		return __inject__(FileRepresentation.class).extractBytes(identifiers);
 	}
+
+	@Override
+	public Response count(String filterAsString) {
+		return __inject__(FileRepresentation.class).count(filterAsString);
+	}
+
+	@Override
+	public Response countInDirectory() {
+		return __inject__(FileRepresentation.class).countInDirectory();
+	}
 }

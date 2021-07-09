@@ -15,7 +15,17 @@
 	<display-name>${cyk.variable.system.name}</display-name>
 	
 	<!-- System -->
-	
+	<!--
+	<filter>
+        <filter-name>Keycloak Filter</filter-name>
+        <filter-class>org.keycloak.adapters.servlet.KeycloakOIDCFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Keycloak Filter</filter-name>
+        <url-pattern>/keycloak/*</url-pattern>
+        <url-pattern>/api/open/file/get</url-pattern>
+    </filter-mapping>
+	-->
 	<context-param>
 		<param-name>cyk.variable.system.identifier</param-name>
 		<param-value>${cyk.variable.system.identifier}</param-value>

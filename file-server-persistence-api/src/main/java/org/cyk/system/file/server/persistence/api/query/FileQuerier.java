@@ -4,11 +4,11 @@ import java.util.Collection;
 
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.utility.__kernel__.Helper;
+import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.persistence.query.Querier;
 import org.cyk.utility.persistence.query.QueryExecutorArguments;
 import org.cyk.utility.persistence.query.QueryIdentifierBuilder;
 import org.cyk.utility.persistence.query.QueryName;
-import org.cyk.utility.__kernel__.value.Value;
 
 public interface FileQuerier extends Querier {
 
@@ -37,6 +37,9 @@ public interface FileQuerier extends Querier {
 	
 	String QUERY_IDENTIFIER_COUNT_WHERE_FILTER = QueryIdentifierBuilder.getInstance().build(File.class, QueryName.COUNT_WHERE_FILTER.getValue());
 	Long countWhereFilter(QueryExecutorArguments arguments);
+	
+	Long countInDirectories(Collection<String> pathsNames,String acceptedPathNameRegularExpression);
+	Long countInDirectories();
 	
 	/**/
 	

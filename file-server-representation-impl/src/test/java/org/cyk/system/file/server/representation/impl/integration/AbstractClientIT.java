@@ -37,6 +37,22 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		assertThat(response.getHeader(ResponseHelper.HEADER_COLLECTION_SIZE)).isEqualTo(expectedCollectionSize);
     }
 	
+	protected void assertCount(String filterAsString,String expectedCount) {
+		RequestSpecification requestSpecification = given().when();
+		if(StringHelper.isNotBlank(filterAsString))
+			requestSpecification.queryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING, filterAsString);
+		Response response = requestSpecification.get(FileOpenAPI.OPERATION_COUNT);
+		response.then().statusCode(200);
+		assertThat(response.getBody().asString()).isEqualTo(expectedCount);
+    }
+	
+	protected void assertCountInDirectory(String expectedCount) {
+		RequestSpecification requestSpecification = given().when();
+		Response response = requestSpecification.get(FileOpenAPI.OPERATION_COUNT_IN_DIRECTORY);
+		response.then().statusCode(200);
+		assertThat(response.getBody().asString()).isEqualTo(expectedCount);
+    }
+	
 	protected void assertDownload(String identifier,String expectedName,String expectedExtension,String expectedMimeType,String expectedSize,String expectedBytes) {
 		RequestSpecification requestSpecification = given().when();
 		requestSpecification.queryParam(FileRepresentation.PARAMETER_IS_INLINE, Boolean.TRUE);	

@@ -13,6 +13,7 @@ import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.business.impl.FileBusinessImpl;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.FilePersistenceImpl;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -25,6 +26,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.business.TransactionResult;
 import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.representation.Arguments;
+import org.cyk.utility.representation.EntityCounter;
 import org.cyk.utility.representation.EntityReader;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
 
@@ -47,6 +49,37 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	}
 	
 	@Override
+	public Response count(String filterAsString) {
+		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_COUNT_DYNAMIC);
+		if(StringHelper.isNotBlank(filterAsString))
+			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
+		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
+		return EntityCounter.getInstance().count(arguments);
+	}
+	
+	@Override
+	public Response countInDirectory() {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						responseBuilderArguments.setEntity(FileQuerier.getInstance().countInDirectories());
+					    responseBuilderArguments.setHeadersCORS();
+					}
+				};
+			}
+		});
+	}
+	
+	@Override
 	public Response import_(List<String> pathsNames, String acceptedPathNameRegularExpression) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
 		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
@@ -60,7 +93,7 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 					@Override
 					public TransactionResult transact() {
 						TransactionResult result = fileBusiness.import_(CollectionHelper.isEmpty(pathsNames) 
-								? ConfigurationHelper.getValueAsStrings(FileBusinessImpl.FILES_PATHS_NAMES) : pathsNames
+								? ConfigurationHelper.getValueAsStrings(FilePersistenceImpl.DIRECTORY) : pathsNames
 								, StringHelper.isBlank(acceptedPathNameRegularExpression) 
 								? ConfigurationHelper.getValueAsString(FileBusinessImpl.ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) : acceptedPathNameRegularExpression);
 						if(Boolean.TRUE.equals(NumberHelper.isGreaterThanZero(result.getNumberOfCreation())))

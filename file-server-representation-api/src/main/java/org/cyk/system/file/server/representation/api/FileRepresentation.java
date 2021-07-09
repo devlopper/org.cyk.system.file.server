@@ -32,6 +32,18 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 			,@QueryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES) Integer numberOfTuples
 			);
 	
+	String PATH_COUNT = "count";
+	@GET
+	@Path(PATH_COUNT)
+	@Produces({MediaType.APPLICATION_JSON})
+	Response count(@QueryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING) String filterAsString);
+	
+	String PATH_COUNT_IN_DIRECTORY = "countindirectory";
+	@GET
+	@Path(PATH_COUNT_IN_DIRECTORY)
+	@Produces({MediaType.APPLICATION_JSON})
+	Response countInDirectory();
+	
 	String PATH_IMPORT = "import";
 	@POST
 	@Path(PATH_IMPORT)

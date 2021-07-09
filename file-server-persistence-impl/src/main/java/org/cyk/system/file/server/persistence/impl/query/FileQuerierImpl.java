@@ -13,11 +13,16 @@ import static org.cyk.utility.persistence.query.Language.Where.where;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.FilePersistenceImpl;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.file.FileHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.file.PathsScanner;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.persistence.query.Query;
 import org.cyk.utility.persistence.query.QueryExecutor;
@@ -104,6 +109,21 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	}
 	
 	@Override
+	public Long countInDirectories(Collection<String> pathsNames, String acceptedPathNameRegularExpression) {
+		return NumberHelper.getLong(PathsScanner.getInstance().count(new PathsScanner.Arguments().addPathsFromNames(pathsNames)
+				.setAcceptedPathNameRegularExpression(acceptedPathNameRegularExpression)
+				.setMinimalSize(FilePersistenceImpl.getMinimalSize()).setMaximalSize(FilePersistenceImpl.getMaximalSize())));
+	}
+	
+	@Override
+	public Long countInDirectories() {
+		String directory = FilePersistenceImpl.getDirectory();
+		if(StringHelper.isBlank(directory))
+			return null;
+		return countInDirectories(List.of(directory), FilePersistenceImpl.getAcceptedPathNameRegularExpression());
+	}
+	
+	@Override
 	public Collection<String> readUniformResourceLocators() {
 		return GenericFieldExecutor.getInstance().getValues(File.class, String.class, File.FIELD_UNIFORM_RESOURCE_LOCATOR);
 	}
@@ -170,4 +190,7 @@ public class FileQuerierImpl extends FileQuerier.AbstractImpl implements Seriali
 	private static String getReadWhereBytesDoNotExistsFromWhere() {
 		return "FROM File t WHERE NOT EXISTS(SELECT fb FROM FileBytes fb WHERE fb.file = t)";
 	}
+
+	/**/
+	
 }

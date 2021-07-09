@@ -49,6 +49,13 @@
 			<artifactId>jee-utility-server-deployment</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		<!--
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-servlet-filter-adapter</artifactId>
+			<version>${org.keycloak.version}</version>
+		</dependency>
+		-->
 	</dependencies>
 	
 	<profiles>

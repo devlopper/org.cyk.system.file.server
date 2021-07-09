@@ -5,6 +5,7 @@
     	<class>org.cyk.system.file.server.persistence.entities.FileBytes</class>
     	<class>org.cyk.system.file.server.persistence.entities.FileText</class>
 		<properties>
+			<property name="hibernate.hbm2ddl.charset_name" value="UTF-8" />
 			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
 			<property name="javax.persistence.sql-load-script-source" value="memory/data.sql" />
 						
