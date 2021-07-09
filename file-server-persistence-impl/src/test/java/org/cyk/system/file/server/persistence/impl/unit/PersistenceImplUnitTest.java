@@ -29,6 +29,12 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 				, new String[] {
 						"il est vivant le seigneur mon dieu.pdf"
 					}
+				, new String[] {
+						"application/pdf"
+					}
+				, new Long[] {
+						33195l
+					}
 			);
 		
 		assertFileReadDynamicFilter("il"
@@ -39,6 +45,14 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 				, new String[] {
 						"ah qu il es bon.pdf"
 						,"il est vivant le seigneur mon dieu.pdf"
+					}
+				, new String[] {
+						"application/pdf"
+						,"application/pdf"
+					}
+				, new Long[] {
+						537836l
+						,33195l						
 					}
 			);
 	}
@@ -56,14 +70,16 @@ public class PersistenceImplUnitTest extends AbstractUnitTestMemory {
 		assertThat(new String(file.getBytes())).isEqualTo("hello world!");
 	}
 	
-	private void assertFileReadDynamicFilter(String name,String[] expectedIdentifiers,String[] expectedNamesAndExtensions){
+	private void assertFileReadDynamicFilter(String name,String[] expectedIdentifiers,String[] expectedNamesAndExtensions,String[] expectedMimes,Long[] expectedSizes){
 		Collection<File> files = EntityReader.getInstance().readManyDynamically(File.class,new QueryExecutorArguments().addFilterField(File.FIELD_NAME, name)
-				.addProcessableTransientFieldsNames(File.FIELD_NAME_AND_EXTENSION));
+				.addProcessableTransientFieldsNames(File.FIELD_NAME_AND_EXTENSION_MIME_TYPE_SIZE));
 		assertThat(files).isNotEmpty();		
 		assertThat(files.stream().map(x -> x.getIdentifier())).containsExactly(expectedIdentifiers);
 		//assertThat(files.stream().map(x -> x.getName())).containsExactly((String)null);
 		//assertThat(files.stream().map(x -> x.getExtension())).containsExactly((String)null);
 		assertThat(files.stream().map(x -> x.getNameAndExtension())).containsExactly(expectedNamesAndExtensions);
+		assertThat(files.stream().map(x -> x.getMimeType())).containsExactly(expectedMimes);
+		assertThat(files.stream().map(x -> x.getSize())).containsExactly(expectedSizes);
 		//assertThat(files.stream().map(x -> x.getSha1())).containsExactly((String)null);
 	}
 }

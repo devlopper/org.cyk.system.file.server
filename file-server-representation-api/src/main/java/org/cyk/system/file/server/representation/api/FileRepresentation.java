@@ -3,6 +3,7 @@ package org.cyk.system.file.server.representation.api;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -63,20 +64,17 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	@Produces({ MediaType.TEXT_PLAIN})
 	Response extractBytes(@QueryParam(PARAMETER_IDENTIFIERS) List<String> identifiers);
 	
-	String PATH_DOWNLOAD_ONE = "{identifier}/"+ConstantString.DOWNLOAD;
+	String PATH_DOWNLOAD = "{identifier}/download";
 	@GET
-	@Path(PATH_DOWNLOAD_ONE)
+	@Path(PATH_DOWNLOAD)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
 	Response download(@PathParam(PARAMETER_IDENTIFIER) String identifier,@QueryParam(PARAMETER_IS_INLINE) Boolean isInline);
 	
-	/*
-	String PATH_CREATE_FROM_DIRECTORIES = "create_from_directories";
-	@POST
-	@Path(PATH_CREATE_FROM_DIRECTORIES)
-	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	Response createFromDirectories(@QueryParam(PARAMETER_DIRECTORY) List<String> directories,@QueryParam(PARAMETER_EXTENSION) List<String> extensions
-			,@QueryParam(PARAMETER_SIZE) List<String> sizes,@QueryParam(PARAMETER_BATCH_SIZE) Integer batchSize,@QueryParam(PARAMETER_COUNT) Integer count);
-	*/
+	String PATH_GET_INFOS = "{identifier}/getinfos";
+	@HEAD
+	@Path(PATH_GET_INFOS)
+	Response getInfos(@PathParam(PARAMETER_IDENTIFIER) String identifier);
+	
 	/*
 	 * Upload is not yet standard. For now we will use specific application server functionality
 	 */
@@ -86,14 +84,6 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	Response upload();
-	*/
-	/*
-	@GET
-	@Path(PATH_GET_MANY_BY_GLOBAL_FILTER)
-	@Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
-	Response getManyByGlobalFilter(@QueryParam(PARAMETER_IS_PAGEABLE) Boolean isPageable,@QueryParam(PARAMETER_FROM) Long from,@QueryParam(PARAMETER_COUNT) Long count
-			,@QueryParam(PARAMETER_FIELDS) String fields,@PathParam("__filter__") String globalFilter,@QueryParam("loggableAsInfo")Boolean loggableAsInfo);
 	*/
 	
 	/**/

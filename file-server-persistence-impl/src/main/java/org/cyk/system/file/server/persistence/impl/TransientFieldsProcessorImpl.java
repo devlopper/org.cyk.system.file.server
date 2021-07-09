@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.cyk.system.file.server.persistence.entities.File;
+import org.cyk.system.file.server.persistence.impl.query.FileNameAndExtensionMimeTypeSizeReader;
 import org.cyk.system.file.server.persistence.impl.query.FileNameAndExtensionReader;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.persistence.query.Filter;
@@ -23,6 +24,8 @@ public class TransientFieldsProcessorImpl extends org.cyk.utility.persistence.se
 		for(String fieldName : fieldsNames) {
 			if(File.FIELD_NAME_AND_EXTENSION.equals(fieldName))
 				new FileNameAndExtensionReader().readThenSet(files, null);
-		}		
+			else if(File.FIELD_NAME_AND_EXTENSION_MIME_TYPE_SIZE.equals(fieldName))
+				new FileNameAndExtensionMimeTypeSizeReader().readThenSet(files, null);
+		}
 	}
 }

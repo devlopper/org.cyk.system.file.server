@@ -22,6 +22,11 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	}
 	
 	@Override
+	public Response getInfos(String identifier) {
+		return __inject__(FileRepresentation.class).getInfos(identifier);
+	}
+	
+	@Override
 	public Response download(String identifier, Boolean isInline) {
 		return __inject__(FileRepresentation.class).download(identifier, isInline);
 	}

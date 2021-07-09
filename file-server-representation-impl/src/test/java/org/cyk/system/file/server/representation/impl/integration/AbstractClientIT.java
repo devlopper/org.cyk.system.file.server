@@ -24,7 +24,7 @@ public abstract class AbstractClientIT extends AbstractClientTest {
     	return AbstractIT.buildArchive();
     }
 	
-	protected void assertGet(String filterAsString,Integer firstTupleIndex,Integer numberOfTuples,String expectedCollectionSize,String[] expectedNameAndExtension) {
+	protected void assertGet(String filterAsString,Integer firstTupleIndex,Integer numberOfTuples,String expectedCollectionSize,String[] expectedNameAndExtension,String[] expectedMimes,Integer[] expectedSizes) {
 		RequestSpecification requestSpecification = given().when();
 		if(StringHelper.isNotBlank(filterAsString))
 			requestSpecification.queryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING, filterAsString);
@@ -33,7 +33,11 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 		if(numberOfTuples != null)
 			requestSpecification.queryParam(EntityReader.PARAMETER_NAME_NUMBER_OF_TUPLES, numberOfTuples);		
 		Response response = requestSpecification.get(FileOpenAPI.OPERATION_GET);
-		response.then().statusCode(200).assertThat().body(File.FIELD_NAME_AND_EXTENSION, hasItems(expectedNameAndExtension));
+		response.then().statusCode(200).assertThat()
+			.body(File.FIELD_NAME_AND_EXTENSION, hasItems(expectedNameAndExtension))
+			.body(File.FIELD_MIME_TYPE, hasItems(expectedMimes))
+			//.body(File.FIELD_SIZE, hasItems(expectedSizes))
+			;
 		assertThat(response.getHeader(ResponseHelper.HEADER_COLLECTION_SIZE)).isEqualTo(expectedCollectionSize);
     }
 	

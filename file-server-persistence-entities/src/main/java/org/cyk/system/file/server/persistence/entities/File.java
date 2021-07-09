@@ -82,6 +82,7 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	public static final String FIELD_TEXT = "text";
 	public static final String FIELD_EXTENSION = "extension";
 	public static final String FIELD_NAME_AND_EXTENSION = "nameAndExtension";
+	public static final String FIELD_NAME_AND_EXTENSION_MIME_TYPE_SIZE = "nameAndExtensionMimeTypeSize";
 	public static final String FIELD_MIME_TYPE = "mimeType";
 	public static final String FIELD_UNIFORM_RESOURCE_LOCATOR = "uniformResourceLocator";
 	public static final String FIELD_SIZE = "size";

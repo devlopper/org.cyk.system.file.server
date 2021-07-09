@@ -28,10 +28,6 @@ public interface FileBusiness extends SpecificBusiness<File> {
 	String DOWNLOAD = "DOWNLOAD";
 	File download(String identifier);
 	
-	/*
-	FileBusiness createFromDirectories(Strings directories,Strings mimeTypeTypes,Strings mimeTypeSubTypes,Strings mimeTypes,Strings extensions,Intervals sizes
-			,Integer batchSize,Integer count);
-	
-	Collection<File> findWhereNameContains(String string);
-	*/	
+	String GET_INFOS = "GET_INFOS";
+	File getInfos(String identifier);
 }

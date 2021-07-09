@@ -18,7 +18,9 @@ import org.cyk.system.file.server.business.api.FileTextBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.impl.FilePersistenceImpl;
+import org.cyk.system.file.server.persistence.impl.query.AbstractFileReader;
 import org.cyk.system.file.server.persistence.impl.query.FileNameExtensionMimeTypeSizeBytesReader;
+import org.cyk.system.file.server.persistence.impl.query.FileNameExtensionMimeTypeSizeReader;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.collection.CollectionProcessor;
@@ -189,14 +191,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 	
 	@Override
 	public File download(String identifier) {
-		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("File identifier", identifier);
-		Collection<File> files = new FileNameExtensionMimeTypeSizeBytesReader().readByIdentifiersThenInstantiate(List.of(identifier), null);
-		if(CollectionHelper.isEmpty(files))
-			throw new RuntimeException("File bytes instance not found");
-		if(files.size() > 1)
-			throw new RuntimeException("Too much files found");
-		File file = (File) files.iterator().next();
-		ThrowableHelper.throwIllegalArgumentExceptionIfNull("File", file);
+		File file = __get__(identifier,new FileNameExtensionMimeTypeSizeBytesReader());
 		if(file.getBytes() == null && StringHelper.isNotBlank(file.getUniformResourceLocator())) {
 			try {
 				file.setBytes(IOUtils.toByteArray(new URI(file.getUniformResourceLocator()).toURL()));
@@ -214,6 +209,23 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 				throw new RuntimeException(String.format("File bytes with identifier <<%s>> from url <<%s>> not found",file.getIdentifier(),file.getUniformResourceLocator()));
 		}
 		return file;
+	}
+	
+	private File __get__(String identifier,AbstractFileReader reader) {
+		ThrowableHelper.throwIllegalArgumentExceptionIfBlank("File identifier", identifier);
+		Collection<File> files = reader.readByIdentifiersThenInstantiate(List.of(identifier), null);
+		if(CollectionHelper.isEmpty(files))
+			throw new RuntimeException("File bytes instance not found");
+		if(files.size() > 1)
+			throw new RuntimeException("Too much files found");
+		File file = (File) files.iterator().next();
+		ThrowableHelper.throwIllegalArgumentExceptionIfNull("File", file);
+		return file;
+	}
+	
+	@Override
+	public File getInfos(String identifier) {
+		return __get__(identifier,new FileNameExtensionMimeTypeSizeReader());
 	}
 	
 	/**/

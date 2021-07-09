@@ -3,6 +3,7 @@ package org.cyk.system.file.server.representation.impl.openapi;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -87,6 +88,17 @@ public interface FileOpenAPI extends OpenAPI {
 			,@APIResponse(description = "Error while downloading file",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
 	})
 	Response download(@PathParam(FileRepresentation.PARAMETER_IDENTIFIER) String identifier,@QueryParam(FileRepresentation.PARAMETER_IS_INLINE) Boolean isInline);
+	
+	String OPERATION_GET_INFOS = "{identifier}/getinfos";
+	@HEAD
+	@Path(OPERATION_GET_INFOS)
+	@Operation(description = "Get file infos",operationId = "get_file_infos")
+	@APIResponses(value = {
+			@APIResponse(description = "File infos got",responseCode = "200")
+			,@APIResponse(description = "File not found",responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN))
+			,@APIResponse(description = "Error while getting file infos",responseCode = "500", content = @Content(mediaType = MediaType.APPLICATION_JSON))
+	})
+	Response getInfos(@PathParam(FileRepresentation.PARAMETER_IDENTIFIER) String identifier);
 	
 	String OPERATION_EXTRACT_BYTES_OF_ALL = "extractbytesofall";
 	@POST

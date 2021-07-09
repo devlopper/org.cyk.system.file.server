@@ -14,7 +14,7 @@ public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeL
 
 	@Override
 	public void __initialize__(Object object) {
-		FileDtoMapper.DOWNLOAD_PATH_FORMAT = "%s/"+StringUtils.replace(FileRepresentation.PATH_DOWNLOAD_ONE+"?isinline=%s"
+		FileDtoMapper.DOWNLOAD_PATH_FORMAT = "%s/"+StringUtils.replace(FileRepresentation.PATH_DOWNLOAD+"?isinline=%s"
 				,RepresentationEntity.FORMAT_PARAMETER_IDENTIFIER,"%s");
 	}
 	

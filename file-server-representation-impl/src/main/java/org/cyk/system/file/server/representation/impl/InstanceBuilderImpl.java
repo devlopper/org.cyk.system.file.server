@@ -40,6 +40,6 @@ public class InstanceBuilderImpl extends AbstractInstanceBuilderImpl implements 
 		}
 	}
 	
-	private static final String DOWNLOAD_UNIFORM_RESOURCE_FORMAT = FileRepresentation.PATH+FileRepresentation.PATH_DOWNLOAD_ONE+"?isinline=true";
+	private static final String DOWNLOAD_UNIFORM_RESOURCE_FORMAT = FileRepresentation.PATH+FileRepresentation.PATH_DOWNLOAD+"?isinline=true";
 	
 }

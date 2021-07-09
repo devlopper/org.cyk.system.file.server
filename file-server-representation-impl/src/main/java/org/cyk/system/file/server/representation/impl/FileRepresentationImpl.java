@@ -38,7 +38,8 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
 		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class)
 				.setCountable(countable);
-		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC);
+		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
+		.addProjectionsFromStrings(File.FIELD_IDENTIFIER).addProcessableTransientFieldsNames(File.FIELD_NAME_AND_EXTENSION_MIME_TYPE_SIZE);
 		if(StringHelper.isNotBlank(filterAsString))
 			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
@@ -162,6 +163,35 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 					    String name = FileHelper.concatenateNameAndExtension(file.getName(), file.getExtension());
 					    responseBuilderArguments.setHeader(HttpHeaders.CONTENT_DISPOSITION, (Boolean.TRUE.equals(isInline) ? ConstantString.INLINE : ConstantString.ATTACHMENT)+"; "+ConstantString.FILENAME
 					    		+"="+name);
+					    if(NumberHelper.isGreaterThanZero(file.getSize()))
+					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());
+					    responseBuilderArguments.setHeadersCORS();
+					}
+				};
+			}
+			
+			@Override
+			public Response getResponseWhenThrowableIsNotNull(Runner.Arguments arguments) {
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+		});
+	}
+	
+	@Override
+	public Response getInfos(String identifier) {
+		Runner.Arguments runnerArguments = new Runner.Arguments();
+		return RequestProcessor.getInstance().process(new RequestProcessor.Request.AbstractImpl() {
+			@Override
+			public Runner.Arguments getRunnerArguments() {
+				return runnerArguments;
+			}
+			@Override
+			public Runnable getRunnable() {
+				return new Runnable() {					
+					@Override
+					public void run() {
+						File file = fileBusiness.getInfos(identifier);
+						responseBuilderArguments.setHeader(HttpHeaders.CONTENT_TYPE, file.getMimeType());
 					    if(NumberHelper.isGreaterThanZero(file.getSize()))
 					    	responseBuilderArguments.setHeader(HttpHeaders.CONTENT_LENGTH, file.getSize());
 					    responseBuilderArguments.setHeadersCORS();
