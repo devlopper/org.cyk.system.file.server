@@ -10,14 +10,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.cyk.system.file.server.business.api.FileBusiness;
-import org.cyk.system.file.server.business.impl.FileBusinessImpl;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.persistence.impl.FilePersistenceImpl;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
 import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
-import org.cyk.utility.__kernel__.configuration.ConfigurationHelper;
 import org.cyk.utility.__kernel__.constant.ConstantString;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.rest.RequestProcessor;
@@ -93,9 +91,9 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 					@Override
 					public TransactionResult transact() {
 						TransactionResult result = fileBusiness.import_(CollectionHelper.isEmpty(pathsNames) 
-								? ConfigurationHelper.getValueAsStrings(FilePersistenceImpl.DIRECTORY) : pathsNames
+								? CollectionHelper.listOf(Boolean.TRUE, FilePersistenceImpl.getDirectory()) : pathsNames
 								, StringHelper.isBlank(acceptedPathNameRegularExpression) 
-								? ConfigurationHelper.getValueAsString(FileBusinessImpl.ACCEPTED_PATH_NAME_REGULAR_EXPRESSION) : acceptedPathNameRegularExpression);
+								? FilePersistenceImpl.getAcceptedPathNameRegularExpression() : acceptedPathNameRegularExpression);
 						if(Boolean.TRUE.equals(NumberHelper.isGreaterThanZero(result.getNumberOfCreation())))
 							responseBuilderArguments.setStatus(Status.CREATED);
 						return result;
