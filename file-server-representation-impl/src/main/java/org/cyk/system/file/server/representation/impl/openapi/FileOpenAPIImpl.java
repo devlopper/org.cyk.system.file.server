@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.cyk.system.file.server.representation.api.FileRepresentation;
+import org.cyk.system.file.server.representation.impl.FileRepresentationImpl;
 
 public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,Serializable {
 
@@ -18,7 +19,7 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	
 	@Override
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
-		return __inject__(FileRepresentation.class).get(filterAsString, countable, firstTupleIndex, numberOfTuples);
+		return FileRepresentationImpl.get(filterAsString, countable, firstTupleIndex, numberOfTuples,FileOpenAPI.PATH,FileOpenAPI.OPERATION_DOWNLOAD);
 	}
 	
 	@Override

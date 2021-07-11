@@ -9,6 +9,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
@@ -36,6 +37,10 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	
 	@Override
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
+		return get(filterAsString, countable, firstTupleIndex, numberOfTuples, FileRepresentation.PATH, FileRepresentation.PATH_DOWNLOAD);
+	}
+	
+	public static Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples,String rootPath,String downloadPath) {
 		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class)
 				.setCountable(countable);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
@@ -44,7 +49,19 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
 		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
+		arguments.setListener(new Arguments.Listener.AbstractImpl() {
+			@Override
+			protected void processRepresentationEntity(Object representationEntity) {
+				super.processRepresentationEntity(representationEntity);
+				FileDto file = (FileDto) representationEntity;
+				addDownloadLink(file, rootPath, downloadPath);
+			}
+		});
 		return EntityReader.getInstance().read(arguments);
+	}
+	
+	public static void addDownloadLink(FileDto file,String rootPath,String downloadPath) {
+		file.addDownloadLink(rootPath+"/"+RegExUtils.replaceFirst(downloadPath, "\\{identifier\\}", file.getIdentifier()));
 	}
 	
 	@Override
