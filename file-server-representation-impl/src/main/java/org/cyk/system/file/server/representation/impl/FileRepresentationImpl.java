@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.representation.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,6 +29,7 @@ import org.cyk.utility.representation.Arguments;
 import org.cyk.utility.representation.EntityCounter;
 import org.cyk.utility.representation.EntityReader;
 import org.cyk.utility.representation.server.AbstractSpecificRepresentationImpl;
+import org.cyk.utility.representation.server.LinksGenerator;
 
 @ApplicationScoped
 public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<FileDto> implements FileRepresentation,Serializable {
@@ -37,10 +39,10 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	
 	@Override
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
-		return get(filterAsString, countable, firstTupleIndex, numberOfTuples, FileRepresentation.PATH, FileRepresentation.PATH_DOWNLOAD);
+		return get(filterAsString, countable, firstTupleIndex, numberOfTuples, null);
 	}
 	
-	public static Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples,String rootPath,String downloadPath) {
+	public static Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples,String downloadLinkFormat) {
 		Arguments arguments = new Arguments().setRepresentationEntityClass(FileDto.class).setPersistenceEntityClass(File.class)
 				.setCountable(countable);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setQueryIdentifier(FileQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
@@ -49,12 +51,12 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			arguments.getQueryExecutorArguments(Boolean.TRUE).addFilterFieldsValues(FileQuerier.PARAMETER_NAME_NAME,filterAsString);
 		arguments.getQueryExecutorArguments(Boolean.TRUE).setFirstTupleIndex(firstTupleIndex).setNumberOfTuples(numberOfTuples);
 		arguments.getResponseBuilderArguments(Boolean.TRUE).setHeadersCORS();
-		arguments.setListener(new Arguments.Listener.AbstractImpl() {
+		arguments.setListener(new Arguments.Listener.AbstractImpl<FileDto,File>() {
 			@Override
-			protected void processRepresentationEntity(Object representationEntity) {
-				super.processRepresentationEntity(representationEntity);
-				FileDto file = (FileDto) representationEntity;
-				addDownloadLink(file, rootPath, downloadPath);
+			public void processRepresentationEntities(Collection<FileDto> representationEntities) {
+				super.processRepresentationEntities(representationEntities);
+				LinksGenerator.getInstance().generate(new LinksGenerator.Arguments().addIdentifiers(List.of(FileRepresentationImpl.LINK_DOWNLOAD))
+						.addOwners(representationEntities).addValueFormat(FileRepresentationImpl.LINK_DOWNLOAD, downloadLinkFormat));
 			}
 		});
 		return EntityReader.getInstance().read(arguments);
@@ -194,6 +196,18 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 		});
 	}
 	
+	public static String buildDownloadFormat(String path,String verb) {
+		return path+"/%s/"+verb+"?"+FileRepresentation.PARAMETER_IS_INLINE+"=true";
+	}
+	
+	public static String buildDownloadFormat(String path) {
+		return buildDownloadFormat(path, PATH_DOWNLOAD_VERB);
+	}
+	
+	public static String buildDownloadFormat() {
+		return buildDownloadFormat(PATH_DOWNLOAD);
+	}
+	
 	@Override
 	public Response getInfos(String identifier) {
 		Runner.Arguments runnerArguments = new Runner.Arguments();
@@ -222,4 +236,9 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			}
 		});
 	}
+	
+	/**/
+	
+	public static final String LINK_DOWNLOAD = "download";
+	public static final String LINK_DOWNLOAD_FORMAT = FileRepresentationImpl.buildDownloadFormat(PATH);
 }

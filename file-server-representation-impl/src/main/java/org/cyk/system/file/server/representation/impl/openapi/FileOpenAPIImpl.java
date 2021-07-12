@@ -19,7 +19,7 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	
 	@Override
 	public Response get(String filterAsString,Boolean countable,Integer firstTupleIndex,Integer numberOfTuples) {
-		return FileRepresentationImpl.get(filterAsString, countable, firstTupleIndex, numberOfTuples,FileOpenAPI.PATH,FileOpenAPI.OPERATION_DOWNLOAD);
+		return FileRepresentationImpl.get(filterAsString, countable, firstTupleIndex, numberOfTuples,LINK_DOWNLOAD_FORMAT);
 	}
 	
 	@Override
@@ -51,4 +51,8 @@ public class FileOpenAPIImpl extends AbstractOpenAPIImpl implements FileOpenAPI,
 	public Response countInDirectory() {
 		return __inject__(FileRepresentation.class).countInDirectory();
 	}
+	
+	/**/
+	
+	public static final String LINK_DOWNLOAD_FORMAT = FileRepresentationImpl.buildDownloadFormat(PATH);
 }

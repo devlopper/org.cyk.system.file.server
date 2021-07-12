@@ -64,7 +64,8 @@ public interface FileRepresentation extends SpecificRepresentation<FileDto> {
 	@Produces({ MediaType.TEXT_PLAIN})
 	Response extractBytes(@QueryParam(PARAMETER_IDENTIFIERS) List<String> identifiers);
 	
-	String PATH_DOWNLOAD = "{identifier}/download";
+	String PATH_DOWNLOAD_VERB = "download";
+	String PATH_DOWNLOAD = "{identifier}/"+PATH_DOWNLOAD_VERB;
 	@GET
 	@Path(PATH_DOWNLOAD)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })

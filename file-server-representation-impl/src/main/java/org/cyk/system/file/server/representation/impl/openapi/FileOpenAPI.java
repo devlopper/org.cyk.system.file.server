@@ -77,7 +77,8 @@ public interface FileOpenAPI extends OpenAPI {
 	@Operation(description = "Count files in directory",operationId = "count_files_in_directory")
 	Response countInDirectory();
 	
-	String OPERATION_DOWNLOAD = "{identifier}/download";
+	String OPERATION_DOWNLOAD_VERB = "download";
+	String OPERATION_DOWNLOAD = "{identifier}/"+OPERATION_DOWNLOAD_VERB;
 	@GET
 	@Path(OPERATION_DOWNLOAD)
 	@Produces({ MediaType.APPLICATION_OCTET_STREAM })

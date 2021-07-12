@@ -9,9 +9,12 @@ import org.cyk.utility.__kernel__.variable.VariableHelper;
 @ApplicationScoped
 public class ApplicationScopeLifeCycleListener extends AbstractApplicationScopeLifeCycleListener {
 
+	public static Boolean INTEGRATION = Boolean.TRUE;
+	
 	@Override
 	public void __initialize__(Object object) {
-		org.cyk.system.file.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
+		if(Boolean.TRUE.equals(INTEGRATION))
+			org.cyk.system.file.server.persistence.impl.ApplicationScopeLifeCycleListener.initialize();
 		VariableHelper.write(FilePersistenceImpl.DIRECTORY, System.getProperty("user.dir")+"/src/test/resources/org/cyk/system/file/server/representation/impl/integration");
 		VariableHelper.write(FilePersistenceImpl.ACCEPTED_PATH_NAME_REGULAR_EXPRESSION, ".pdf|.txt");
 	}
