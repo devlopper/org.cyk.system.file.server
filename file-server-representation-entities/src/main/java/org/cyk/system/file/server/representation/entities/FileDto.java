@@ -38,5 +38,7 @@ public class FileDto extends AbstractIdentifiableSystemScalarStringImpl implemen
 	
 	/**/
 	
+	public static final String FIELD_DOWNLOAD_LINK = "downloadLink";
+	
 	public static final String LINK_DOWNLOAD = "download";
 }

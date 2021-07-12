@@ -27,27 +27,27 @@ public class FileOpenAPIIT extends AbstractClientIT {
 	
 	@Test @InSequence(1)
     public void get() {
-		assertGet(null, null, null, "10", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1});
+		assertGet(null, null, null, "10", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1},new String[] {});
     }
 	
 	@Test @InSequence(1)
     public void get_page() {
-		assertGet(null, 0, 1, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1});
+		assertGet(null, 0, 1, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1},new String[] {});
     }
 	
 	@Test @InSequence(1)
     public void get_filter_Sainte() {
-		assertGet("Sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1});
+		assertGet("Sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1},new String[] {});
     }
 	
 	@Test @InSequence(1)
     public void get_filter_sainte() {
-		assertGet("sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1});
+		assertGet("sainte", null, null, "1", new String[] {"Beni soit la Sainte Trinité (couplets).pdf"},new String[] {"application/pdf"},new Integer[] {1},new String[] {});
     }
 	
 	@Test @InSequence(1)
     public void get_filter_croix() {
-		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.txt"},new String[] {"text/plain"},new Integer[] {2});
+		assertGet("croix", null, null, "2", new String[] {"Chant à la croix.txt"},new String[] {"text/plain"},new Integer[] {2},new String[] {});
     }
 	
 	@Test @InSequence(1)

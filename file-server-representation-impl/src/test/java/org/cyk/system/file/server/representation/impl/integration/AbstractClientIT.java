@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasItems;
 
 import org.cyk.system.file.server.persistence.entities.File;
 import org.cyk.system.file.server.representation.api.FileRepresentation;
+import org.cyk.system.file.server.representation.entities.FileDto;
 import org.cyk.system.file.server.representation.impl.openapi.FileOpenAPI;
 import org.cyk.utility.__kernel__.rest.ResponseHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -24,7 +25,8 @@ public abstract class AbstractClientIT extends AbstractClientTest {
     	return AbstractIT.buildArchive();
     }
 	
-	protected void assertGet(String filterAsString,Integer firstTupleIndex,Integer numberOfTuples,String expectedCollectionSize,String[] expectedNameAndExtension,String[] expectedMimes,Integer[] expectedSizes) {
+	protected void assertGet(String filterAsString,Integer firstTupleIndex,Integer numberOfTuples,String expectedCollectionSize,String[] expectedNameAndExtension
+			,String[] expectedMimes,Integer[] expectedSizes,String[] expectedDownloadLinks) {
 		RequestSpecification requestSpecification = given().when();
 		if(StringHelper.isNotBlank(filterAsString))
 			requestSpecification.queryParam(EntityReader.PARAMETER_NAME_FILTER_AS_STRING, filterAsString);
@@ -37,6 +39,7 @@ public abstract class AbstractClientIT extends AbstractClientTest {
 			.body(File.FIELD_NAME_AND_EXTENSION, hasItems(expectedNameAndExtension))
 			.body(File.FIELD_MIME_TYPE, hasItems(expectedMimes))
 			//.body(File.FIELD_SIZE, hasItems(expectedSizes))
+			.body(FileDto.FIELD_DOWNLOAD_LINK, hasItems(expectedDownloadLinks))
 			;
 		assertThat(response.getHeader(ResponseHelper.HEADER_COLLECTION_SIZE)).isEqualTo(expectedCollectionSize);
     }

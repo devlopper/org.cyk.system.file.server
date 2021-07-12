@@ -19,7 +19,7 @@ public class LinksGeneratorImpl extends org.cyk.utility.representation.server.Li
 	protected String __generateValue__(Object owner, Link link, String valueFormat) {
 		String value = super.__generateValue__(owner, link, valueFormat);
 		if(owner instanceof FileDto && FileRepresentationImpl.LINK_DOWNLOAD.equals(link.getIdentifier()))
-			((FileDto)owner).setDownloadLink(link.getValue());
+			((FileDto)owner).setDownloadLink(value);
 		return value;
 	}
 }
