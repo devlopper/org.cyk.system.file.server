@@ -10,7 +10,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.RegExUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
 import org.cyk.system.file.server.persistence.api.query.FileQuerier;
 import org.cyk.system.file.server.persistence.entities.File;
@@ -60,10 +59,6 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 			}
 		});
 		return EntityReader.getInstance().read(arguments);
-	}
-	
-	public static void addDownloadLink(FileDto file,String rootPath,String downloadPath) {
-		file.addDownloadLink(rootPath+"/"+RegExUtils.replaceFirst(downloadPath, "\\{identifier\\}", file.getIdentifier()));
 	}
 	
 	@Override
@@ -239,6 +234,6 @@ public class FileRepresentationImpl extends AbstractSpecificRepresentationImpl<F
 	
 	/**/
 	
-	public static final String LINK_DOWNLOAD = "download";
+	public static final String LINK_DOWNLOAD = "file.download";
 	public static final String LINK_DOWNLOAD_FORMAT = FileRepresentationImpl.buildDownloadFormat(PATH);
 }

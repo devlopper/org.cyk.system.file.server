@@ -27,18 +27,13 @@ public class FileDto extends AbstractIdentifiableSystemScalarStringImpl implemen
 	private String sha1;
 	private String text;
 	
+	/* Links */
+	
+	private String downloadLink;
+	
 	@Override
 	public FileDto setIdentifier(String identifier) {
 		return (FileDto) super.setIdentifier(identifier);
-	}
-	
-	@Override
-	public FileDto add__link__(String name, String value) {
-		return (FileDto) super.add__link__(name, value);
-	}
-	
-	public FileDto addDownloadLink(String value) {
-		return add__link__(LINK_DOWNLOAD, value);
 	}
 	
 	/**/
