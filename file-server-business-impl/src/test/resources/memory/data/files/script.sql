@@ -1,0 +1,1 @@
+INSERT INTO at_file (identifier,extension,mime,name,sha1,size,uri) VALUES ('1','pdf','application/pdf','Chant à la croix','1',1,'file.pdf');

@@ -1,6 +1,7 @@
 package org.cyk.system.file.server.persistence.entities;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -73,6 +74,16 @@ public class File extends AbstractIdentifiableSystemScalarStringImpl implements 
 	@Override
 	public File setIdentifier(String identifier) {
 		return (File) super.setIdentifier(identifier);
+	}
+	
+	public static File instantiate(Path path,String url) {
+		File file = new File();
+		if(path != null) {
+			file.setNameAndExtension(path.toFile().getName());
+			file.setSize(path.toFile().length());
+		}
+		file.setUniformResourceLocator(url);		
+		return file;
 	}
 	
 	/**/

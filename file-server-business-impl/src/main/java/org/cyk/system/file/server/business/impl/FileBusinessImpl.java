@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
 import org.apache.commons.io.IOUtils;
 import org.cyk.system.file.server.business.api.FileBusiness;
@@ -31,8 +32,11 @@ import org.cyk.utility.__kernel__.random.RandomHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
+import org.cyk.utility.business.Initializer;
 import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.business.Validator;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
+import org.cyk.utility.business.server.EntityCreator;
 import org.cyk.utility.file.FileHelper;
 import org.cyk.utility.file.PathsProcessor;
 import org.cyk.utility.file.PathsScanner;
@@ -45,15 +49,12 @@ import org.cyk.utility.persistence.query.QueryExecutorArguments;
 public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> implements FileBusiness,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//public static Path ROOT_FOLDER_PATH;
-	//public static final String FILES_PATHS_NAMES = "FILES_PATHS_NAMES";
 	public static final String ACCEPTED_PATH_NAME_REGULAR_EXPRESSION = "ACCEPTED_PATH_NAME_REGULAR_EXPRESSION";
 	
 	@Inject private FileBytesBusiness fileBytesBusiness;
 	@Inject private FileTextBusiness fileTextBusiness;
-	
-	@Override
-	public TransactionResult import_(Collection<String> pathsNames,String acceptedPathNameRegularExpression) {
+		
+	public static TransactionResult import_(Collection<String> pathsNames,String acceptedPathNameRegularExpression,EntityManager entityManager) {
 		if(CollectionHelper.isEmpty(pathsNames))
 			throw new RuntimeException("paths names required");
 		if(StringHelper.isBlank(acceptedPathNameRegularExpression))
@@ -65,19 +66,35 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 				.setMinimalSize(FilePersistenceImpl.getMinimalSize()).setMaximalSize(FilePersistenceImpl.getMaximalSize()));
 		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
 		Collection<File> files = new ArrayList<>();
-		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {			
+		Collection<String> messages = new ArrayList<>();
+		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {
 			@Override
 			protected void __process__(Path path) {
 				String url = path.toFile().toURI().toString();
 				if(Boolean.TRUE.equals(CollectionHelper.contains(existingsURLs, url)))
 					return;
-				files.add(instantiateFile(path,url));
+				File file = File.instantiate(path,url);
+				Initializer.getInstance().initialize(File.class, file,IMPORT);
+				if(StringHelper.isBlank(file.getMimeType())) {
+					messages.add(String.format("%s has no mime type", url));
+					return;
+				}
+				files.add(file);
 			}
 		});
-		create(files);
+		messages.forEach(message -> {
+			LogHelper.logWarning(message, FileBusinessImpl.class);
+		});
+		ThrowablesMessages.throwIfNotEmpty(Validator.getInstance().validate(File.class, files,IMPORT));
+		EntityCreator.getInstance().create(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(CollectionHelper.cast(Object.class, files)));
 		result.incrementNumberOfCreation(Long.valueOf(files.size()));
-		result.log(getClass());
+		result.log(FileBusinessImpl.class);
 		return result;
+	}
+	
+	@Override
+	public TransactionResult import_(Collection<String> pathsNames,String acceptedPathNameRegularExpression) {
+		return import_(pathsNames, acceptedPathNameRegularExpression, EntityManagerGetter.getInstance().get());
 	}
 	
 	@Override
@@ -88,13 +105,7 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		return import_(List.of(directory), FilePersistenceImpl.getAcceptedPathNameRegularExpression());
 	}
 	
-	private static File instantiateFile(Path path,String url) {
-		File file = new File();
-		file.setNameAndExtension(path.toFile().getName());
-		file.setSize(path.toFile().length());
-		file.setUniformResourceLocator(url);		
-		return file;
-	}
+	/**/
 	
 	@Override
 	protected void __prepare__(File file,Action action,ThrowablesMessages throwablesMessages) {

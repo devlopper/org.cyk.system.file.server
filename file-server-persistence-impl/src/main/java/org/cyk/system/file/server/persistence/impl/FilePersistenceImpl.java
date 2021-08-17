@@ -43,13 +43,9 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	public static final String MINIMAL_SIZE = "MINIMAL_SIZE";
 	public static Long getMinimalSize() {
 		Long size = ConfigurationHelper.getValueAsLong(MINIMAL_SIZE);
-		if(NumberHelper.isLessThanOrEqualZero(size)) {
-			LogHelper.logWarning(String.format("No minimal size found under variable named %s.", MINIMAL_SIZE), FilePersistenceImpl.class);
-			return null;
-		}
-		if(NumberHelper.isLessThanOrEqualZero(size)) {
+		if(size == null || NumberHelper.isLessThanOrEqualZero(size)) {
 			size = File.MINIMAL_SIZE;
-			LogHelper.logInfo("<<1>> will be used as minimal size", FilePersistenceImpl.class);
+			LogHelper.logInfo(String.format("<%s>> will be used as minimal size",size), FilePersistenceImpl.class);
 		}
 		return size;
 	}
@@ -57,13 +53,9 @@ public class FilePersistenceImpl extends AbstractPersistenceEntityImpl<File> imp
 	public static final String MAXIMAL_SIZE = "MAXIMAL_SIZE";
 	public static Long getMaximalSize() {
 		Long size = ConfigurationHelper.getValueAsLong(MAXIMAL_SIZE);
-		if(NumberHelper.isLessThanOrEqualZero(size)) {
-			LogHelper.logWarning(String.format("No maximal size found under variable named %s.", MAXIMAL_SIZE), FilePersistenceImpl.class);
-			return null;
-		}
-		if(NumberHelper.isLessThanOrEqualZero(size)) {
+		if(size == null || NumberHelper.isLessThanOrEqualZero(size)) {
 			size = File.MAXIMAL_SIZE;
-			LogHelper.logInfo("<<1>> will be used as maximal size", FilePersistenceImpl.class);
+			LogHelper.logInfo(String.format("<%s>> will be used as maximal size",size), FilePersistenceImpl.class);
 		}
 		return size;
 	}
