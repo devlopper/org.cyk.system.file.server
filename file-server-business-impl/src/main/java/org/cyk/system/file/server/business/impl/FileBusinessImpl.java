@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import org.cyk.utility.__kernel__.throwable.ThrowableHelper;
 import org.cyk.utility.__kernel__.throwable.ThrowablesMessages;
 import org.cyk.utility.business.Initializer;
 import org.cyk.utility.business.TransactionResult;
+import org.cyk.utility.business.TransactionResult.SuccessMessageBuilder;
 import org.cyk.utility.business.Validator;
 import org.cyk.utility.business.server.AbstractSpecificBusinessImpl;
 import org.cyk.utility.business.server.EntityCreator;
@@ -64,26 +66,28 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		Collection<Path> paths = PathsScanner.getInstance().scan(new PathsScanner.Arguments().addPathsFromNames(pathsNames)
 				.setAcceptedPathNameRegularExpression(acceptedPathNameRegularExpression)
 				.setMinimalSize(FilePersistenceImpl.getMinimalSize()).setMaximalSize(FilePersistenceImpl.getMaximalSize()));
-		Collection<String> existingsURLs = FileQuerier.getInstance().readUniformResourceLocators();
+		Collection<String> existingsURLs = new HashSet<>();
+		CollectionHelper.add(existingsURLs, Boolean.TRUE, FileQuerier.getInstance().readUniformResourceLocators());
 		Collection<File> files = new ArrayList<>();
-		Collection<String> messages = new ArrayList<>();
+		//Collection<String> messages = new ArrayList<>();
 		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {
 			@Override
 			protected void __process__(Path path) {
 				String url = path.toFile().toURI().toString();
-				if(Boolean.TRUE.equals(CollectionHelper.contains(existingsURLs, url)))
+				if(Boolean.TRUE.equals(CollectionHelper.contains(existingsURLs, url))) {
+					result.addMessages(String.format("%s exist already", url));
 					return;
+				}
 				File file = File.instantiate(path,url);
 				Initializer.getInstance().initialize(File.class, file,IMPORT);
 				if(StringHelper.isBlank(file.getMimeType())) {
-					messages.add(String.format("%s has no mime type", url));
+					result.addMessages(String.format("%s has no mime type", url));
 					return;
 				}
+				if(StringHelper.isNotBlank(file.getUniformResourceLocator()))
+					existingsURLs.add(file.getUniformResourceLocator());
 				files.add(file);
 			}
-		});
-		messages.forEach(message -> {
-			LogHelper.logWarning(message, FileBusinessImpl.class);
 		});
 		ThrowablesMessages.throwIfNotEmpty(Validator.getInstance().validate(File.class, files,IMPORT));
 		EntityCreator.getInstance().create(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(CollectionHelper.cast(Object.class, files)));
@@ -103,6 +107,14 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		if(StringHelper.isBlank(directory))
 			return null;
 		return import_(List.of(directory), FilePersistenceImpl.getAcceptedPathNameRegularExpression());
+	}
+	
+	public static class ImportSuccessMessageBuilderImpl extends SuccessMessageBuilder.AbstractImpl implements Serializable {
+		@Override
+		public String build(TransactionResult transactionResult) {
+			String string = super.build(transactionResult);
+			return string;
+		}
 	}
 	
 	/**/

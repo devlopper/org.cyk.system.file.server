@@ -36,6 +36,6 @@ public class FileBusinessImplUnitTest extends AbstractUnitTestMemory {
 				FileBusinessImpl.import_(List.of("src\\test\\resources\\memory\\data\\files\\binaries"), ".pdf|.txt|.xxx", entityManager);
 			}
 		}.run();
-		assertThat(DynamicManyExecutor.getInstance().count(File.class)).isEqualTo(2l);
+		assertThat(DynamicManyExecutor.getInstance().count(File.class)).isEqualTo(4l);
 	}
 }
