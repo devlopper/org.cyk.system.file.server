@@ -69,12 +69,11 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 		Collection<String> existingsURLs = new HashSet<>();
 		CollectionHelper.add(existingsURLs, Boolean.TRUE, FileQuerier.getInstance().readUniformResourceLocators());
 		Collection<File> files = new ArrayList<>();
-		//Collection<String> messages = new ArrayList<>();
 		PathsProcessor.getInstance().process(paths,new CollectionProcessor.Arguments.Processing.AbstractImpl<Path>() {
 			@Override
 			protected void __process__(Path path) {
 				String url = path.toFile().toURI().toString();
-				if(Boolean.TRUE.equals(CollectionHelper.contains(existingsURLs, url))) {
+				if(existingsURLs.contains(url)) {
 					result.addMessages(String.format("%s exist already", url));
 					return;
 				}
@@ -89,6 +88,11 @@ public class FileBusinessImpl extends AbstractSpecificBusinessImpl<File> impleme
 				files.add(file);
 			}
 		});
+		Collection<String> urls = files.stream().filter(file -> StringHelper.isNotBlank(file.getUniformResourceLocator())).map(file -> file.getUniformResourceLocator())
+				.collect(Collectors.toSet());
+		if(files.size() != urls.size())
+			throw new RuntimeException(String.format("Duplicate urls found : %s", files.stream().filter(file -> StringHelper.isNotBlank(file.getUniformResourceLocator()))
+					.map(file -> file.getUniformResourceLocator()).collect(Collectors.toList())));
 		ThrowablesMessages.throwIfNotEmpty(Validator.getInstance().validate(File.class, files,IMPORT));
 		EntityCreator.getInstance().create(new QueryExecutorArguments().setEntityManager(entityManager).setObjects(CollectionHelper.cast(Object.class, files)));
 		result.incrementNumberOfCreation(Long.valueOf(files.size()));
